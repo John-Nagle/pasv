@@ -4,7 +4,7 @@ var
   sym: symtype;			{symbol type and classification}
   val: valu;			{value of constant}
   lgth: integer;		{length of string}
-  string: packed array[0..strlen1] of char;	{value of string}
+  stringvar: packed array[0..strlen1] of char;	{value of string}
   id: idtype;			{last identifier}
   ch: char;			{last character}
   atendoffile: boolean;		{ true after EOF detected in source }
@@ -20,7 +20,7 @@ var
   linenr : pack5;
   chartab:chartabtype;
   bline :  array[1..mbuf] of char; {line buffer} { MUST BEGIN AT 0 W/NEW PAS05 }
-  ctimer,cdate:alfa;
+  ctimer,cdate: packed array[0..9] of char; { WAS alfa }
   
                                {option switches:}
                                {****************}

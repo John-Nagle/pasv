@@ -70,13 +70,13 @@ type
 	    invariantsy,measuresy,proofsy,rulesy,statesy,summarysy,
 	    oldsy);
 
-  operator = (mul,andop,sdiv,idiv,imod,plus,minus,orop,ltop,leop,
+  operatorenum = (mul,andop,sdiv,idiv,imod,plus,minus,orop,ltop,leop,
               geop,gtop,neop,eqop,inop,maxop,minop,ceilop,
 	      floorop,impliesop,noop);
 
   symtype = record
               sy: symbol;
-              op: operator
+              op: operatorenum
             end;
   buffer= packed array[1..alfaleng] of char;
   idtype = record
@@ -273,7 +273,7 @@ type
   end;
   nametab = array[0..nrbuiltin1] of idtype;
   sizetables = array[forms] of integer;
-  binoptab = array[forms,operator] of 0..255;
+  binoptab = array[forms,operatorenum] of 0..255;
   doargtab = array[0..nrbuiltin1] of set of (hasarg, getarg);
   litshfttab = array[0..auword] of integer;
   options =array['A'..'Z'] of boolean;

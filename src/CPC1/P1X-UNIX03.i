@@ -93,7 +93,8 @@ begin
     assert(filestackdepth > 0);		{ must be something there }
     with filestack[filestackdepth] do begin { using top of stack }
 	assert(state = unopened);	{ must not be opened yet }
-	reset(infile,fname);		{ open the file }
+	assign(infile,fname);       { associate name with file object}
+	reset(infile);		        { open the file }
 	state := opened;		{ mark as opened }
 	fileserial := fileserial + 1;	{ count files opened }
 	filenumber := fileserial;	{ save sn of this file on stack }
@@ -108,7 +109,7 @@ end {opentopfile};
 procedure pushfile(fn: pathname);	{ file name to be pushed }
 begin
     if filestackdepth >= filestackmax then begin { if too many }
-	message('Too many file names or included files.');
+	write(output,'Too many file names or included files.');
 	terminateprogram;
     end else begin			{ new name will be accepted }
 	filestackdepth := succ(filestackdepth); { move to next slot }
@@ -133,8 +134,8 @@ begin
 	filestackdepth := pred(filestackdepth); { done with this one }
 	end;
     if filestackdepth = 0 then begin	{ if out of include files }
-	while (currentarg < argc) and (filestackdepth < 1) do begin
-	    argv(currentarg,argwork);	{ read next argument }
+	while (currentarg < ParamCount) and (filestackdepth < 1) do begin
+	    argwork := ParamStr(currentarg); { read next argument }
 	    if argwork[1] <> '-' then begin { if not a flag }
 		filestackdepth := 1;	{ put on the file stack }
 		with filestack[1] do begin { using first entry }
@@ -158,8 +159,8 @@ var argwork: pathname;			{ working argument string }
     i: 0..1000;				{ arg count }
     key: char;
 begin
-    for i := 1 to argc-1 do begin	{ scan for keyletters }
-	argv(i,argwork);		{ read an argument }
+    for i := 1 to ParamCount-1 do begin	{ scan for keyletters }
+    argwork := ParamStr(i);  { read an argument }
 	if argwork[1] = '-' then begin	{ this is a keyletter }
 	    key := argwork[2];		{ get keyletter }   
 	    makeuppercase(key);		{ force into upper case }
@@ -177,6 +178,7 @@ end {readargs};
 }
 procedure readline(var inf: text;	{ file to be read }
 		   var ateof: boolean);	{ returns true if EOF reached }
+const tab = #9;             { tab char }
 var chr: char;				{ last char actually read }
 begin
     chavail := 0;			{ number of chars read }
@@ -252,18 +254,24 @@ end {initinput};
 }
 procedure resetmsgfile(var f: text);
 begin
-    reset(f, errortextfile);			{ use UNIX file name }
+    assign(f, errortextfile);           { use UNIX file name }
+    reset(f);			    { open file }
 end {resetmsgfile};
 {
 	initout --  initialize output files
 }
 procedure initoutput;
 begin
-  if option['L'] then				{ if Listing option }
-      rewrite(lst,lstfilename);			{ user listing file }
-  rewrite(int,intfilename);			{ icode file }
-  rewrite(dat,datfilename);			{ rdata object file }
-  rewrite(symfil,symfilename);			{ interpreter symbols file }
+  if option['L'] then begin				{ if Listing option }
+      assign(lst, lstfilename);
+      rewrite(lst);			{ user listing file }
+  end;
+  assign(int, intfilename);         { icode file }
+  rewrite(int); 
+  assign(dat, datfilename);        
+  rewrite(dat);			                { rdata object file }
+  assign(symfil, symfilename);  
+  rewrite(symfil);			            { interpreter symbols file }
 end {initoutput};
 {
 	writesourceline  --  write current source line to specified file
