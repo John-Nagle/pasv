@@ -1,0 +1,1 @@
+::	Puts files under SCCS control:	then removes the original file.::				J. Nagle    3 Mar 81for FILE do    admin -i$FILE s.$FILE    case $? in    0)	;;    *)  exit $?    esac    rm -f $FILEdone

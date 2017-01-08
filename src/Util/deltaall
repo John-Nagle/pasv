@@ -1,0 +1,1 @@
+#! /bin/sh#	Generate delta command for all files with p files in given directory#						Version 1.5 of 2/9/82set -eCMD=`(echo $1/p.* | sed  -n -e '/\*/d' -e 'H' -e '$g' -e '$s/\n/ /g' -e '$p' | sed -e 's/\/p\./\/s./g' -e 's/^/delta /' )`echo $CMDexec $CMD

@@ -1,0 +1,1 @@
+if make ${1?'usage: mktest make-name [bin-name]'}then mv $1 $HOME/bintest/${2-$1}fi

@@ -1,0 +1,1 @@
+{	Test for recursion detector		Version 1.1 of 3/18/82}program recurse3;procedure p0;beginend;procedure p1;depth 0;procedure p2;	{ ERROR: no DEPTH statement for recursive routine }procedure p3;depth 0;begin {p3}    p1;end;begin {p2}    p3;end;begin {p1}    p2;end;begin    p0;    p1;end.
