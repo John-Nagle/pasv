@@ -1,1 +1,780 @@
-#include "global.h"procedure WriteFinishId;begin  writeln('finish.p 1.24') end;procedure DismantleVariableList(var VL: PointerToVariableList);(* Input and Output: VL. * Assumption: VL points to a variable list that is terminated by a  *   nil link. * Effect: Every node in the list is disposed and VL is set to nil. *)var T: PointerToVariableList;begin  while VL <> nil do begin    T := VL^.Tail;    dispose(VL);    VL := T end end;procedure FinishGraph;var CurEnv: EnvIndex; (* current environment maintained during traversal *)procedure Develop(S: StringIndex; E: EnvIndex;		     SetL: boolean; var L:PointerToVariableList);(* Input: The string indicated by S, the enviornment indicated *    by E, and the variable table (particulary the OnList field). * Output: L, the string indicated by S. * Assumptions: The string is a Jcode expression. * Effect: All the variables in the string are located and *    are given postfixes as indicated by the enviornment E. *    If SetL is true, L is set to a list of all variables in S whose *    postfixes of the form @@@ or +@@, and whose OnList bits are false; *    otherwise L is left untouched.  Note: in the process of constructing *    the list L, OnList bits are played with.  However, on return from *    Develop the OnList bits will be restored to whatever value they had *    on input. *)var  Offset: 0 .. +1;       (* Used to compute postfix *)  KindLetter: char;      (* Either 'v' or 'd' -- also part of postfix *)  PostN,                 (* Numeric value of Postfix *)  HiOrder,               (* High order digit of PostN in base AlphaRadix *)  LoOrder: integer;      (* Low order digit of PostN in base AlphaRadix *)  VarStart: StringIndex; (* Used to remember the beginning of the variable *)  VarPtr: PointerToVariable;  ListNode: PointerToVariableList;begin  (* The format assumed for an assertion is repetitions of the   * following pattern:   *   *    1         2    3         4         5              *    <non-(>*  <(>  <space>*  <alpha>*  <delim>   *   *  where <delim> one of: ! +++ +@@ @++ @@@    *  and <alpha> is any character than can appear in an identifier   *   *  The string ends with a slash that must occur somewhere   *  in the <non-(>* part.   *)  (* As each variable (with a @@@ or +@@ postfix) is encountered for the   * first time, it is added to the list L (if L is being set).   *)  if SetL then L := nil;  repeat    (* "In state i" is defined to mean that StringPool[S] is matched by     * part of pattern j, where j is the smallest index greater or     * equal to i such that pattern j does not match the empty string.     *)    (* In state 1 *)    while not (StringPool[S] in ['(','/']) do S := S + 1;    (* StringPool[S] = '/' IMPLIES In state 1;     * StringPool[S] = '(' IMPLIES In state 2     *)    if StringPool[S] = '(' then begin      (* In state 2 *)      S := S + 1;      (* In state 3 *)      while StringPool[S] = ' ' do S := S + 1;      (* In state 4 *)      (* If <alpha>* matches a variable, it begins here *)      VarStart := S;      while not (StringPool[S] in DelimiterSet) do S := S + 1;      (* In state 5 *)      (* Identifiers end in a string of three elements of ['+', '@'];       * operators end in ! and should be left alone.       * User function names are followed by " ", then an argument list       * and also should be left alone.       *)      if StringPool[S] = '!' then	(* builtin function *)	S := S + 1      else if StringPool[S] = ' ' then begin		(* user function *)	while StringPool[S + 1] = ' ' do S := S + 1; 	(* skip mult spaces *)	if StringPool[S + 1] = ')' then begin		(* no args to fn *)	  writeln('no args to function');		(* parser error *)	  Abort end;      end else begin        if not (StringPool[S] in ['+','@']) then begin          writeln('variable syntax');          Abort end        else begin	  (* Figure out whether this is an actual or shadow variable *)          case StringPool[S] of	  '+': begin	    VarPtr := GetVariable(VarStart, GetShadow);	    KindLetter := 'd' end;	  '@': begin	    VarPtr := GetVariable(VarStart, GetActual);	    KindLetter := 'v' end;	  end;          (* Compute (in PostN) the postfix to be inserted *)          case StringPool[S+1] of          '+': Offset := 1;          '@': Offset := 0;          end;	  PostN := EnvPool[E + VarPtr^.Index]+Offset;          if SetL and (Offset = 0) and (not VarPtr^.OnList) then begin            (* Add VarPtr to the list L being accumulated *)            new(ListNode);            with ListNode^ do begin              Head := VarPtr;              Tail := L end;            L := ListNode;            VarPtr^.OnList := true end;          (* Convert PostN to a form that conforms to variable syntax *)          HiOrder := PostN div AlphaRadix;          LoOrder := PostN mod AlphaRadix;          if PostN >= AlphaRadix then begin	    writeln('instance overflow');            Abort end;          (* Extend the variable name by the postfix *)          StringPool[S]   := KindLetter;          StringPool[S+1] := AlphaString[HiOrder];          StringPool[S+2] := AlphaString[LoOrder];          S := S + 3 end end end       (* In state 1 *)  until StringPool[S] = '/';  (* Reset the OnList fields of the variables on L *)  if SetL then begin    ListNode := L;    while ListNode <> nil do begin      ListNode^.Head^.OnList := false;      ListNode := ListNode^.Tail end end end; function NewSplit(J: PointerToJnode; E: EnvIndex): PointerToJnode; (* Input: J, PostFix, E. * Output: the J-graph, through function name. * Assumption: J points to an undeveloped NewN or ReNewN node. * Effect: Remove J from the J-graph, and replace it by one or *   more developed NewN nodes. *   The first NewN node is created by overwriting the fields of J; *   subsequent nodes are allocated and inserted after J. *   The function returns a pointer to the last created node. * *   Note that the NewDeadVars field of J is overwritten, but its previous *   contents are not disposed; that is the responsibility of the caller, *   (who might need it to properly update the enviornment). *)var  Postfix: char;           (* Variable postix added to the new list *)  InputRecycled: boolean;  (* Whether we have reused the input node *)  SaveString: StringIndex; (* Used to create temporary strings *)  FirstEnd: PointerToJnode; (* First node in the cluster *)  VL: PointerToVariableList;    (* Variable used to create new nodes *)  NewVarList: PointerToVariableList;  NewNode: PointerToJnode;function StringFrom: StringIndex;(* Input: FromProver. * Output: through function name. * Effect: Read a line from FromProver and return it as a string. *   On return, the window will be over the first character of the *   next line. *)begin  StringFrom := NextString;  while not eoln(FromProver) do begin    PutStringPool(FromProver^);    get(FromProver) end;  PutStringEnd;  get(FromProver) end;begin  (* The only difference between a NewN node and a RenewN node is   * the postfix used to recognize the variables being newed.   *)  if J^.Jtag = NewN then    Postfix := '+'  else if J^.Jtag = RenewN then    Postfix := '@'  else    assert(false);  (* Send the formula to lisp to be split, by constructing   * a function call of the form:   *   *    (newsplit '(var-list) '(formula))   *   * and sending it out over ToProver.   *)  write(ToProver, '(newsplit ''');  WriteVarList(ToProver, J^.NewDeadVars, Postfix);  write(ToProver, ' ''');  WriteString(ToProver, J^.NewState);  write(ToProver, ')');  flush(ToProver);  (* We expect to get back over FromProver is   * a list of one or more NEW instructions.  The variable list   * comes back as a sequence of variables, one per line.  This is   * followed by a line containing the formula; we can easily distinguish   * it from the variables, because it begins with a left paren.   * This sequence of blocks is terminated by a line consisting of   * a right paren.   *)  InputRecycled := false;  FirstEnd := J;  while (FromProver^ <> '/') do begin    VL := nil;    while (FromProver^ <> '(') do begin      new(NewVarList);      with NewVarList^ do begin	SaveString := NextString;	Head := GetVariable(StringFrom, GetEither);	NextString := SaveString;	Tail := VL end;      VL := NewVarList end;    (* Make the node that will contain the newly created instruction. *)    if VL = nil then begin      (* Insert a ProclaimN node just before FirstEnd *)      new(NewNode, ProclaimN);      with NewNode^ do begin        Jtag := ProclaimN;        SimLink := OtherList;        OtherList := NewNode;	Next := FirstEnd;	Previous := FirstEnd^.Previous;	FirstEnd^.Previous^.Next := NewNode;	FirstEnd^.Previous := NewNode;        Proclamation := StringFrom;	Develop(Proclamation, E, true, ProcLiveVars) end end    else begin      if not InputRecycled then 	(* Put a NewN node in J *)	InputRecycled := true       else begin	(* Insert a NewN node after J, and then point J at the new node *)	new(NewNode, NewN);	with NewNode^ do begin	  Jtag := NewN;	  ClusterMark := MiddleCluster;	  SimLink := OtherList;	  OtherList := NewNode;	  Previous := J;	  Next := J^.Next;	  if J^.Next <> nil then J^.Next^.Previous := NewNode;	  J^.Next := NewNode;	  J := NewNode end end;      (* Fill in the fields to create the instruction. *)      with J^ do begin	NewDeadVars := VL;	NewState := StringFrom;	Develop(NewState, E, true, NewLiveVars) end end end;  (* The window is over the line that begins with '/'; read that line   * and the line containing 'nil', the value of the function.1   *)  readln(FromProver);  readln(FromProver);  (* The path tracer must (alas!) be able to cluster the NewN nodes into   * groups that all came from the same original NEW (or RENEW) instruction.   * If a NEW is unbroken, it is marked as a Singleton.  If it is broken   * into a series of NewNs, the first and last node in the series are marked   * as BeginCluster and EndCluster, and the ones in the middle (if there are    * any) are marked as MiddleCluster.   *    * Any new nodes created are marked as middle nodes.  J and FirstEnd   * are the first and last nodes in the cluster.  If they are the same   * node, it will already by correctly marked as a Singleton node.  If   * they are different, they are both marked as the begin and end.   *)  if not InputRecycled then with J^ do begin    (* Build a dummy new statement, simply because it is inconvenient     * to delete, and almost never happens.     *)    NewLiveVars := nil;    NewDeadVars := nil;    NewState := QuoteTrue end  else if J <> FirstEnd then begin    FirstEnd^.ClusterMark := BeginCluster;    J^.ClusterMark := EndCluster end;  NewSplit := J end;procedure Traverse(J: PointerToJnode);(* Input: The J-graph, CurEnv, J. * Output: The J-graph. * Assumptions:  CurEnv reflects the number of NEW instructions along *   any path from the start node to J, TraverseCounts are zero * Effects:  All nodes reachable from J are traversed.  The traversal *   order is such that if q can be reached from p, then p is visited *   before q.  Note that the graph must be acyclic for such a traversal *   to be possible. *)label 21012;  (* The palindrome is a mnemonic for recursion;               * N := E; goto 21012 is used to replace the recursive               * call Traverse(E).               *)var  M: PointerToJnode; (* loop index *)  SaveVL, VL: PointerToVariableList;  X: EnvIndex;  LastBranch: PointerToJnode;procedure ReachableWithoutJ(N: PointerToJnode);(* Input: J-graph, N, J. * Output: J-graph, Done. * Effect: Mark all JoinN nodes that are reachable from N without *   going through J or any nodes that were marked on input. *   Set Done to true. * Assumption:  J is a SplitN node. *)var  (* Indices and flags *)  Done: boolean;begin  repeat    (* Tail recursion has been replaced with iteration.     * Changing N and performing another iteration of the     * loop is equivalent to a recursive call.     *)    (* First check for degenerate case *)    if N = nil then      Done := true    else if N^.Jtag = JoinN then begin      (* If N has been marked, then there are no nodes reachable        * from N without going through a marked node.        *)      if N^.Marked then        Done := true       else begin        (* Otherwise, mark the node and recursively mark everything          * that can be reached from its without going through J.         *)        N^.Marked := true;        Done := false end end    else       (* If the node is not a JoinN, recursively mark all the       * JoinN nodes reachable from it without going through J.       *)      Done := false;    if not Done then begin      if N^.Jtag = SplitN then begin        if N = J then          (* There are no nodes reachable from J without going           * through J           *)          Done := true        else begin          (* Clearly any node marked by a recursive call is reachable           * from N.  Suppose a node M is reachable from N in the graph as           * it appears on input.  The only hard part is to show that M will           * be marked by one of the recursive calls.  Choose a valid path           * from N to M.  Let X be the first node after N on that path.  If           * when the following loop gets to X the path is still clear,           * the recursive call on X will mark M.  Otherwise, consider the           * first recursive call that obstructs the path with a mark.  That           * call will mark M.           *)          N := N^.Next;          while N <> nil do begin            ReachableWithoutJ(N);            N := N^.WhenMate end end end      else        (* N is not a SplitN node (it therefore cannot be J).         * It has at most one successor.  Recursively find all nodes          * reachable from it without going through J         *)        N := N^.Next end        (* Done is false at this point *)  until Done end;procedure BalanceNew(J:PointerToJnode);(* Input: J, CurEnv, J-graph, LastBranch. * Output: J-graph. * Assumptions: J is a JoinN node; LastBranch is a predecessor of J; *   the set of NewN (and ReNewN) nodes along all paths leading to J *   (that pass through a visited BranchN predecessor of J other than *   LastBranch) is accurately reflected in J^.JoinEnv. * Effect: Add NewN nodes before the predecessors of J so that the set of *   NewN nodes along all paths leading to J (that pass through any visited *   BranchN predecessor of J, including LastBranch) is accurately reflected *   by CurEnv and J^JoinEnv, which are made equal by incrementing various *   elements to reflect the inserted NewN noded. *)   var  V: VariableIndex;  (* loop counter *)  W: PointerToJnode; (* loop counter *)  NullAssertion: StringIndex;		     (* Expressions of the form (equal! (new! x) x)  *)  VarName: StringIndex;  VarKind: char;  NotUsed1: StringIndex;  NotUsed2: PointerToVariableList;procedure InsertNewBefore(B: PointerToJnode);(* Input: B, NullAssertion, V; * Output: the J-graph; * Effect: Insert a NewN node representing: *      NEW (V) (equal! (new! v) v) *   just before node B. * Assumption: The needed string has already been constructed and *   is pointed to by NullAssertion. *)var  NewNode: PointerToJnode;begin  new(NewNode, NewN);  with NewNode^ do begin    Jtag := NewN;    Previous := B^.Previous;    Next := B;    B^.Previous := NewNode;    Previous^.Next := NewNode;    SimLink := OtherList;    OtherList := NewNode;    NewState := NullAssertion;    new(NewLiveVars);    with NewLiveVars^ do begin      Head := VariableWithIndex[V];      Tail := nil end;    new(NewDeadVars);    NewDeadVars^ := NewLiveVars^ end end;begin  with J^ do begin    V := 0;    while V < EnvLength do begin      if EnvPool[CurEnv+V] = EnvPool[JoinEnv+V] then        V := V + 1      else begin        (* Since the NEW count in the JoinN node does         * not match the NEW count in the current enviornment,         * it is necessary to insert NewNs for V just before some         * of the BranchNs that precede the current JoinN.         *)         (* Build the assertion that will be put in all the constructed         * NewN nodes.  The string has the form:         *         *     (equal! (var#++) (var#@@))	 *	 *  where # is either + or @, depending on what kind of variable	 *  we are processing.         *         * Point NullAssertion to the string.         *)        NullAssertion := NextString;	with VariableWithIndex[V]^ do begin	  VarName := Name;	  case Kind of	  Actual: VarKind := '@';	  DefinedShadow: VarKind := '+'	  end end;        NotUsed1 := StringCreate('(equal! (/)');        NextString := NextString - 2;     (* back space over /) *)        StringCopy(VarName);        NextString := NextString - 2;     (* back space over /) *)	PutStringPool(VarKind);        NotUsed1 := StringCreate('++) (/)');        NextString := NextString - 2;     (* back space over /) *)        StringCopy(VarName);        NextString := NextString - 2;     (* back space over /) *)	PutStringPool(VarKind);        NotUsed1 := StringCreate('@@))/)');        if EnvPool[CurEnv+V] < EnvPool[JoinEnv+V] then begin          Develop(NullAssertion, CurEnv, false, NotUsed2);          InsertNewBefore(LastBranch);          EnvPool[CurEnv+V] := EnvPool[CurEnv+V] + 1 end        else begin          (* Insert NewN nodes before every visited BranchN leading           * into J, except for LastBranch           *)          Develop(NullAssertion, JoinEnv, false, NotUsed2);          W := Previous;          while W <> nil do begin            if W^.Visited and (W <> LastBranch) then              InsertNewBefore(W);            W := W^.BranchMate end;          EnvPool[JoinEnv+V] := EnvPool[JoinEnv+V] + 1 end end end end end;begin  21012: (* come here instead of recursive calls *)  if J <> nil then begin    case J^.Jtag of      NewN: begin	(* Save the original list of dead variables; we will use	 * this list to udpate the enviornment after we have split	 * the new.	 *)        SaveVL := J^.NewDeadVars;	(* Split and develop the new. *)	J := NewSplit(J, CurEnv);        (* Now update the current environment to reflect the NEW         * instruction.         *)	VL := SaveVL;        while VL <> nil do begin          X := CurEnv + VL^.Head^.Index;          EnvPool[X] := EnvPool[X] + 1;          VL := VL^.Tail end;	  DismantleVariableList(SaveVL);                J := J^.Next;        goto 21012 end;      RenewN: begin        (* Renew is similar to new, except that its state assertion	 * is developed in the enviornment following the new, and variables	 * appearing in the dead list are not added to the live list.         *)        SaveVL := J^.NewDeadVars;	VL := SaveVL;        while VL <> nil do begin	  (* Update the enviornment *)          X := CurEnv + VL^.Head^.Index;          EnvPool[X] := EnvPool[X] + 1;	  (* Mark the variable so that Develop will not put it on the	   * list of live variables.	   *)	  VL^.Head^.OnList := true;          VL := VL^.Tail end;        (* Split and develop the new. *)	J := NewSplit(J, CurEnv);	(* Unmark all the variables we marked *)        VL := SaveVL;        while VL <> nil do begin	  VL^.Head^.OnList := false;          VL := VL^.Tail end;        	DismantleVariableList(SaveVL);        J := J^.Next;        goto 21012 end;      SplitN: begin        (* For every JoinN node M that J dominates, set M^.DirectDominator to J.         * Because the traversal order is visits P before Q if there is a path         * from P to Q, when a JoinN node is visited, its DirectDominator node         * will be correct (and will not change after that).         *)        (* First clear all the marks on the JoinN nodes *)        M := JoinList;        while M <> nil do begin          M^.Marked := false;          M := M^.SimLink end;        (* Now set the marks on all JoinN nodes reachable from StartNode         * without going through J.         *)        ReachableWithoutJ(StartNode);        (* Because all the JoinN nodes are reachable from StartNode if we are         * allowed to use J, any unmarked JoinN node is dominated by J.         *)         M := JoinList;         while M <> nil do begin           if not M^.Marked then             M^.DirectDominator := J;           M := M^.SimLink end;        (* Now save a copy of the current environment in the node,         * so we can restore the environment on return from the recursion         *)        CopyEnv(CurEnv, J^.SplitEnv);        (* Now traverse all the successors of the node. *)        J := J^.Next;        (* The current environment is correct for the first successor *)        Traverse(J);        while (J^.WhenMate <> nil) do begin          J := J^.WhenMate;          (* For the second and subsequent successors the environment must be           * restored from the copy saved in the SplitN node           *)          CopyEnv(J^.Previous^.SplitEnv, CurEnv);          Traverse(J) end end;      JoinN: with J^ do begin        if J^.TraverseCount = 0 then          CopyEnv(CurEnv, JoinEnv)        else          BalanceNew(J);        (* If we have completely explored all ways into the JoinN         * then we are free to look at what comes after the JoinN.         * Otherwise, we must back up.         *)        J^.TraverseCount := J^.TraverseCount + 1;        if J^.TraverseCount = J^.InDegree          then begin             J := J^.Next;            goto 21012 end end;      ProclaimN: begin        Develop(J^.Proclamation, CurEnv, true, J^.ProcLiveVars);        J := J^.Next;        goto 21012 end;      RequireN: begin        Develop(J^.Requirement, CurEnv, true, J^.ReqLiveVars);        J := J^.Next;        goto 21012 end;      BranchN: begin        LastBranch := J;        J^.Visited := true;        J := J^.Next;        goto 21012 end;      WhenN: begin        Develop(J^.Constraint, CurEnv, true, J^.WhenLiveVars);        J := J^.Next;        goto 21012 end;      BreakN: begin        (* Nothing to do but continue the traversal *)        J := J^.Next;        goto 21012 end end end end;procedure DeltaJoinEnv;(* Input: J-graph. * Output: J-graph. * Assumption: Every SplitN and JoinN node contains enviornments *   that reflect the number of NEWs along every path from start node  *   to that node. * Effect: Update the enviornments in the JoinN nodes to reflect the *   number of NEWs along every path from its dominator to the JoinN node. *)var  J: PointerToJnode;   (* Used to traverse JoinList *)  SE: EnvIndex;        (* Enviornment in SplitN node *)  JE: EnvIndex;        (* Enviornment in JoinN node *)  V: VariableIndex;    (* Used to loop through enviornments *)begin  J := JoinList;  while J <> nil do begin    if J^.DirectDominator <> StartNode then begin      assert(J^.Jtag = JoinN);      JE := J^.JoinEnv;      assert(J^.DirectDominator^.Jtag = SplitN);      SE := J^.DirectDominator^.SplitEnv;      for V := 0 to EnvLength-1 do 	EnvPool[JE+V] := EnvPool[JE+V] - EnvPool[SE+V] end;          J := J^.SimLink end end;begin (* FinishGraph *)  CurEnv := AllocateEnv;  Traverse(StartNode);  DeltaJoinEnv end;procedure CleanUp;      procedure DismantleVariableTable;(* Input and Output: VariableTable * Effect: dispose of all the heap storage used by the VariableTable *   and set all its slots to nil. *)var  J: 0..VariableTableSize;  S, T: PointerToVariable;begin  (* Free up the variable table *)  for J := 0 to VariableTableSize do begin    T := VariableTable[J];    VariableTable[J] := nil;    while T <> nil do begin      assert(T^.StatusStack = nil);      S := T^.BucketMate;      dispose(T);      T := S end end end;procedure DismantleJgraph;(* Input and Output: RequireList, JoinList, SplitList, BranchList, OtherList. * Effect:  All the heap storage comprising the J-graph is disposed, *   and the above variables are set to nil. *)procedure DismantleJnodeList(var JL: PointerToJnode);(* Input and Output:  JL; * Assumption: JL points to a list of Jnode linked through their SimLink *   fields and terminated by a null pointer. * Effect: Dispose of the list and set JL to nil. *) var T: PointerToJnode;begin  while JL <> nil do begin    with JL^ do begin      (* Free any variable list that might be rooted in JL^. *)      if Jtag in [NewN, RenewN, WhenN, RequireN] then 	case Jtag of	NewN, RenewN: begin	  DismantleVariableList(NewLiveVars);	  DismantleVariableList(NewDeadVars) end;	WhenN:	  DismantleVariableList(WhenLiveVars);	RequireN:	  DismantleVariableList(ReqLiveVars)	end;            T := SimLink end;    case JL^.Jtag of    NewN:     dispose(JL, NewN);    RenewN:   dispose(JL, RenewN);    SplitN:   dispose(JL, SplitN);    WhenN:    dispose(JL, WhenN);    BranchN:  dispose(JL, BranchN);    JoinN:    dispose(JL, JoinN);    RequireN: dispose(JL, RequireN);    BreakN:   dispose(JL, BreakN);    ProclaimN:dispose(JL, ProclaimN);    end;    JL := T end end;begin (* DismantleJgraph *)  (* Every node in the J-graph is in one of five SimLists. *)  DismantleJnodeList(RequireList);  DismantleJnodeList(JoinList);  DismantleJnodeList(BranchList);  DismantleJnodeList(SplitList);  DismantleJnodeList(OtherList) end;begin (* Cleanup *)  DismantleVariableTable;  DismantleJgraph end;
+#include "global.h"
+
+procedure WriteFinishId;
+begin
+  writeln('finish.p 1.24') end;
+
+procedure DismantleVariableList(var VL: PointerToVariableList);
+(* Input and Output: VL.
+ * Assumption: VL points to a variable list that is terminated by a 
+ *   nil link.
+ * Effect: Every node in the list is disposed and VL is set to nil.
+ *)
+var T: PointerToVariableList;
+begin
+  while VL <> nil do begin
+    T := VL^.Tail;
+    dispose(VL);
+    VL := T end end;
+
+procedure FinishGraph;
+
+var CurEnv: EnvIndex; (* current environment maintained during traversal *)
+
+procedure Develop(S: StringIndex; E: EnvIndex;
+		     SetL: boolean; var L:PointerToVariableList);
+(* Input: The string indicated by S, the enviornment indicated
+ *    by E, and the variable table (particulary the OnList field).
+ * Output: L, the string indicated by S.
+ * Assumptions: The string is a Jcode expression.
+ * Effect: All the variables in the string are located and
+ *    are given postfixes as indicated by the enviornment E.
+ *    If SetL is true, L is set to a list of all variables in S whose
+ *    postfixes of the form @@@ or +@@, and whose OnList bits are false;
+ *    otherwise L is left untouched.  Note: in the process of constructing
+ *    the list L, OnList bits are played with.  However, on return from
+ *    Develop the OnList bits will be restored to whatever value they had
+ *    on input.
+ *)
+var
+  Offset: 0 .. +1;       (* Used to compute postfix *)
+  KindLetter: char;      (* Either 'v' or 'd' -- also part of postfix *)
+  PostN,                 (* Numeric value of Postfix *)
+  HiOrder,               (* High order digit of PostN in base AlphaRadix *)
+  LoOrder: integer;      (* Low order digit of PostN in base AlphaRadix *)
+  VarStart: StringIndex; (* Used to remember the beginning of the variable *)
+  VarPtr: PointerToVariable;
+  ListNode: PointerToVariableList;
+
+begin
+  (* The format assumed for an assertion is repetitions of the
+   * following pattern:
+   *
+   *    1         2    3         4         5           
+   *    <non-(>*  <(>  <space>*  <alpha>*  <delim>
+   *
+   *  where <delim> one of: ! +++ +@@ @++ @@@ 
+   *  and <alpha> is any character than can appear in an identifier
+   *
+   *  The string ends with a slash that must occur somewhere
+   *  in the <non-(>* part.
+   *)
+
+  (* As each variable (with a @@@ or +@@ postfix) is encountered for the
+   * first time, it is added to the list L (if L is being set).
+   *)
+  if SetL then L := nil;
+
+  repeat
+    (* "In state i" is defined to mean that StringPool[S] is matched by
+     * part of pattern j, where j is the smallest index greater or
+     * equal to i such that pattern j does not match the empty string.
+     *)
+
+    (* In state 1 *)
+    while not (StringPool[S] in ['(','/']) do S := S + 1;
+    (* StringPool[S] = '/' IMPLIES In state 1;
+     * StringPool[S] = '(' IMPLIES In state 2
+     *)
+    if StringPool[S] = '(' then begin
+      (* In state 2 *)
+      S := S + 1;
+      (* In state 3 *)
+      while StringPool[S] = ' ' do S := S + 1;
+      (* In state 4 *)
+      (* If <alpha>* matches a variable, it begins here *)
+      VarStart := S;
+      while not (StringPool[S] in DelimiterSet) do S := S + 1;
+      (* In state 5 *)
+      (* Identifiers end in a string of three elements of ['+', '@'];
+       * operators end in ! and should be left alone.
+       * User function names are followed by " ", then an argument list
+       * and also should be left alone.
+       *)
+      if StringPool[S] = '!' then	(* builtin function *)
+	S := S + 1
+      else if StringPool[S] = ' ' then begin		(* user function *)
+	while StringPool[S + 1] = ' ' do S := S + 1; 	(* skip mult spaces *)
+	if StringPool[S + 1] = ')' then begin		(* no args to fn *)
+	  writeln('no args to function');		(* parser error *)
+	  Abort end;
+      end else begin
+        if not (StringPool[S] in ['+','@']) then begin
+          writeln('variable syntax');
+          Abort end
+        else begin
+	  (* Figure out whether this is an actual or shadow variable *)
+          case StringPool[S] of
+	  '+': begin
+	    VarPtr := GetVariable(VarStart, GetShadow);
+	    KindLetter := 'd' end;
+	  '@': begin
+	    VarPtr := GetVariable(VarStart, GetActual);
+	    KindLetter := 'v' end;
+	  end;
+
+          (* Compute (in PostN) the postfix to be inserted *)
+          case StringPool[S+1] of
+          '+': Offset := 1;
+          '@': Offset := 0;
+          end;
+
+	  PostN := EnvPool[E + VarPtr^.Index]+Offset;
+
+          if SetL and (Offset = 0) and (not VarPtr^.OnList) then begin
+            (* Add VarPtr to the list L being accumulated *)
+            new(ListNode);
+            with ListNode^ do begin
+              Head := VarPtr;
+              Tail := L end;
+            L := ListNode;
+            VarPtr^.OnList := true end;
+
+          (* Convert PostN to a form that conforms to variable syntax *)
+          HiOrder := PostN div AlphaRadix;
+          LoOrder := PostN mod AlphaRadix;
+          if PostN >= AlphaRadix then begin
+	    writeln('instance overflow');
+            Abort end;
+
+          (* Extend the variable name by the postfix *)
+          StringPool[S]   := KindLetter;
+          StringPool[S+1] := AlphaString[HiOrder];
+          StringPool[S+2] := AlphaString[LoOrder];
+          S := S + 3 end end end 
+
+      (* In state 1 *)
+  until StringPool[S] = '/';
+
+  (* Reset the OnList fields of the variables on L *)
+  if SetL then begin
+    ListNode := L;
+    while ListNode <> nil do begin
+      ListNode^.Head^.OnList := false;
+      ListNode := ListNode^.Tail end end end; 
+
+function NewSplit(J: PointerToJnode; E: EnvIndex): PointerToJnode; 
+(* Input: J, PostFix, E.
+ * Output: the J-graph, through function name.
+ * Assumption: J points to an undeveloped NewN or ReNewN node.
+ * Effect: Remove J from the J-graph, and replace it by one or
+ *   more developed NewN nodes.
+ *   The first NewN node is created by overwriting the fields of J;
+ *   subsequent nodes are allocated and inserted after J.
+ *   The function returns a pointer to the last created node.
+ *
+ *   Note that the NewDeadVars field of J is overwritten, but its previous
+ *   contents are not disposed; that is the responsibility of the caller,
+ *   (who might need it to properly update the enviornment).
+ *)
+var
+  Postfix: char;           (* Variable postix added to the new list *)
+  InputRecycled: boolean;  (* Whether we have reused the input node *)
+  SaveString: StringIndex; (* Used to create temporary strings *)
+  FirstEnd: PointerToJnode; (* First node in the cluster *)
+  VL: PointerToVariableList;  
+
+  (* Variable used to create new nodes *)
+  NewVarList: PointerToVariableList;
+  NewNode: PointerToJnode;
+
+function StringFrom: StringIndex;
+(* Input: FromProver.
+ * Output: through function name.
+ * Effect: Read a line from FromProver and return it as a string.
+ *   On return, the window will be over the first character of the
+ *   next line.
+ *)
+begin
+  StringFrom := NextString;
+  while not eoln(FromProver) do begin
+    PutStringPool(FromProver^);
+    get(FromProver) end;
+  PutStringEnd;
+  get(FromProver) end;
+
+begin
+  (* The only difference between a NewN node and a RenewN node is
+   * the postfix used to recognize the variables being newed.
+   *)
+  if J^.Jtag = NewN then
+    Postfix := '+'
+  else if J^.Jtag = RenewN then
+    Postfix := '@'
+  else
+    assert(false);
+
+  (* Send the formula to lisp to be split, by constructing
+   * a function call of the form:
+   *
+   *    (newsplit '(var-list) '(formula))
+   *
+   * and sending it out over ToProver.
+   *)
+  write(ToProver, '(newsplit ''');
+  WriteVarList(ToProver, J^.NewDeadVars, Postfix);
+  write(ToProver, ' ''');
+  WriteString(ToProver, J^.NewState);
+  write(ToProver, ')');
+  flush(ToProver);
+
+  (* We expect to get back over FromProver is
+   * a list of one or more NEW instructions.  The variable list
+   * comes back as a sequence of variables, one per line.  This is
+   * followed by a line containing the formula; we can easily distinguish
+   * it from the variables, because it begins with a left paren.
+   * This sequence of blocks is terminated by a line consisting of
+   * a right paren.
+   *)
+
+  InputRecycled := false;
+  FirstEnd := J;
+
+  while (FromProver^ <> '/') do begin
+    VL := nil;
+    while (FromProver^ <> '(') do begin
+      new(NewVarList);
+      with NewVarList^ do begin
+	SaveString := NextString;
+	Head := GetVariable(StringFrom, GetEither);
+	NextString := SaveString;
+	Tail := VL end;
+      VL := NewVarList end;
+
+    (* Make the node that will contain the newly created instruction. *)
+    if VL = nil then begin
+      (* Insert a ProclaimN node just before FirstEnd *)
+      new(NewNode, ProclaimN);
+      with NewNode^ do begin
+        Jtag := ProclaimN;
+        SimLink := OtherList;
+        OtherList := NewNode;
+	Next := FirstEnd;
+	Previous := FirstEnd^.Previous;
+	FirstEnd^.Previous^.Next := NewNode;
+	FirstEnd^.Previous := NewNode;
+        Proclamation := StringFrom;
+	Develop(Proclamation, E, true, ProcLiveVars) end end
+
+    else begin
+      if not InputRecycled then 
+	(* Put a NewN node in J *)
+	InputRecycled := true 
+      else begin
+	(* Insert a NewN node after J, and then point J at the new node *)
+	new(NewNode, NewN);
+	with NewNode^ do begin
+	  Jtag := NewN;
+	  ClusterMark := MiddleCluster;
+	  SimLink := OtherList;
+	  OtherList := NewNode;
+	  Previous := J;
+	  Next := J^.Next;
+	  if J^.Next <> nil then J^.Next^.Previous := NewNode;
+	  J^.Next := NewNode;
+	  J := NewNode end end;
+
+      (* Fill in the fields to create the instruction. *)
+      with J^ do begin
+	NewDeadVars := VL;
+	NewState := StringFrom;
+	Develop(NewState, E, true, NewLiveVars) end end end;
+
+  (* The window is over the line that begins with '/'; read that line
+   * and the line containing 'nil', the value of the function.1
+   *)
+  readln(FromProver);
+  readln(FromProver);
+
+  (* The path tracer must (alas!) be able to cluster the NewN nodes into
+   * groups that all came from the same original NEW (or RENEW) instruction.
+   * If a NEW is unbroken, it is marked as a Singleton.  If it is broken
+   * into a series of NewNs, the first and last node in the series are marked
+   * as BeginCluster and EndCluster, and the ones in the middle (if there are 
+   * any) are marked as MiddleCluster.
+   * 
+   * Any new nodes created are marked as middle nodes.  J and FirstEnd
+   * are the first and last nodes in the cluster.  If they are the same
+   * node, it will already by correctly marked as a Singleton node.  If
+   * they are different, they are both marked as the begin and end.
+   *)
+  if not InputRecycled then with J^ do begin
+    (* Build a dummy new statement, simply because it is inconvenient
+     * to delete, and almost never happens.
+     *)
+    NewLiveVars := nil;
+    NewDeadVars := nil;
+    NewState := QuoteTrue end
+
+  else if J <> FirstEnd then begin
+    FirstEnd^.ClusterMark := BeginCluster;
+    J^.ClusterMark := EndCluster end;
+
+  NewSplit := J end;
+
+procedure Traverse(J: PointerToJnode);
+(* Input: The J-graph, CurEnv, J.
+ * Output: The J-graph.
+ * Assumptions:  CurEnv reflects the number of NEW instructions along
+ *   any path from the start node to J, TraverseCounts are zero
+ * Effects:  All nodes reachable from J are traversed.  The traversal
+ *   order is such that if q can be reached from p, then p is visited
+ *   before q.  Note that the graph must be acyclic for such a traversal
+ *   to be possible.
+ *)
+label 21012;  (* The palindrome is a mnemonic for recursion;
+               * N := E; goto 21012 is used to replace the recursive
+               * call Traverse(E).
+               *)
+
+var
+  M: PointerToJnode; (* loop index *)
+  SaveVL, VL: PointerToVariableList;
+  X: EnvIndex;
+  LastBranch: PointerToJnode;
+
+procedure ReachableWithoutJ(N: PointerToJnode);
+(* Input: J-graph, N, J.
+ * Output: J-graph, Done.
+ * Effect: Mark all JoinN nodes that are reachable from N without
+ *   going through J or any nodes that were marked on input.
+ *   Set Done to true.
+ * Assumption:  J is a SplitN node.
+ *)
+var
+  (* Indices and flags *)
+  Done: boolean;
+
+begin
+  repeat
+    (* Tail recursion has been replaced with iteration.
+     * Changing N and performing another iteration of the
+     * loop is equivalent to a recursive call.
+     *)
+
+    (* First check for degenerate case *)
+    if N = nil then
+      Done := true
+    else if N^.Jtag = JoinN then begin
+      (* If N has been marked, then there are no nodes reachable 
+       * from N without going through a marked node. 
+       *)
+      if N^.Marked then
+        Done := true 
+      else begin
+        (* Otherwise, mark the node and recursively mark everything 
+         * that can be reached from its without going through J.
+         *)
+        N^.Marked := true;
+        Done := false end end
+    else 
+      (* If the node is not a JoinN, recursively mark all the
+       * JoinN nodes reachable from it without going through J.
+       *)
+      Done := false;
+
+    if not Done then begin
+      if N^.Jtag = SplitN then begin
+        if N = J then
+          (* There are no nodes reachable from J without going
+           * through J
+           *)
+          Done := true
+        else begin
+          (* Clearly any node marked by a recursive call is reachable
+           * from N.  Suppose a node M is reachable from N in the graph as
+           * it appears on input.  The only hard part is to show that M will
+           * be marked by one of the recursive calls.  Choose a valid path
+           * from N to M.  Let X be the first node after N on that path.  If
+           * when the following loop gets to X the path is still clear,
+           * the recursive call on X will mark M.  Otherwise, consider the
+           * first recursive call that obstructs the path with a mark.  That
+           * call will mark M.
+           *)
+          N := N^.Next;
+          while N <> nil do begin
+            ReachableWithoutJ(N);
+            N := N^.WhenMate end end end
+      else
+        (* N is not a SplitN node (it therefore cannot be J).
+         * It has at most one successor.  Recursively find all nodes 
+         * reachable from it without going through J
+         *)
+
+        N := N^.Next end
+        (* Done is false at this point *)
+  until Done end;
+
+procedure BalanceNew(J:PointerToJnode);
+(* Input: J, CurEnv, J-graph, LastBranch.
+ * Output: J-graph.
+ * Assumptions: J is a JoinN node; LastBranch is a predecessor of J;
+ *   the set of NewN (and ReNewN) nodes along all paths leading to J
+ *   (that pass through a visited BranchN predecessor of J other than
+ *   LastBranch) is accurately reflected in J^.JoinEnv.
+ * Effect: Add NewN nodes before the predecessors of J so that the set of
+ *   NewN nodes along all paths leading to J (that pass through any visited
+ *   BranchN predecessor of J, including LastBranch) is accurately reflected
+ *   by CurEnv and J^JoinEnv, which are made equal by incrementing various
+ *   elements to reflect the inserted NewN noded.
+ *)   
+var
+  V: VariableIndex;  (* loop counter *)
+  W: PointerToJnode; (* loop counter *)
+  NullAssertion: StringIndex;
+		     (* Expressions of the form (equal! (new! x) x)  *)
+  VarName: StringIndex;
+  VarKind: char;
+  NotUsed1: StringIndex;
+  NotUsed2: PointerToVariableList;
+
+procedure InsertNewBefore(B: PointerToJnode);
+(* Input: B, NullAssertion, V;
+ * Output: the J-graph;
+ * Effect: Insert a NewN node representing:
+ *      NEW (V) (equal! (new! v) v)
+ *   just before node B.
+ * Assumption: The needed string has already been constructed and
+ *   is pointed to by NullAssertion.
+ *)
+var
+  NewNode: PointerToJnode;
+begin
+  new(NewNode, NewN);
+  with NewNode^ do begin
+    Jtag := NewN;
+    Previous := B^.Previous;
+    Next := B;
+    B^.Previous := NewNode;
+    Previous^.Next := NewNode;
+    SimLink := OtherList;
+    OtherList := NewNode;
+    NewState := NullAssertion;
+    new(NewLiveVars);
+    with NewLiveVars^ do begin
+      Head := VariableWithIndex[V];
+      Tail := nil end;
+    new(NewDeadVars);
+    NewDeadVars^ := NewLiveVars^ end end;
+
+begin
+  with J^ do begin
+    V := 0;
+    while V < EnvLength do begin
+      if EnvPool[CurEnv+V] = EnvPool[JoinEnv+V] then
+        V := V + 1
+      else begin
+        (* Since the NEW count in the JoinN node does
+         * not match the NEW count in the current enviornment,
+         * it is necessary to insert NewNs for V just before some
+         * of the BranchNs that precede the current JoinN.
+         *) 
+
+        (* Build the assertion that will be put in all the constructed
+         * NewN nodes.  The string has the form:
+         *
+         *     (equal! (var#++) (var#@@))
+	 *
+	 *  where # is either + or @, depending on what kind of variable
+	 *  we are processing.
+         *
+         * Point NullAssertion to the string.
+         *)
+        NullAssertion := NextString;
+	with VariableWithIndex[V]^ do begin
+	  VarName := Name;
+	  case Kind of
+	  Actual: VarKind := '@';
+	  DefinedShadow: VarKind := '+'
+	  end end;
+        NotUsed1 := StringCreate('(equal! (/)');
+        NextString := NextString - 2;     (* back space over /) *)
+        StringCopy(VarName);
+        NextString := NextString - 2;     (* back space over /) *)
+	PutStringPool(VarKind);
+        NotUsed1 := StringCreate('++) (/)');
+        NextString := NextString - 2;     (* back space over /) *)
+        StringCopy(VarName);
+        NextString := NextString - 2;     (* back space over /) *)
+	PutStringPool(VarKind);
+        NotUsed1 := StringCreate('@@))/)');
+
+        if EnvPool[CurEnv+V] < EnvPool[JoinEnv+V] then begin
+          Develop(NullAssertion, CurEnv, false, NotUsed2);
+          InsertNewBefore(LastBranch);
+          EnvPool[CurEnv+V] := EnvPool[CurEnv+V] + 1 end
+        else begin
+          (* Insert NewN nodes before every visited BranchN leading
+           * into J, except for LastBranch
+           *)
+          Develop(NullAssertion, JoinEnv, false, NotUsed2);
+          W := Previous;
+          while W <> nil do begin
+            if W^.Visited and (W <> LastBranch) then
+              InsertNewBefore(W);
+            W := W^.BranchMate end;
+          EnvPool[JoinEnv+V] := EnvPool[JoinEnv+V] + 1 end end end end end;
+
+begin
+  21012: (* come here instead of recursive calls *)
+  if J <> nil then begin
+    case J^.Jtag of
+      NewN: begin
+	(* Save the original list of dead variables; we will use
+	 * this list to udpate the enviornment after we have split
+	 * the new.
+	 *)
+        SaveVL := J^.NewDeadVars;
+
+	(* Split and develop the new. *)
+	J := NewSplit(J, CurEnv);
+
+        (* Now update the current environment to reflect the NEW
+         * instruction.
+         *)
+	VL := SaveVL;
+        while VL <> nil do begin
+          X := CurEnv + VL^.Head^.Index;
+          EnvPool[X] := EnvPool[X] + 1;
+          VL := VL^.Tail end;
+
+	  DismantleVariableList(SaveVL);
+        
+        J := J^.Next;
+        goto 21012 end;
+
+      RenewN: begin
+        (* Renew is similar to new, except that its state assertion
+	 * is developed in the enviornment following the new, and variables
+	 * appearing in the dead list are not added to the live list.
+         *)
+
+        SaveVL := J^.NewDeadVars;
+	VL := SaveVL;
+        while VL <> nil do begin
+
+	  (* Update the enviornment *)
+          X := CurEnv + VL^.Head^.Index;
+          EnvPool[X] := EnvPool[X] + 1;
+
+	  (* Mark the variable so that Develop will not put it on the
+	   * list of live variables.
+	   *)
+	  VL^.Head^.OnList := true;
+
+          VL := VL^.Tail end;
+
+        (* Split and develop the new. *)
+	J := NewSplit(J, CurEnv);
+
+	(* Unmark all the variables we marked *)
+        VL := SaveVL;
+        while VL <> nil do begin
+	  VL^.Head^.OnList := false;
+          VL := VL^.Tail end;
+        
+	DismantleVariableList(SaveVL);
+        J := J^.Next;
+        goto 21012 end;
+
+      SplitN: begin
+        (* For every JoinN node M that J dominates, set M^.DirectDominator to J.
+         * Because the traversal order is visits P before Q if there is a path
+         * from P to Q, when a JoinN node is visited, its DirectDominator node
+         * will be correct (and will not change after that).
+         *)
+
+        (* First clear all the marks on the JoinN nodes *)
+        M := JoinList;
+        while M <> nil do begin
+          M^.Marked := false;
+          M := M^.SimLink end;
+
+        (* Now set the marks on all JoinN nodes reachable from StartNode
+         * without going through J.
+         *)
+        ReachableWithoutJ(StartNode);
+
+        (* Because all the JoinN nodes are reachable from StartNode if we are
+         * allowed to use J, any unmarked JoinN node is dominated by J.
+         *)
+         M := JoinList;
+         while M <> nil do begin
+           if not M^.Marked then
+             M^.DirectDominator := J;
+           M := M^.SimLink end;
+
+        (* Now save a copy of the current environment in the node,
+         * so we can restore the environment on return from the recursion
+         *)
+        CopyEnv(CurEnv, J^.SplitEnv);
+
+        (* Now traverse all the successors of the node. *)
+        J := J^.Next;
+
+        (* The current environment is correct for the first successor *)
+        Traverse(J);
+        while (J^.WhenMate <> nil) do begin
+          J := J^.WhenMate;
+
+          (* For the second and subsequent successors the environment must be
+           * restored from the copy saved in the SplitN node
+           *)
+          CopyEnv(J^.Previous^.SplitEnv, CurEnv);
+          Traverse(J) end end;
+
+      JoinN: with J^ do begin
+        if J^.TraverseCount = 0 then
+          CopyEnv(CurEnv, JoinEnv)
+        else
+          BalanceNew(J);
+
+        (* If we have completely explored all ways into the JoinN
+         * then we are free to look at what comes after the JoinN.
+         * Otherwise, we must back up.
+         *)
+
+        J^.TraverseCount := J^.TraverseCount + 1;
+        if J^.TraverseCount = J^.InDegree
+          then begin 
+            J := J^.Next;
+            goto 21012 end end;
+
+      ProclaimN: begin
+        Develop(J^.Proclamation, CurEnv, true, J^.ProcLiveVars);
+        J := J^.Next;
+        goto 21012 end;
+
+      RequireN: begin
+        Develop(J^.Requirement, CurEnv, true, J^.ReqLiveVars);
+        J := J^.Next;
+        goto 21012 end;
+
+      BranchN: begin
+        LastBranch := J;
+        J^.Visited := true;
+        J := J^.Next;
+        goto 21012 end;
+
+      WhenN: begin
+        Develop(J^.Constraint, CurEnv, true, J^.WhenLiveVars);
+        J := J^.Next;
+        goto 21012 end;
+
+      BreakN: begin
+        (* Nothing to do but continue the traversal *)
+        J := J^.Next;
+        goto 21012 end end end end;
+
+procedure DeltaJoinEnv;
+(* Input: J-graph.
+ * Output: J-graph.
+ * Assumption: Every SplitN and JoinN node contains enviornments
+ *   that reflect the number of NEWs along every path from start node 
+ *   to that node.
+ * Effect: Update the enviornments in the JoinN nodes to reflect the
+ *   number of NEWs along every path from its dominator to the JoinN node.
+ *)
+var
+  J: PointerToJnode;   (* Used to traverse JoinList *)
+  SE: EnvIndex;        (* Enviornment in SplitN node *)
+  JE: EnvIndex;        (* Enviornment in JoinN node *)
+  V: VariableIndex;    (* Used to loop through enviornments *)
+begin
+  J := JoinList;
+  while J <> nil do begin
+    if J^.DirectDominator <> StartNode then begin
+      assert(J^.Jtag = JoinN);
+      JE := J^.JoinEnv;
+      assert(J^.DirectDominator^.Jtag = SplitN);
+      SE := J^.DirectDominator^.SplitEnv;
+
+      for V := 0 to EnvLength-1 do 
+	EnvPool[JE+V] := EnvPool[JE+V] - EnvPool[SE+V] end;
+      
+    J := J^.SimLink end end;
+
+begin (* FinishGraph *)
+  CurEnv := AllocateEnv;
+  Traverse(StartNode);
+  DeltaJoinEnv end;
+
+
+procedure CleanUp;
+      
+procedure DismantleVariableTable;
+(* Input and Output: VariableTable
+ * Effect: dispose of all the heap storage used by the VariableTable
+ *   and set all its slots to nil.
+ *)
+var
+  J: 0..VariableTableSize;
+  S, T: PointerToVariable;
+begin
+  (* Free up the variable table *)
+  for J := 0 to VariableTableSize do begin
+    T := VariableTable[J];
+    VariableTable[J] := nil;
+    while T <> nil do begin
+      assert(T^.StatusStack = nil);
+      S := T^.BucketMate;
+      dispose(T);
+      T := S end end end;
+
+procedure DismantleJgraph;
+(* Input and Output: RequireList, JoinList, SplitList, BranchList, OtherList.
+ * Effect:  All the heap storage comprising the J-graph is disposed,
+ *   and the above variables are set to nil.
+ *)
+
+procedure DismantleJnodeList(var JL: PointerToJnode);
+(* Input and Output:  JL;
+ * Assumption: JL points to a list of Jnode linked through their SimLink
+ *   fields and terminated by a null pointer.
+ * Effect: Dispose of the list and set JL to nil.
+ *) 
+
+var T: PointerToJnode;
+begin
+  while JL <> nil do begin
+    with JL^ do begin
+
+      (* Free any variable list that might be rooted in JL^. *)
+      if Jtag in [NewN, RenewN, WhenN, RequireN] then 
+	case Jtag of
+	NewN, RenewN: begin
+	  DismantleVariableList(NewLiveVars);
+	  DismantleVariableList(NewDeadVars) end;
+	WhenN:
+	  DismantleVariableList(WhenLiveVars);
+	RequireN:
+	  DismantleVariableList(ReqLiveVars)
+	end;
+      
+      T := SimLink end;
+
+    case JL^.Jtag of
+    NewN:     dispose(JL, NewN);
+    RenewN:   dispose(JL, RenewN);
+    SplitN:   dispose(JL, SplitN);
+    WhenN:    dispose(JL, WhenN);
+    BranchN:  dispose(JL, BranchN);
+    JoinN:    dispose(JL, JoinN);
+    RequireN: dispose(JL, RequireN);
+    BreakN:   dispose(JL, BreakN);
+    ProclaimN:dispose(JL, ProclaimN);
+    end;
+
+    JL := T end end;
+
+begin (* DismantleJgraph *)
+  (* Every node in the J-graph is in one of five SimLists. *)
+  DismantleJnodeList(RequireList);
+  DismantleJnodeList(JoinList);
+  DismantleJnodeList(BranchList);
+  DismantleJnodeList(SplitList);
+  DismantleJnodeList(OtherList) end;
+
+begin (* Cleanup *)
+  DismantleVariableTable;
+  DismantleJgraph end;

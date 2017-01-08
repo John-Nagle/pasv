@@ -1,1 +1,5 @@
-:	Filter for putting line numbers on files::					Version 1.2 of 3/3/86:    awk '{printf("%5d.  %s\n", 1+(n++), $0 ); }' <&0 >&1
+:	Filter for putting line numbers on files
+:
+:					Version 1.2 of 3/3/86
+:
+    awk '{printf("%5d.  %s\n", 1+(n++), $0 ); }' <&0 >&1

@@ -1,1 +1,36 @@
-program specvar1;type array1 = array [1..10] of char;     rec1 = record	f1: integer;	f2: array1;	end;var p,q: boolean;procedure p1(var a,b,c: integer; tab: array1;		var rec: rec1);entry (a + b) > c;exit  c > 0;      (a + b) > c;		{ ERROR: a needs a .old suffix }      (c > 0) implies p;      p implies (q implies p); { ERROR: q not a param }      p.old implies (q implies p.old);	{ ERROR: q not a param }      tab[3].old  = 'a';      rec.f1 = 25;      rec.f1.old = 25;      rec.f2[3] = tab[3].old;begin   rec.f1 := rec.f1;   if a > b then begin	c := b;	b := a;	assert(a > c);   end else begin	c := a;	b := a;        p := true;	assert(b > c);   end;end {p1};beginend.
+program specvar1;
+type array1 = array [1..10] of char;
+     rec1 = record
+	f1: integer;
+	f2: array1;
+	end;
+var p,q: boolean;
+procedure p1(var a,b,c: integer; tab: array1;
+		var rec: rec1);
+entry (a + b) > c;
+exit  c > 0;
+      (a + b) > c;		{ ERROR: a needs a .old suffix }
+      (c > 0) implies p;
+      p implies (q implies p); { ERROR: q not a param }
+      p.old implies (q implies p.old);	{ ERROR: q not a param }
+      tab[3].old  = 'a';
+      rec.f1 = 25;
+      rec.f1.old = 25;
+      rec.f2[3] = tab[3].old;
+begin
+   rec.f1 := rec.f1;
+   if a > b then begin
+	c := b;
+	b := a;
+	assert(a > c);
+   end else begin
+	c := a;
+	b := a;
+        p := true;
+	assert(b > c);
+   end;
+end {p1};
+begin
+end.
+
+

@@ -1,1 +1,10 @@
- #	Message merge    merges messages found in jcode with given source##	Usage is	mergemsgs  source jcode##				Version 1.9 of 4/2/82#grep "(\/" ${2} | sed -e "s/^.*(\/ //" -e "s/\/).*$//" -e "s/^{[a-zA-Z0-9\-]*\.pf:/      /" -e "s/}/.1	|	/" > MSGSawk '{printf("%4d.  %s\n", 1+(n++), $0 ); }' ${1} > SOURCE        cat SOURCE MSGS | sort -n | sed -e "s/^.*\.1	|	/	/"
+ 
+#	Message merge    merges messages found in jcode with given source
+#
+#	Usage is	mergemsgs  source jcode
+#
+#				Version 1.9 of 4/2/82
+#
+grep "(\/" ${2} | sed -e "s/^.*(\/ //" -e "s/\/).*$//" -e "s/^{[a-zA-Z0-9\-]*\.pf:/      /" -e "s/}/.1	|	/" > MSGS
+awk '{printf("%4d.  %s\n", 1+(n++), $0 ); }' ${1} > SOURCE        
+cat SOURCE MSGS | sort -n | sed -e "s/^.*\.1	|	/	/"

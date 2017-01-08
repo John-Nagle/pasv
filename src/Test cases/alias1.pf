@@ -1,1 +1,27 @@
-{	TESTSUITE test program	Aliasing Error Test		Version 1.2 of 1/14/82}program alias1;var tab1, tab2: array [0..10] of integer;    x,y: 0..10;procedure proc1(i: integer; var j: integer);begin    j := tab2[i-1];end {proc1};{	swap  --  swap arguments}procedure swap(var i,j: integer);var temp: integer;begin    temp := i;    i := j;    j := temp;end {swap};begin    x := 1; y := 2;    proc1(10, tab1[10]);			{ OK }    proc1(10, tab2[10]);			{ ERROR }    swap(tab1[x], tab1[y]);			{ OK }    swap(tab1[x], tab1[x]);			{ ERROR }end.
+{	TESTSUITE test program
+	Aliasing Error Test		Version 1.2 of 1/14/82
+}
+program alias1;
+var tab1, tab2: array [0..10] of integer;
+    x,y: 0..10;
+procedure proc1(i: integer; var j: integer);
+begin
+    j := tab2[i-1];
+end {proc1};
+{
+	swap  --  swap arguments
+}
+procedure swap(var i,j: integer);
+var temp: integer;
+begin
+    temp := i;
+    i := j;
+    j := temp;
+end {swap};
+begin
+    x := 1; y := 2;
+    proc1(10, tab1[10]);			{ OK }
+    proc1(10, tab2[10]);			{ ERROR }
+    swap(tab1[x], tab1[y]);			{ OK }
+    swap(tab1[x], tab1[x]);			{ ERROR }
+end.

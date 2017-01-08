@@ -1,1 +1,13 @@
-start   line = syspit                           /f(end)	line    ".DP"                           /f(copy)	syspot = linemore    line = syspit                           /f(end)	line    ".DE"                           /s(copy)	line    "."                             /s(iscmd)fix     line    *a* ' ' = a '\0'                /s(fix)fixtab	line	*a* '	' = a '\0\0\0\0\0\0\0\0' /s(fixtab)iscmd   syspot = line                           /(more)copy    syspot = line                           /(start)end     line = line
+start   line = syspit                           /f(end)
+	line    ".DP"                           /f(copy)
+	syspot = line
+more    line = syspit                           /f(end)
+	line    ".DE"                           /s(copy)
+	line    "."                             /s(iscmd)
+fix     line    *a* ' ' = a '\0'                /s(fix)
+fixtab	line	*a* '	' = a '\0\0\0\0\0\0\0\0' /s(fixtab)
+iscmd   syspot = line                           /(more)
+
+copy    syspot = line                           /(start)
+
+end     line = line

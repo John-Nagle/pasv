@@ -1,1 +1,56 @@
-1	INTERNAL COMPILER OR VERIFIER ERROR: icode argument stack underflow2	TABLE OVERFLOW: icode argument stack overflow6	INTERNAL COMPILER OR VERIFIER ERROR: scope number tally is off7	INTERNAL COMPILER OR VERIFIER ERROR: block stack is off9	INTERNAL COMPILER OR VERIFIER ERROR: floating point unimplemented10	INTERNAL VERIFIER ERROR: icode node allocation error11	INTERNAL COMPILER OR VERIFIER ERROR: varfile format error - (depth)12	MACHINE ADDRESS RECOGNITION ERROR: variable address lookup failed13	MACHINE ADDRESS RECOGNITION ERROR: field address lookup failed14	VARIABLE OVERLAP ERROR: variables overlap in memory15	INTERNAL VERIFIER ERROR: arg count table bad21	TABLE OVERFLOW: "scopedepthmax" limit exceeded22	INTERNAL COMPILER OR VERIFIER ERROR: extra END in icode23	INTERNAL COMPILER OR VERIFIER ERROR: scope in address out of range31	INTERNAL COMPILER OR VERIFIER ERROR: unimplemented icode op33	INTERNAL VERIFIER ERROR: arg count wrong in tables34	MACHINE ADDRESS RECOGNITION ERROR: no relevant array at given address36	INTERNAL TYPE CHECKING ERROR: do not know type of index object37	MACHINE ADDRESS RECOGNITION ERROR: cannot find relevant array38	INTERNAL TYPE CHECKING ERROR: node not properly typed39	TABLE OVERFLOW: "rtempmax" limit exceeded40	MACHINE ADDRESS RECOGNITION ERROR: cannot find associated WITH41	INTERNAL COMPILER OR VERIFIER ERROR: bad non-value42	INTERNAL TYPE CHECKING ERROR: machine type clash43	TABLE OVERFLOW: "rtempmax" limit exceeded44	MACHINE ADDRESS RECOGNITION ERROR: routine unidentified45	CALL ERROR: call to non-routine46	CALL ERROR: too many arguments in call47	CALL ERROR: too few arguments in call48	MACHINE ADDRESS RECOGNITION ERROR: expected pointerdata49	INTERNAL COMPILER OR VERIFIER ERROR: need val, have stmt50	INTERNAL COMPILER OR VERIFIER ERROR: not pointer at ref arg51	INTERNAL COMPILER OR VERIFIER ERROR: literal too big52	INTERNAL COMPILER OR VERIFIER ERROR: literal too small53	INTERNAL COMPILER OR VERIFIER ERROR: ref arg not passed by ref54	INTERNAL COMPILER OR VERIFIER ERROR: literal 0 when disallowed55	MACHINE ADDRESS RECOGNITION ERROR: "data" ambiguous56	MACHINE ADDRESS RECOGNITION ERROR: address lookup fail57	MACHINE ADDRESS RECOGNITION ERROR: address/size lookup fail70	INTERNAL TYPE CHECKING ERROR: first var nil71	INTERNAL TYPE CHECKING ERROR: second var nil72	INTERNAL TYPE CHECKING ERROR: only one has child73	INTERNAL TYPE CHECKING ERROR: only one has sibling75	INTERNAL TYPE CHECKING ERROR: type clash (form)76	INTERNAL TYPE CHECKING ERROR: type clash (size)77	INTERNAL TYPE CHECKING ERROR: type clash (scale)78	INTERNAL TYPE CHECKING ERROR: type clash (min value)79	INTERNAL TYPE CHECKING ERROR: type clash (max value)81	INTERNAL TYPE CHECKING ERROR: bound clash (max value)101	UNIMPLEMENTED102	INTERNAL COMPILER OR VERIFIER ERROR: non-statement misplaced103	INTERNAL COMPILER OR VERIFIER ERROR: expected VDECL104	INTERNAL VERIFIER ERROR: report106	INTERNAL COMPILER OR VERIFIER ERROR: not SEQ or VDECL118	INTERNAL COMPILER OR VERIFIER ERROR: no higher node119	INTERNAL COMPILER OR VERIFIER ERROR: not record
+1	INTERNAL COMPILER OR VERIFIER ERROR: icode argument stack underflow
+2	TABLE OVERFLOW: icode argument stack overflow
+6	INTERNAL COMPILER OR VERIFIER ERROR: scope number tally is off
+7	INTERNAL COMPILER OR VERIFIER ERROR: block stack is off
+9	INTERNAL COMPILER OR VERIFIER ERROR: floating point unimplemented
+10	INTERNAL VERIFIER ERROR: icode node allocation error
+11	INTERNAL COMPILER OR VERIFIER ERROR: varfile format error - (depth)
+12	MACHINE ADDRESS RECOGNITION ERROR: variable address lookup failed
+13	MACHINE ADDRESS RECOGNITION ERROR: field address lookup failed
+14	VARIABLE OVERLAP ERROR: variables overlap in memory
+15	INTERNAL VERIFIER ERROR: arg count table bad
+21	TABLE OVERFLOW: "scopedepthmax" limit exceeded
+22	INTERNAL COMPILER OR VERIFIER ERROR: extra END in icode
+23	INTERNAL COMPILER OR VERIFIER ERROR: scope in address out of range
+31	INTERNAL COMPILER OR VERIFIER ERROR: unimplemented icode op
+33	INTERNAL VERIFIER ERROR: arg count wrong in tables
+34	MACHINE ADDRESS RECOGNITION ERROR: no relevant array at given address
+36	INTERNAL TYPE CHECKING ERROR: do not know type of index object
+37	MACHINE ADDRESS RECOGNITION ERROR: cannot find relevant array
+38	INTERNAL TYPE CHECKING ERROR: node not properly typed
+39	TABLE OVERFLOW: "rtempmax" limit exceeded
+40	MACHINE ADDRESS RECOGNITION ERROR: cannot find associated WITH
+41	INTERNAL COMPILER OR VERIFIER ERROR: bad non-value
+42	INTERNAL TYPE CHECKING ERROR: machine type clash
+43	TABLE OVERFLOW: "rtempmax" limit exceeded
+44	MACHINE ADDRESS RECOGNITION ERROR: routine unidentified
+45	CALL ERROR: call to non-routine
+46	CALL ERROR: too many arguments in call
+47	CALL ERROR: too few arguments in call
+48	MACHINE ADDRESS RECOGNITION ERROR: expected pointerdata
+49	INTERNAL COMPILER OR VERIFIER ERROR: need val, have stmt
+50	INTERNAL COMPILER OR VERIFIER ERROR: not pointer at ref arg
+51	INTERNAL COMPILER OR VERIFIER ERROR: literal too big
+52	INTERNAL COMPILER OR VERIFIER ERROR: literal too small
+53	INTERNAL COMPILER OR VERIFIER ERROR: ref arg not passed by ref
+54	INTERNAL COMPILER OR VERIFIER ERROR: literal 0 when disallowed
+55	MACHINE ADDRESS RECOGNITION ERROR: "data" ambiguous
+56	MACHINE ADDRESS RECOGNITION ERROR: address lookup fail
+57	MACHINE ADDRESS RECOGNITION ERROR: address/size lookup fail
+70	INTERNAL TYPE CHECKING ERROR: first var nil
+71	INTERNAL TYPE CHECKING ERROR: second var nil
+72	INTERNAL TYPE CHECKING ERROR: only one has child
+73	INTERNAL TYPE CHECKING ERROR: only one has sibling
+75	INTERNAL TYPE CHECKING ERROR: type clash (form)
+76	INTERNAL TYPE CHECKING ERROR: type clash (size)
+77	INTERNAL TYPE CHECKING ERROR: type clash (scale)
+78	INTERNAL TYPE CHECKING ERROR: type clash (min value)
+79	INTERNAL TYPE CHECKING ERROR: type clash (max value)
+81	INTERNAL TYPE CHECKING ERROR: bound clash (max value)
+101	UNIMPLEMENTED
+102	INTERNAL COMPILER OR VERIFIER ERROR: non-statement misplaced
+103	INTERNAL COMPILER OR VERIFIER ERROR: expected VDECL
+104	INTERNAL VERIFIER ERROR: report
+106	INTERNAL COMPILER OR VERIFIER ERROR: not SEQ or VDECL
+118	INTERNAL COMPILER OR VERIFIER ERROR: no higher node
+119	INTERNAL COMPILER OR VERIFIER ERROR: not record

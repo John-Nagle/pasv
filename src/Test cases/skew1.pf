@@ -1,1 +1,35 @@
-{	Check for VAR arg set/used processing				Version 1.3 of 1/15/82}program skew1;var i1,j1,k1,l1,m1: integer;    i2,j2,k2,l2,m2: integer;	{ ERROR  --  l2, m2 used but not set }    sink: integer;{	assigns 1 to all variables if lev is big enough }procedure skew1(lev: integer; var a,b,c,d,e: integer);var x: integer;begin    e := 1;    if lev > 0 then	skew1(lev-1, x, a, b, c, d);end {skew1};{	incorrect version of skew1}procedure skew2(lev: integer; var a,b,c,d,e: integer);{ ERROR -- d, e useless }var x: integer;begin    c := 1;    if lev > 0 then	skew2(lev-1, x, a, b, c, d);end {skew2};begin    skew1(5,i1,j1,k1,l1,m1);    skew2(5,i2,j2,k2,l2,m2);    sink := i1 + j1 + k1 + l1 + m1;	    sink := i2 + j2 + k2 + l2 + m2;end.
+{
+	Check for VAR arg set/used processing
+
+				Version 1.3 of 1/15/82
+}
+program skew1;
+var i1,j1,k1,l1,m1: integer;
+    i2,j2,k2,l2,m2: integer;	{ ERROR  --  l2, m2 used but not set }
+    sink: integer;
+{
+	assigns 1 to all variables if lev is big enough 
+}
+procedure skew1(lev: integer; var a,b,c,d,e: integer);
+var x: integer;
+begin
+    e := 1;
+    if lev > 0 then
+	skew1(lev-1, x, a, b, c, d);
+end {skew1};
+{
+	incorrect version of skew1
+}
+procedure skew2(lev: integer; var a,b,c,d,e: integer);{ ERROR -- d, e useless }
+var x: integer;
+begin
+    c := 1;
+    if lev > 0 then
+	skew2(lev-1, x, a, b, c, d);
+end {skew2};
+begin
+    skew1(5,i1,j1,k1,l1,m1);
+    skew2(5,i2,j2,k2,l2,m2);
+    sink := i1 + j1 + k1 + l1 + m1;	
+    sink := i2 + j2 + k2 + l2 + m2;
+end.

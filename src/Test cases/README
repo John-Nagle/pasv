@@ -1,1 +1,9 @@
-Test cases README				Version 1.2 of 1/14/82    This directory is to contain only test programs for the Verifiersuitable for testing with the test driver.  Such test cases need merelycontain the word "ERROR" on each line which is expected to be printedwhen the verifier prints lines in error, and the word ERROR (upper caseonly) must not be used in any other context.    The shell procedure "vertestdrive" will use test cases conformingto these rules.
+Test cases README				Version 1.2 of 1/14/82
+
+    This directory is to contain only test programs for the Verifier
+suitable for testing with the test driver.  Such test cases need merely
+contain the word "ERROR" on each line which is expected to be printed
+when the verifier prints lines in error, and the word ERROR (upper case
+only) must not be used in any other context.
+    The shell procedure "vertestdrive" will use test cases conforming
+to these rules.

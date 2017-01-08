@@ -1,1 +1,60 @@
-{	A traditional verification					Version 1.3 of 3/15/82}program pushpop;const lim = 10;				{ size of stack }var stkpos: 0..lim;			{ top of stack pointer }    stack: array [0..lim] of integer;	{ the stack itself }{	push}procedure push(item: integer);entry       stkpos < lim;			{ must have room left }exit  stkpos = stkpos.old + 1;      stkpos > 0;      stack[stkpos] = item.old;      defined(stack[stkpos]);begin    stkpos := stkpos + 1;    stack[stkpos] := item;end {push};{	pop}procedure pop(var item: integer);entry stkpos > 0;			{ must not be empty }      defined(stack[stkpos]);exit  stkpos = stkpos.old - 1;      stkpos < lim;      item = stack[stkpos.old].old;begin    item := stack[stkpos];    stkpos := stkpos - 1;end {pop};{	initstack  --  clears stack}procedure initstack;exit  stkpos = 0;begin    stkpos := 0;			{ reset stack depth }end {initstack};{	Test of push and pop	The object is to prove that pop cannot fail after the push.}procedure test;var n: integer;exit defined(stack[1]) = defined(stack[1]);	{ indicate don't care }begin    n := 100;    initstack;    push(n);    pop(n);end;begin { main }end.
+{
+	A traditional verification
+
+					Version 1.3 of 3/15/82
+}
+program pushpop;
+const lim = 10;				{ size of stack }
+var stkpos: 0..lim;			{ top of stack pointer }
+    stack: array [0..lim] of integer;	{ the stack itself }
+{
+	push
+}
+procedure push(item: integer);
+entry 
+      stkpos < lim;			{ must have room left }
+exit  stkpos = stkpos.old + 1;
+      stkpos > 0;
+      stack[stkpos] = item.old;
+      defined(stack[stkpos]);
+begin
+    stkpos := stkpos + 1;
+    stack[stkpos] := item;
+end {push};
+{
+	pop
+}
+procedure pop(var item: integer);
+entry stkpos > 0;			{ must not be empty }
+      defined(stack[stkpos]);
+exit  stkpos = stkpos.old - 1;
+      stkpos < lim;
+      item = stack[stkpos.old].old;
+begin
+    item := stack[stkpos];
+    stkpos := stkpos - 1;
+end {pop};
+{
+	initstack  --  clears stack
+}
+procedure initstack;
+exit  stkpos = 0;
+begin
+    stkpos := 0;			{ reset stack depth }
+end {initstack};
+{
+	Test of push and pop
+	The object is to prove that pop cannot fail after the push.
+}
+procedure test;
+var n: integer;
+exit defined(stack[1]) = defined(stack[1]);	{ indicate don't care }
+begin
+    n := 100;
+    initstack;
+    push(n);
+    pop(n);
+end;
+begin { main }
+end.
+

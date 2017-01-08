@@ -1,1 +1,9 @@
-#   Script file to release new theorem prover environments from#   existing <THM>THM sysout.  (I.e., updates CODE1, DATA1, and library#   files.)rminode $thm/BOOTSTRAP $thm/PROVEALLrmtest proveallrmtest bootstrapthm < $thm/scripts.d/rerelease1 >& $thm/scripts.d/rerelease.logmkversions
+#   Script file to release new theorem prover environments from
+#   existing <THM>THM sysout.  (I.e., updates CODE1, DATA1, and library
+#   files.)
+
+rminode $thm/BOOTSTRAP $thm/PROVEALL
+rmtest proveall
+rmtest bootstrap
+thm < $thm/scripts.d/rerelease1 >& $thm/scripts.d/rerelease.log
+mkversions

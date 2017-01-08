@@ -1,1 +1,11 @@
-This is CPCI 3 of the Pascal-F Verifier, the path tracer and verificationcondition generator.Generating this on the SUN requires some painful kludges.  We wanted to havethe ability to read and write pipes in Pascal, a facility not normallyavailable in the language.  So we have some subroutines which make thispossible.  But these subroutines need a .h file which defines the Pascal-FI/O tables, and SUN doesn't provide that file.  So the file has been adaptedfrom the 4.1BSD file, which is slightly different.  I'm not happy about this,because I had to guess at the table format after examining some parts ofthe Pascal library with adb.  So if pipe I/O trouble is experienced, thismechanism is probably faulty.
+This is CPCI 3 of the Pascal-F Verifier, the path tracer and verification
+condition generator.
+Generating this on the SUN requires some painful kludges.  We wanted to have
+the ability to read and write pipes in Pascal, a facility not normally
+available in the language.  So we have some subroutines which make this
+possible.  But these subroutines need a .h file which defines the Pascal-F
+I/O tables, and SUN doesn't provide that file.  So the file has been adapted
+from the 4.1BSD file, which is slightly different.  I'm not happy about this,
+because I had to guess at the table format after examining some parts of
+the Pascal library with adb.  So if pipe I/O trouble is experienced, this
+mechanism is probably faulty.

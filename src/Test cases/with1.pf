@@ -1,1 +1,19 @@
-{	WITH frozen variable test	Version 1.1 of 1/15/82}program with1;type rc = record 	f: integer; 	g: char;	end;var j,k: integer;    i: 1..10;    tab: array [1..10] of rc;begin    i := 5;    tab[i].f := 1;    with tab[i] do begin       j := f;       i := i + 1;			{ ERROR }       end;end.
+{
+	WITH frozen variable test	Version 1.1 of 1/15/82
+}
+program with1;
+type rc = record 
+	f: integer; 
+	g: char;
+	end;
+var j,k: integer;
+    i: 1..10;
+    tab: array [1..10] of rc;
+begin
+    i := 5;
+    tab[i].f := 1;
+    with tab[i] do begin
+       j := f;
+       i := i + 1;			{ ERROR }
+       end;
+end.

@@ -1,1 +1,136 @@
-BEGIN sqrt-- Sample of jcode-- Square root routine by bisection-- Pascal-F manual, page 4-4s:          (fixed 16 800 3)sqrt:       (fixed 8 80 3)x:          (fixed 8 800 3)lowbound:   (fixed 8 800 3)highbound:  (fixed 8 800 3)count18:   (integer)sD:         (boolean)sqrtD:      (boolean)xD:         (boolean)lowboundD:  (boolean)highboundD: (boolean)-- routine beginBREAK      (/begin program/)NEW        (s sD) (new! sD) (/assignment statement/)-- x := s-- REQUIRE    (inrange! s)  (/14: assignment statement/)REQUIRE    (sD) (/14: `s' undefined/)NEW        (x xD) (and! (xD) (equal! (new! x) (s))) (/assignment statement/)-- lowbound := 1.0-- REQUIRE    (inrange! (constf! 8 3)) (/15: assignment statement/)NEW        (lowbound lowboundD)            (and! (lowboundD)                 (equal! (new! lowbound) (constf! 8 3)))	   (/assignment statement/)-- highbound := x-- REQUIRE    (inrange! x)  (/14: assignment statement/)REQUIRE    (xD) (/14: `x' undefined/)NEW        (highbound highboundD)           (and! (highboundD) (equal! (new! highbound) (x)))           (/assignment statement/) -- while highbound - lowbound > 0.1NEW        (count18)  (infinitef! (count18)) (/assignment statement/)REQUIRE    (highboundD) (/18: `highbound' undefined/)REQUIRE    (lowboundD) (/18: `lowbound' undefined/)-- REQUIRE    (inrange! (subf! (highbound) (lowbound))) (/18: overflow/)SPLIT      1WHEN       (gtf! (subf! (highbound) (lowbound)) (constf! 1 3)) 1BRANCH     (/18:enter/) 2WHEN       (gtf! (subf! (highbound) (lowbound)) (constf! 1 3)) 3BRANCH     (/18:loop/) 2JOIN       2REQUIRE    (lef! (mulf! (lowbound) (lowbound)) (s))           (/20: state not satisfied/)REQUIRE    (gef! (mulf! (highbound) (highbound)) (s))           (/21: state not satisfied/)REQUIRE    (gef! (highbound) (lowbound)) (/22: state not satisfied/)REQUIRE    (lef! (x) (highbound)) (/23: state not satisfied/)REQUIRE    (gef! (x) (lowbound)) (/24: state not satisfied/)REQUIRE    (gef! (subf! (highbound) (lowbound)) (constf! 0 0))           (/20: negative measure/)REQUIRE    (ltf! (subf! (highbound) (lowbound)) (count18))           (/20: measure not decreased by loop body/)HANGWHEN       (true!) 1NEW        (x xD highbound lowbound highboundD lowboundD count18)           (and! (lef! (mulf! (new! lowbound) (new! lowbound)) (s))           (and! (gef! (mulf! (new! highbound) (new! highbound)) (s))           (and! (gef! (new! highbound) (new! lowbound))           (and! (lef! (x) (new! highbound))           (and! (gef! (x) (new! lowbound))           (and! (new! lowboundD)           (and! (new! highboundD)           (equal! (count18) (subf! (new! highbound) (new! lowbound))))))))))           (/loop invariant/)-- x :=  (highbound + lowbound) / 2REQUIRE    (highboundD)  (/27: `highbound' undefined/)REQUIRE    (lowboundD)   (/27: `lowbound' undefined/)REQUIRE    (notequal! (constf! 2 0) (constf! 0 0)) (/27: division by zero/)NEW        (x xD)           (and! (xD) (equal! (new! x)               (divf! (addf! (highbound) (lowbound)) (constf! 2 0))))           (/assignment statement/)-- if x*x > 2REQUIRE    (xD) (/28: `x' undefined/)REQUIRE    (xD) (/28: `x' undefined/)REQUIRE    (sD) (/28: `s' undefined/)SPLIT      5WHEN       (gtf! (mulf! (x) (x)) (s)) 5-- highbound := xREQUIRE    (xD) (/29: `x' undefined/)NEW        (highbound highboundD) (and! (highboundD) (equal! (highbound) (x)))           (/assignment statement/)BRANCH     (/28:then/) 6-- elseWHEN       (not! (gtf! (mulf! (x) (x)) (s))) 5-- lowbound := xREQUIRE    (xD) (/31: `x' undefined/)NEW        (highbound highboundD) (and! (highboundD) (equal! (highbound) (x)))           (/assignment statement/)            -- end ifBRANCH     (/30:else/) 6JOIN       6-- end loopREQUIRE    (highboundD) (/18: `highbound' undefined/)REQUIRE    (lowboundD) (/18: `lowbound' undefined/)-- REQUIRE    (inrange! (subf! (highbound) (lowbound))) (/18: overflow/)SPLIT      3WHEN       (not! (gtf! (subf! (highbound) (lowbound)) (constf! 1 3))) 1BRANCH     (/32:skip/) 4WHEN       (not! (gtf! (subf! (highbound) (lowbound)) (constf! 1 3))) 3BRANCH     (/32:exit/) 4JOIN       4-- sqrt := xREQUIRE    (xD) (/34: `x' undefined/)-- REQUIRE    (inrange! sqrt) (/34: `sqrt' out of range/)NEW        (sqrt) (equal! (sqrt) (x)) (/assignment statement/)NEW        (sqrtD) (new! sqrtD) (/assignment statement/)-- routine endREQUIRE    (sqrtD) (/35: `sqrt' undefined/)REQUIRE    (lef! (abs (subf! (mulf! (sqrt) (sqrt)) (s))) (constf! 1 3))           (/9: exit assertion not satisfied at routine end/)HANGEND
+BEGIN sqrt
+
+-- Sample of jcode
+-- Square root routine by bisection
+-- Pascal-F manual, page 4-4
+
+s:          (fixed 16 800 3)
+sqrt:       (fixed 8 80 3)
+x:          (fixed 8 800 3)
+lowbound:   (fixed 8 800 3)
+highbound:  (fixed 8 800 3)
+count18:   (integer)
+sD:         (boolean)
+sqrtD:      (boolean)
+xD:         (boolean)
+lowboundD:  (boolean)
+highboundD: (boolean)
+
+-- routine begin
+BREAK      (/begin program/)
+NEW        (s sD) (new! sD) (/assignment statement/)
+
+-- x := s
+-- REQUIRE    (inrange! s)  (/14: assignment statement/)
+REQUIRE    (sD) (/14: `s' undefined/)
+NEW        (x xD) (and! (xD) (equal! (new! x) (s))) (/assignment statement/)
+
+-- lowbound := 1.0
+-- REQUIRE    (inrange! (constf! 8 3)) (/15: assignment statement/)
+NEW        (lowbound lowboundD) 
+           (and! (lowboundD)
+                 (equal! (new! lowbound) (constf! 8 3)))
+	   (/assignment statement/)
+
+-- highbound := x
+-- REQUIRE    (inrange! x)  (/14: assignment statement/)
+REQUIRE    (xD) (/14: `x' undefined/)
+NEW        (highbound highboundD)
+           (and! (highboundD) (equal! (new! highbound) (x)))
+           (/assignment statement/) 
+
+-- while highbound - lowbound > 0.1
+NEW        (count18)  (infinitef! (count18)) (/assignment statement/)
+REQUIRE    (highboundD) (/18: `highbound' undefined/)
+REQUIRE    (lowboundD) (/18: `lowbound' undefined/)
+-- REQUIRE    (inrange! (subf! (highbound) (lowbound))) (/18: overflow/)
+SPLIT      1
+WHEN       (gtf! (subf! (highbound) (lowbound)) (constf! 1 3)) 1
+BRANCH     (/18:enter/) 2
+WHEN       (gtf! (subf! (highbound) (lowbound)) (constf! 1 3)) 3
+BRANCH     (/18:loop/) 2
+JOIN       2
+
+REQUIRE    (lef! (mulf! (lowbound) (lowbound)) (s))
+           (/20: state not satisfied/)
+REQUIRE    (gef! (mulf! (highbound) (highbound)) (s))
+           (/21: state not satisfied/)
+REQUIRE    (gef! (highbound) (lowbound)) (/22: state not satisfied/)
+REQUIRE    (lef! (x) (highbound)) (/23: state not satisfied/)
+REQUIRE    (gef! (x) (lowbound)) (/24: state not satisfied/)
+REQUIRE    (gef! (subf! (highbound) (lowbound)) (constf! 0 0))
+           (/20: negative measure/)
+REQUIRE    (ltf! (subf! (highbound) (lowbound)) (count18))
+           (/20: measure not decreased by loop body/)
+HANG
+WHEN       (true!) 1
+NEW        (x xD highbound lowbound highboundD lowboundD count18)
+           (and! (lef! (mulf! (new! lowbound) (new! lowbound)) (s))
+           (and! (gef! (mulf! (new! highbound) (new! highbound)) (s))
+           (and! (gef! (new! highbound) (new! lowbound))
+           (and! (lef! (x) (new! highbound))
+           (and! (gef! (x) (new! lowbound))
+           (and! (new! lowboundD)
+           (and! (new! highboundD)
+           (equal! (count18) (subf! (new! highbound) (new! lowbound))))))))))
+           (/loop invariant/)
+
+-- x :=  (highbound + lowbound) / 2
+REQUIRE    (highboundD)  (/27: `highbound' undefined/)
+REQUIRE    (lowboundD)   (/27: `lowbound' undefined/)
+REQUIRE    (notequal! (constf! 2 0) (constf! 0 0)) (/27: division by zero/)
+NEW        (x xD)
+           (and! (xD) (equal! (new! x)
+               (divf! (addf! (highbound) (lowbound)) (constf! 2 0))))
+           (/assignment statement/)
+
+-- if x*x > 2
+REQUIRE    (xD) (/28: `x' undefined/)
+REQUIRE    (xD) (/28: `x' undefined/)
+REQUIRE    (sD) (/28: `s' undefined/)
+SPLIT      5
+WHEN       (gtf! (mulf! (x) (x)) (s)) 5
+
+-- highbound := x
+REQUIRE    (xD) (/29: `x' undefined/)
+NEW        (highbound highboundD) (and! (highboundD) (equal! (highbound) (x)))
+           (/assignment statement/)
+BRANCH     (/28:then/) 6
+
+-- else
+WHEN       (not! (gtf! (mulf! (x) (x)) (s))) 5
+
+-- lowbound := x
+REQUIRE    (xD) (/31: `x' undefined/)
+NEW        (highbound highboundD) (and! (highboundD) (equal! (highbound) (x)))
+           (/assignment statement/)
+            
+
+-- end if
+BRANCH     (/30:else/) 6
+JOIN       6
+
+-- end loop
+REQUIRE    (highboundD) (/18: `highbound' undefined/)
+REQUIRE    (lowboundD) (/18: `lowbound' undefined/)
+-- REQUIRE    (inrange! (subf! (highbound) (lowbound))) (/18: overflow/)
+SPLIT      3
+WHEN       (not! (gtf! (subf! (highbound) (lowbound)) (constf! 1 3))) 1
+BRANCH     (/32:skip/) 4
+WHEN       (not! (gtf! (subf! (highbound) (lowbound)) (constf! 1 3))) 3
+BRANCH     (/32:exit/) 4
+JOIN       4
+
+-- sqrt := x
+REQUIRE    (xD) (/34: `x' undefined/)
+-- REQUIRE    (inrange! sqrt) (/34: `sqrt' out of range/)
+NEW        (sqrt) (equal! (sqrt) (x)) (/assignment statement/)
+NEW        (sqrtD) (new! sqrtD) (/assignment statement/)
+
+-- routine end
+REQUIRE    (sqrtD) (/35: `sqrt' undefined/)
+REQUIRE    (lef! (abs (subf! (mulf! (sqrt) (sqrt)) (s))) (constf! 1 3))
+           (/9: exit assertion not satisfied at routine end/)
+
+HANG
+END

@@ -1,1 +1,94 @@
-#! /bin/sh##   SCCS identification: @(#)srdiff	1.1 of 6/15/82##   srdiff: display differences between various combinations#           of SCCS and checked-out files.##   Use:#       srdiff [ -rn.m.k.l [ -rn.m.k.l ]] s.file##       If no sids are supplied, compare default release against checked#       out file in current directory.  If 1 is supplied, compare#       checked out version against specified release.  If 2 are supplied#       compare the specified releases.# Set up execution environment:export PATHPATH="$PATH:/usr/public"# Set up temp file name:tempfile=/tmp/srd$$# Handle interrupts:trap "rm -f $tempfile; exit 1"  1 2 15# Look for options:case $1 in-* )    sid_old=$1; shift ;;*  )    sid_old="" ;;esaccase $1 in-* )    sid_new=$1; shift ;;*  )    sid_new="" ;;esac# Check argument accessibility:if  [ ! -r "$1" ]then    echo "File $1 not readable"    exit 1fi# If we were given two SCCS sids as flags, then run diff on the# specified releases.  Otherwise run diff on a gotten version of# the argument SCCS file (assumed to be in the current directory)# and the specified release of the SCCS file.  Note that a null sid# implies the most recent (and default) release.if  [ "$sid_new" = "" ]then    # We have to compare against a checked-out file:    # Get the name of the checked-out file:    # (The second line strips off a leading "s.".)    cmp_vs=`basename $1`    cmp_vs=`expr $cmp_vs : '^s\.\(.*\)$'`    if  [ "$cmp_vs" = "" ]    then        echo "$1 not an SCCS file"        exit 1    fi    if  [ ! -r $cmp_vs ]    then        echo "File $cmp_vs not readable"        exit 1    fi    # Look for ID keywords in the checked-out file.  If there are any,    # arrange to supply the "-k" flag to "get" later on:    if  [ `grep -c '%.%' $cmp_vs` -gt 0 ]    then         kflag=-k    else        kflag=""    fielse    # We must compare two releases of the SCCS file:    cmp_vs=$tempfile    kflag=-k    get -s -p $kflag $sid_new $1 > $tempfilefiget $sid_old $kflag -s -p $1 | diff - $cmp_vsrm -f $tempfileexit 0
+#! /bin/sh
+#
+#   SCCS identification: @(#)srdiff	1.1 of 6/15/82
+#
+#   srdiff: display differences between various combinations
+#           of SCCS and checked-out files.
+#
+#   Use:
+#       srdiff [ -rn.m.k.l [ -rn.m.k.l ]] s.file
+#
+#       If no sids are supplied, compare default release against checked
+#       out file in current directory.  If 1 is supplied, compare
+#       checked out version against specified release.  If 2 are supplied
+#       compare the specified releases.
+
+# Set up execution environment:
+export PATH
+PATH="$PATH:/usr/public"
+
+# Set up temp file name:
+tempfile=/tmp/srd$$
+
+# Handle interrupts:
+trap "rm -f $tempfile; exit 1"  1 2 15
+
+# Look for options:
+case $1 in
+-* )
+    sid_old=$1; shift ;;
+
+*  )
+    sid_old="" ;;
+esac
+
+case $1 in
+-* )
+    sid_new=$1; shift ;;
+
+*  )
+    sid_new="" ;;
+esac
+
+# Check argument accessibility:
+if  [ ! -r "$1" ]
+then
+    echo "File $1 not readable"
+    exit 1
+fi
+
+# If we were given two SCCS sids as flags, then run diff on the
+# specified releases.  Otherwise run diff on a gotten version of
+# the argument SCCS file (assumed to be in the current directory)
+# and the specified release of the SCCS file.  Note that a null sid
+# implies the most recent (and default) release.
+if  [ "$sid_new" = "" ]
+then
+    # We have to compare against a checked-out file:
+
+    # Get the name of the checked-out file:
+    # (The second line strips off a leading "s.".)
+    cmp_vs=`basename $1`
+    cmp_vs=`expr $cmp_vs : '^s\.\(.*\)$'`
+    if  [ "$cmp_vs" = "" ]
+    then
+        echo "$1 not an SCCS file"
+        exit 1
+    fi
+
+    if  [ ! -r $cmp_vs ]
+    then
+        echo "File $cmp_vs not readable"
+        exit 1
+    fi
+
+    # Look for ID keywords in the checked-out file.  If there are any,
+    # arrange to supply the "-k" flag to "get" later on:
+    if  [ `grep -c '%.%' $cmp_vs` -gt 0 ]
+    then 
+        kflag=-k
+    else
+        kflag=""
+    fi
+
+else
+    # We must compare two releases of the SCCS file:
+    cmp_vs=$tempfile
+    kflag=-k
+    get -s -p $kflag $sid_new $1 > $tempfile
+fi
+
+get $sid_old $kflag -s -p $1 | diff - $cmp_vs
+
+rm -f $tempfile
+exit 0

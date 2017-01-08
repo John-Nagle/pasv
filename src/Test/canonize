@@ -1,1 +1,9 @@
-#	Filter for canonizing files prior to comparison#	Converts tabs to spaces and compresses out multiple spaces#	Beginning and trailing spaces are removed##			Version 1.2 of 3/3/86#sed -e "s/	/ /g" -e "s/  */ /g" -e "s/^ *//" -e "s/  *$//" <&0 >&1
+
+#	Filter for canonizing files prior to comparison
+#	Converts tabs to spaces and compresses out multiple spaces
+#	Beginning and trailing spaces are removed
+#
+#			Version 1.2 of 3/3/86
+#
+sed -e "s/	/ /g" -e "s/  */ /g" -e "s/^ *//" -e "s/  *$//" <&0 >&1
+

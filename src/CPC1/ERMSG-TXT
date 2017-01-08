@@ -1,1 +1,139 @@
-  1   expected 'PROGRAM'  2   identifier expected  4   ')' expected  5   ' ' expected  6   illegal symbol  8   'of' expected  9   '(' expected 10   error in type 11   '[' expected 12   ']' expected 13   'end' expected 14   ';' expected 15   integer expected 16   '=' expected 18   error in declaration part 19   error in field list 20   ',' expected 21   '.' expected 22   expected exception designator 23   field of device or packed record will cross word boundary 50   error in constant 51   ':=' expected 52   'then' expected 53   'until' expected 54   'do' expected 55   'to' or 'downto' expected 56   'if' expected 57   'exit' expected 60   syntax error in fixed type declaration 61   invalid range for fixed type 62   invalid precision given for fixed type 63   given range and precision require too many bits101   identifier previously declared102   low bound exceeds high bound103   identifier is not of appropriate class104   identifier not declared105   identifier type unknown106   constant expected107   incompatible subrange types108   file type not allowed109   exported identifier undeclared on inner level110   tagfield type must be scalar or subrange111   type incompatible with tagfield112   exported identifiers were not declared113   illegal index type115   illegal base type120   illegal function result type123   missing result type in function declaration125   error in type of standard function parameter126   number of parameters does not agree with declaration127   incorrect number of items in list129   type conflict of operands130   expression is not of set type133   set element larger than implementation maximum134   illegal type of operand(s)135   type of operand must be Boolean136   set element type must be scalar or subrange137   set element types not compatible138   type of variable is not array139   index type not compatible with declaration140   type of variable is not record141   type of variable must be file or pointer142   illegal parameter substitution143   illegal type of loop control variable144   expression type must be signal145   WAIT not allowed in procedure or function146   procedure may not be called within exporting monitor147   label type incompatible with selecting expression148   subrange bounds must be ordinal type149   index type must not be integer150   cannot call a lower priority routine152   no such field in this record154   actual parameter must be a variable155   actual parameter may not be component of packed structure156   formal and actual parameters of different type (VAR parameter)160   previous declaration was not forward161   already declared forward169   assignment to function not allowed outside of function170   assignment to imported/exported variable not allowed171   Priority level required172   Invalid priority level173   illegal case selector type175   monitor or module name expected176   device address is wrong type or is not a constant177   device address has not been specified178   monitor must be declared on outer level179   multiple specification of device address180   exported procedure may not be declared forward181   device type may not be component of structured type182   array as component of packed record is unimplemented183   invalid device or signal address203   integer constant exceeds range204   illegal digit in octal number205   string too long206   magnitude of constant is too large for precision207   range of fixed point operand too large in TRUNC or ROUND250   too many nested scopes of identifiers251   too many nested procedures and/or functions396   illegal character398   not yet implemented in Pascal-F400   compiler error401   illegal call on main program1000  the {I:<filename>} must be the last source on a line1001  cannot import a variable into a monitor1002  cannot export a variable from a monitor1003  cannot reference this write-only variable1004  cannot modify this read-only variable1007  formal arg is EXTRA, but actual arg is not1008  actual arg is EXTRA, but formal arg is not1009  EXTRA declaration within EXTRA block1020  PROOF statement within PROOF code1021  cannot redefine forward-referenced routine as EXTRA1022  call to EXTRA routine from non-PROOF code1023  EXTRA routine may not be EXTERNAL1024  cannot declare hardware as EXTRA1025  cannot declare VALUE while in PROOF code1026  function calls nested too deeply1028  call to routine with side effects not allowed here1030  cannot reference an executable variable here1031  cannot reference an EXTRA variable here1033  cannot change an executable variable here1034  cannot change an EXTRA variable here1036  too many assertions in single statement1037  identifier too long1038  OLD allowed only in EXIT and EFFECT assertions1039  DEFINED allowed only in assertions1040  comment start within comment1041  expression must have integer type1042  more than one DEPTH declaration for procedure or function1043  cannot INIT imported module1044  INIT of monitor permitted only in main program1045  RETURN allowed only in EXIT conditions1046  cannot use RETURN outside a function1050  FIXED types unimplemented in verifier1051  Variant records unimplemented in verifier1052  EXCEPTION unimplemented in verifier1053  FORWARD unimplemented in verifier1054  EXTERN unimplemented in verifier1055  RULE function may not have ENTRY, EXIT, or body
+  1   expected 'PROGRAM'
+  2   identifier expected
+  4   ')' expected
+  5   ' ' expected
+  6   illegal symbol
+  8   'of' expected
+  9   '(' expected
+ 10   error in type
+ 11   '[' expected
+ 12   ']' expected
+ 13   'end' expected
+ 14   ';' expected
+ 15   integer expected
+ 16   '=' expected
+ 18   error in declaration part
+ 19   error in field list
+ 20   ',' expected
+ 21   '.' expected
+ 22   expected exception designator
+ 23   field of device or packed record will cross word boundary
+ 50   error in constant
+ 51   ':=' expected
+ 52   'then' expected
+ 53   'until' expected
+ 54   'do' expected
+ 55   'to' or 'downto' expected
+ 56   'if' expected
+ 57   'exit' expected
+ 60   syntax error in fixed type declaration
+ 61   invalid range for fixed type
+ 62   invalid precision given for fixed type
+ 63   given range and precision require too many bits
+101   identifier previously declared
+102   low bound exceeds high bound
+103   identifier is not of appropriate class
+104   identifier not declared
+105   identifier type unknown
+106   constant expected
+107   incompatible subrange types
+108   file type not allowed
+109   exported identifier undeclared on inner level
+110   tagfield type must be scalar or subrange
+111   type incompatible with tagfield
+112   exported identifiers were not declared
+113   illegal index type
+115   illegal base type
+120   illegal function result type
+123   missing result type in function declaration
+125   error in type of standard function parameter
+126   number of parameters does not agree with declaration
+127   incorrect number of items in list
+129   type conflict of operands
+130   expression is not of set type
+133   set element larger than implementation maximum
+134   illegal type of operand(s)
+135   type of operand must be Boolean
+136   set element type must be scalar or subrange
+137   set element types not compatible
+138   type of variable is not array
+139   index type not compatible with declaration
+140   type of variable is not record
+141   type of variable must be file or pointer
+142   illegal parameter substitution
+143   illegal type of loop control variable
+144   expression type must be signal
+145   WAIT not allowed in procedure or function
+146   procedure may not be called within exporting monitor
+147   label type incompatible with selecting expression
+148   subrange bounds must be ordinal type
+149   index type must not be integer
+150   cannot call a lower priority routine
+152   no such field in this record
+154   actual parameter must be a variable
+155   actual parameter may not be component of packed structure
+156   formal and actual parameters of different type (VAR parameter)
+160   previous declaration was not forward
+161   already declared forward
+169   assignment to function not allowed outside of function
+170   assignment to imported/exported variable not allowed
+171   Priority level required
+172   Invalid priority level
+173   illegal case selector type
+175   monitor or module name expected
+176   device address is wrong type or is not a constant
+177   device address has not been specified
+178   monitor must be declared on outer level
+179   multiple specification of device address
+180   exported procedure may not be declared forward
+181   device type may not be component of structured type
+182   array as component of packed record is unimplemented
+183   invalid device or signal address
+203   integer constant exceeds range
+204   illegal digit in octal number
+205   string too long
+206   magnitude of constant is too large for precision
+207   range of fixed point operand too large in TRUNC or ROUND
+250   too many nested scopes of identifiers
+251   too many nested procedures and/or functions
+396   illegal character
+398   not yet implemented in Pascal-F
+400   compiler error
+401   illegal call on main program
+1000  the {I:<filename>} must be the last source on a line
+1001  cannot import a variable into a monitor
+1002  cannot export a variable from a monitor
+1003  cannot reference this write-only variable
+1004  cannot modify this read-only variable
+1007  formal arg is EXTRA, but actual arg is not
+1008  actual arg is EXTRA, but formal arg is not
+1009  EXTRA declaration within EXTRA block
+1020  PROOF statement within PROOF code
+1021  cannot redefine forward-referenced routine as EXTRA
+1022  call to EXTRA routine from non-PROOF code
+1023  EXTRA routine may not be EXTERNAL
+1024  cannot declare hardware as EXTRA
+1025  cannot declare VALUE while in PROOF code
+1026  function calls nested too deeply
+1028  call to routine with side effects not allowed here
+1030  cannot reference an executable variable here
+1031  cannot reference an EXTRA variable here
+1033  cannot change an executable variable here
+1034  cannot change an EXTRA variable here
+1036  too many assertions in single statement
+1037  identifier too long
+1038  OLD allowed only in EXIT and EFFECT assertions
+1039  DEFINED allowed only in assertions
+1040  comment start within comment
+1041  expression must have integer type
+1042  more than one DEPTH declaration for procedure or function
+1043  cannot INIT imported module
+1044  INIT of monitor permitted only in main program
+1045  RETURN allowed only in EXIT conditions
+1046  cannot use RETURN outside a function
+1050  FIXED types unimplemented in verifier
+1051  Variant records unimplemented in verifier
+1052  EXCEPTION unimplemented in verifier
+1053  FORWARD unimplemented in verifier
+1054  EXTERN unimplemented in verifier
+1055  RULE function may not have ENTRY, EXIT, or body

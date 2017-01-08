@@ -1,1 +1,4 @@
-for FILE do    get s.$FILE.m    nroff -mm -Tlp $FILE.m > $FILE.lpdone
+for FILE do
+    get s.$FILE.m
+    nroff -mm -Tlp $FILE.m > $FILE.lp
+done

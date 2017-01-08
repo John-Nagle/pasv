@@ -1,1 +1,68 @@
-{	*************************************************	*						*	*						*	*	     The Pascal-F Verifier 		*	*						*	*	     DECOMPILER - PASS 2		*	*						*	*						*	*************************************************  }{	Permission is hereby given to modify or use, but not for profit,	any or all of this program provided that this copyright notice 	is included:	Copyright 1985		Ford Motor Company		The American Road		Dearborn, Michigan  48121	This work was supported by the Long Range Research Program of	the Ford Motor Company, and was carried out at Ford Scientific	Research Labs in Dearborn, Michigan and Ford Aerospace and	Communications Corporation's Western Development Laboratories	in Palo Alto, California.}#include "p2consts.i"#include "p2iconst.h"#include "P1X-VER00.h"type#include "P1X-VER01.h"#include "p2defs.i"#include "p2vars.i"#include "p2tables.i"#include "p2tprint.i"#include "p2errors.i"#include "p2util.i"#include "p2dump.i"#include "p2varfile.i"#include "p2block.i"#include "p2enforce.i"#include "p2build.i"#include "p2augment.i"#include "p2spec.i"#include "p2trutil.i"#include "p2trvar.i"#include "p2trinvar.i"#include "p2trshare.i"#include "p2trmain.i"#include "p2jgen.i"#include "p2rdata.i"#include "p2jvars.i"#include "p2select.i"#include "p2jcommon.i"#include "p2bound.i"#include "p2alias.i"#include "p2routine.i"#include "p2recurse.i"#include "p2call.i"#include "p2icall.i"#include "p2expr.i"#include "p2case.i"#include "p2wait.i"#include "p2loop.i"#include "p2stmt.i"#include "p2junit.i"#include "p2main.i"
+{	*************************************************
+	*						*
+	*						*
+	*	     The Pascal-F Verifier 		*
+	*						*
+	*	     DECOMPILER - PASS 2		*
+	*						*
+	*						*
+	*************************************************  }
+
+{
+	Permission is hereby given to modify or use, but not for profit,
+	any or all of this program provided that this copyright notice 
+	is included:
+
+	Copyright 1985
+
+		Ford Motor Company
+		The American Road
+		Dearborn, Michigan  48121
+
+	This work was supported by the Long Range Research Program of
+	the Ford Motor Company, and was carried out at Ford Scientific
+	Research Labs in Dearborn, Michigan and Ford Aerospace and
+	Communications Corporation's Western Development Laboratories
+	in Palo Alto, California.
+}
+#include "p2consts.i"
+#include "p2iconst.h"
+#include "P1X-VER00.h"
+type
+#include "P1X-VER01.h"
+#include "p2defs.i"
+#include "p2vars.i"
+#include "p2tables.i"
+#include "p2tprint.i"
+#include "p2errors.i"
+#include "p2util.i"
+#include "p2dump.i"
+#include "p2varfile.i"
+#include "p2block.i"
+#include "p2enforce.i"
+#include "p2build.i"
+#include "p2augment.i"
+#include "p2spec.i"
+#include "p2trutil.i"
+#include "p2trvar.i"
+#include "p2trinvar.i"
+#include "p2trshare.i"
+#include "p2trmain.i"
+#include "p2jgen.i"
+#include "p2rdata.i"
+#include "p2jvars.i"
+#include "p2select.i"
+#include "p2jcommon.i"
+#include "p2bound.i"
+#include "p2alias.i"
+#include "p2routine.i"
+#include "p2recurse.i"
+#include "p2call.i"
+#include "p2icall.i"
+#include "p2expr.i"
+#include "p2case.i"
+#include "p2wait.i"
+#include "p2loop.i"
+#include "p2stmt.i"
+#include "p2junit.i"
+#include "p2main.i"

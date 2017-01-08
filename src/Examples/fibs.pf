@@ -1,1 +1,45 @@
-program fibtest;  {This is a program whose exewcution depends on   a property of a fibbonocci series  }  const iceil = 31;  var i: Integer;      n: 0..9;      ceiling: extra 0..16383;procedure fib( var f: integer; a,b:integer );  ENTRY a>=0;  b>=0; n<9;  b<=a;	a <= ceiling;  EXIT  n > n.old;	f <= ceiling * 2;	n <= 9;	defined(f);  DEPTH 10-n;  INVARIANT	(n = 0) implies (ceiling = iceil);	{ ceiling = iceil * 2**n }	(n = 1) implies (ceiling = 2*iceil);	(n = 2) implies (ceiling = 4*iceil);	(n = 3) implies (ceiling = 8*iceil);	(n = 4) implies (ceiling = 16*iceil);	(n = 5) implies (ceiling = 32*iceil);	(n = 6) implies (ceiling = 64*iceil);	(n = 7) implies (ceiling = 128*iceil);	(n = 8) implies (ceiling = 256*iceil);	(n = 9) implies (ceiling = 512*iceil);	(n = 0) or (n = 1) or (n = 2) or (n = 3) or (n = 4) or	(n = 5) or (n = 6) or (n = 7) or (n = 8) or (n = 9);  begin    n:=n+1;    proof ceiling := ceiling * 2;  if n = 9 then    f := a  else    fib( f, a+b, a);  end;  begin  n:=0;  proof ceiling := iceil;  fib(i, 3, 0);end.
+program fibtest;
+  {This is a program whose exewcution depends on
+   a property of a fibbonocci series  }
+  const iceil = 31;
+  var i: Integer;
+      n: 0..9;
+      ceiling: extra 0..16383;
+
+procedure fib( var f: integer; a,b:integer );
+  ENTRY a>=0;  b>=0; n<9;  b<=a;
+	a <= ceiling;
+  EXIT  n > n.old;
+	f <= ceiling * 2;
+	n <= 9;
+	defined(f);
+  DEPTH 10-n;
+  INVARIANT
+	(n = 0) implies (ceiling = iceil);	{ ceiling = iceil * 2**n }
+	(n = 1) implies (ceiling = 2*iceil);
+	(n = 2) implies (ceiling = 4*iceil);
+	(n = 3) implies (ceiling = 8*iceil);
+	(n = 4) implies (ceiling = 16*iceil);
+	(n = 5) implies (ceiling = 32*iceil);
+	(n = 6) implies (ceiling = 64*iceil);
+	(n = 7) implies (ceiling = 128*iceil);
+	(n = 8) implies (ceiling = 256*iceil);
+	(n = 9) implies (ceiling = 512*iceil);
+	(n = 0) or (n = 1) or (n = 2) or (n = 3) or (n = 4) or
+	(n = 5) or (n = 6) or (n = 7) or (n = 8) or (n = 9);
+  begin
+    n:=n+1;
+    proof ceiling := ceiling * 2;
+  if n = 9 then
+    f := a
+  else
+    fib( f, a+b, a);
+  end;
+
+  
+begin
+  n:=0;
+  proof ceiling := iceil;
+  fib(i, 3, 0);
+end.
+

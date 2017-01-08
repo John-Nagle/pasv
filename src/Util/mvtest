@@ -1,1 +1,1 @@
-mv -f $HOME/bintest/$1 /usr/p/frl/bin/$1
+mv -f $HOME/bintest/$1 /usr/p/frl/bin/$1

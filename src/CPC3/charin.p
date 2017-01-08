@@ -1,1 +1,168 @@
-#include "global.h"procedure WriteCharinId;begin  writeln('charin.p 1.6') end;(* The following routines are used to provide a level of * abstraction that hides the details of skipping over white space, * ignoring comments, and joining continuation lines. * * The routines use the variables CurrentChar, CurrentClass, and * StatementLine to communicate with the outside world. * The view of the jcode file provided by these routines is a sequence * values placed in the variables CurrentChar and CurrentClass. * Here are all the values that can be placed in these variables. * CurrentClass can be either Ordinary, EndLine, EndStatement, or EndFile. * If CurrentClass is Ordinary, then CurrentChar just represents itself. * If CurrentClass is EndLine, then CurrentChar is a blank that represents * the end of a line.  If CurrentClass is EndStatement or EndFile, then * CurrentChar is a dollar sign that represents the end of a statement * or the end of all the input, respectively.  The input routines add * an EndLine character on the end of every line, an EndStatement character * to the end of every statement, and arbitrarily many EndFile characters * after the end of the input. *  * Only the following read routines are allowed to change CurrentChar * and CurrentClass.  Certain preconditions must be satisfied before * the routines may be called. * * ReadChar - For purposes of initialization, this routine must be *    called before any others.  After that it may only be called *    if (CurrentChar <> ' ') and (CurrentClass <> EndStatement). *    The representation of the next character is put into CurrentChar *    and CurrentClass. * * SkipToNonBlank - This routine may be called at any time.  If CurrentChar *    is not blank (either an Ordinary one or an EndLine) it returns *    without changing CurrentChar or CurrentClass.  Otherwise,  *    all white space (blanks, comments, and line ends) are read until *    CurrentChar is nonblank. * * ReadStatementEnd - This routine may be called if no character of class *    EndFile has been read.  If CurrentClass <> EndStatement, *    the program is aborted.  Otherwise, zero or more characters *    are read until CurrentClass = EndStatement.  Then one more character *    is read.  The variable StatementLine is set to number of the *    line containing the character just read. *     *)procedure ReadChar;begin  if eof(p3jcode) then begin    CurrentChar := ' ';    CurrentClass := EndFile end  else begin    CurrentChar := p3jcode^;    if eoln(p3jcode) then      CurrentClass := EndLine    else if CurrentChar = chr(9) (* a tab *) then begin      CurrentClass := TabChar;      CurrentChar := ' ' end    else      CurrentClass := Ordinary;    get(p3jcode) end end;procedure SkipToNonBlank;var  WhiteSpaceSeen: boolean;  ForcedComment: boolean;begin  WhiteSpaceSeen := BeginFudge;  ForcedComment := BeginFudge;  (* Each iteration of the following loop either reads a chunk of   * white space that begins with CurrentChar and sets WhiteSpaceSeen   * to true, or it determines that CurrentChar is not the beginning   * of white space and sets WhiteSpaceSeen to false.  A chunk of white   * space is defined as a single space, an end of line character that   * is followed by more white space, or a comment.  A comment is defined   * as -- and all characters following it up to but not including the   * next end of line character.  A -- is considered to begin a comment   * only if it is preceded by a space, tab, or newline.   *)  repeat    if WhiteSpaceSeen and (CurrentChar = '-') then begin      (* Check for beginning of comment *)      if (p3jcode^ = '-') or ForcedComment then begin        (* Either a comment was found, or the syntax demands that         * a comment should be present and it isn't there.  In         * either case we ignore the rest of the current line.         *)        if (p3jcode^ <> '-') then SyntaxError;        repeat          ReadChar        until CurrentClass = EndLine;                ForcedComment := false;        WhiteSpaceSeen := true end      else        WhiteSpaceSeen := false end    else if CurrentClass = EndLine then begin      (* Peek ahead to determine whether this end-of-line       * constitutes an end-of-statement.       *)      LineCount := LineCount + 1;      if eof(p3jcode) then begin        (* The end-of-line is the last character in the program;         * it is therefore an end-of-statement         *)        CurrentChar := '$';        CurrentClass := EndStatement;        WhiteSpaceSeen := false end      else begin        WhiteSpaceSeen := p3jcode^ in [' ', '-', chr(9) (* tab *)];        if WhiteSpaceSeen then begin          (* The next line is either empty, begins with a space or tab,           * or contains a comment (we are assuming non-comment lines           * cannot begin with minus signs).            * Therefore we must continue reading.           *)          ReadChar;          (* if the next line begins with a -, enforce our assumption           * that it must be a comment.           *)          ForcedComment := CurrentChar = '-' end        else begin          (* The next line does not begin with white space *)          CurrentChar := '$';          CurrentClass := EndStatement end end end    else begin      WhiteSpaceSeen := CurrentChar = ' ';      if WhiteSpaceSeen then        ReadChar end      until not WhiteSpaceSeen end;procedure PrintUnitId;begin  writeln;  write('Verifying ');  while CurrentClass <> EndStatement do begin    write(CurrentChar);    if CurrentChar = ' ' then       SkipToNonBlank(false)    else      ReadChar end;  writeln;  ReadStatementEnd end;procedure ReadStatementEnd;begin  if CurrentClass <> EndStatement then     SyntaxError;  StatementLine := StatementLine + LineCount;  LineCount := 0;  ReadChar end;procedure InitReadChar;begin  ReadChar;  if CurrentChar = '-' then begin    SkipToNonBlank(true);    ReadStatementEnd end;  end;
+#include "global.h"
+
+procedure WriteCharinId;
+begin
+  writeln('charin.p 1.6') end;
+
+(* The following routines are used to provide a level of
+ * abstraction that hides the details of skipping over white space,
+ * ignoring comments, and joining continuation lines.
+ *
+ * The routines use the variables CurrentChar, CurrentClass, and
+ * StatementLine to communicate with the outside world.
+ * The view of the jcode file provided by these routines is a sequence
+ * values placed in the variables CurrentChar and CurrentClass.
+ * Here are all the values that can be placed in these variables.
+ * CurrentClass can be either Ordinary, EndLine, EndStatement, or EndFile.
+ * If CurrentClass is Ordinary, then CurrentChar just represents itself.
+ * If CurrentClass is EndLine, then CurrentChar is a blank that represents
+ * the end of a line.  If CurrentClass is EndStatement or EndFile, then
+ * CurrentChar is a dollar sign that represents the end of a statement
+ * or the end of all the input, respectively.  The input routines add
+ * an EndLine character on the end of every line, an EndStatement character
+ * to the end of every statement, and arbitrarily many EndFile characters
+ * after the end of the input.
+ * 
+ * Only the following read routines are allowed to change CurrentChar
+ * and CurrentClass.  Certain preconditions must be satisfied before
+ * the routines may be called.
+ *
+ * ReadChar - For purposes of initialization, this routine must be
+ *    called before any others.  After that it may only be called
+ *    if (CurrentChar <> ' ') and (CurrentClass <> EndStatement).
+ *    The representation of the next character is put into CurrentChar
+ *    and CurrentClass.
+ *
+ * SkipToNonBlank - This routine may be called at any time.  If CurrentChar
+ *    is not blank (either an Ordinary one or an EndLine) it returns
+ *    without changing CurrentChar or CurrentClass.  Otherwise, 
+ *    all white space (blanks, comments, and line ends) are read until
+ *    CurrentChar is nonblank.
+ *
+ * ReadStatementEnd - This routine may be called if no character of class
+ *    EndFile has been read.  If CurrentClass <> EndStatement,
+ *    the program is aborted.  Otherwise, zero or more characters
+ *    are read until CurrentClass = EndStatement.  Then one more character
+ *    is read.  The variable StatementLine is set to number of the
+ *    line containing the character just read.
+ *    
+ *)
+procedure ReadChar;
+begin
+  if eof(p3jcode) then begin
+    CurrentChar := ' ';
+    CurrentClass := EndFile end
+  else begin
+    CurrentChar := p3jcode^;
+    if eoln(p3jcode) then
+      CurrentClass := EndLine
+    else if CurrentChar = chr(9) (* a tab *) then begin
+      CurrentClass := TabChar;
+      CurrentChar := ' ' end
+    else
+      CurrentClass := Ordinary;
+
+    get(p3jcode) end end;
+
+procedure SkipToNonBlank;
+var
+  WhiteSpaceSeen: boolean;
+  ForcedComment: boolean;
+begin
+  WhiteSpaceSeen := BeginFudge;
+  ForcedComment := BeginFudge;
+  (* Each iteration of the following loop either reads a chunk of
+   * white space that begins with CurrentChar and sets WhiteSpaceSeen
+   * to true, or it determines that CurrentChar is not the beginning
+   * of white space and sets WhiteSpaceSeen to false.  A chunk of white
+   * space is defined as a single space, an end of line character that
+   * is followed by more white space, or a comment.  A comment is defined
+   * as -- and all characters following it up to but not including the
+   * next end of line character.  A -- is considered to begin a comment
+   * only if it is preceded by a space, tab, or newline.
+   *)
+  repeat
+    if WhiteSpaceSeen and (CurrentChar = '-') then begin
+      (* Check for beginning of comment *)
+      if (p3jcode^ = '-') or ForcedComment then begin
+        (* Either a comment was found, or the syntax demands that
+         * a comment should be present and it isn't there.  In
+         * either case we ignore the rest of the current line.
+         *)
+
+        if (p3jcode^ <> '-') then SyntaxError;
+
+        repeat
+          ReadChar
+        until CurrentClass = EndLine;
+        
+        ForcedComment := false;
+        WhiteSpaceSeen := true end
+      else
+        WhiteSpaceSeen := false end
+    else if CurrentClass = EndLine then begin
+      (* Peek ahead to determine whether this end-of-line
+       * constitutes an end-of-statement.
+       *)
+      LineCount := LineCount + 1;
+
+      if eof(p3jcode) then begin
+        (* The end-of-line is the last character in the program;
+         * it is therefore an end-of-statement
+         *)
+        CurrentChar := '$';
+        CurrentClass := EndStatement;
+        WhiteSpaceSeen := false end
+      else begin
+        WhiteSpaceSeen := p3jcode^ in [' ', '-', chr(9) (* tab *)];
+        if WhiteSpaceSeen then begin
+          (* The next line is either empty, begins with a space or tab,
+           * or contains a comment (we are assuming non-comment lines
+           * cannot begin with minus signs). 
+           * Therefore we must continue reading.
+           *)
+          ReadChar;
+          (* if the next line begins with a -, enforce our assumption
+           * that it must be a comment.
+           *)
+          ForcedComment := CurrentChar = '-' end
+        else begin
+          (* The next line does not begin with white space *)
+          CurrentChar := '$';
+          CurrentClass := EndStatement end end end
+    else begin
+      WhiteSpaceSeen := CurrentChar = ' ';
+      if WhiteSpaceSeen then
+        ReadChar end
+    
+  until not WhiteSpaceSeen end;
+
+procedure PrintUnitId;
+begin
+  writeln;
+  write('Verifying ');
+  while CurrentClass <> EndStatement do begin
+    write(CurrentChar);
+    if CurrentChar = ' ' then 
+      SkipToNonBlank(false)
+    else
+      ReadChar end;
+  writeln;
+  ReadStatementEnd end;
+
+procedure ReadStatementEnd;
+begin
+  if CurrentClass <> EndStatement then
+     SyntaxError;
+
+  StatementLine := StatementLine + LineCount;
+  LineCount := 0;
+  ReadChar end;
+
+procedure InitReadChar;
+begin
+  ReadChar;
+  if CurrentChar = '-' then begin
+    SkipToNonBlank(true);
+    ReadStatementEnd end;
+  end;

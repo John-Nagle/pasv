@@ -1,1 +1,16 @@
-program angle;type angle = 0..359;				{ angle in degrees }{	anglesub - absolute difference between two angles.}procedure anglediff(a,b: angle; var diff: angle);begin    if a > b then	diff := b - a    else	diff := a - b;    if diff > 180 then diff := 360 - diff;end {anglediff};begin{no main program}end.
+program angle;
+type angle = 0..359;				{ angle in degrees }
+{
+	anglesub - absolute difference between two angles.
+}
+procedure anglediff(a,b: angle; var diff: angle);
+begin
+    if a > b then
+	diff := b - a
+    else
+	diff := a - b;
+    if diff > 180 then diff := 360 - diff;
+end {anglediff};
+begin
+{no main program}
+end.

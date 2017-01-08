@@ -1,1 +1,798 @@
-{	analyzer1  --  analyzer for outputs of Pass 1 of Verifier	This is a debugging tool for the Verifier.}program analyzer1(output);const#include "P1X-VER00.h"    varsmax = 2000;				{ max variables allowed }    vfile = 'pasf-vars';			{ variables file }    ifile = 'pasf-icode';			{ icode file }    sfile = 'pasf-source';			{ source lines file }    mtabsize = 255;type#include "P1X-VER01.h"     byte = 0 .. 255;     mtabtype = array [0..mtabsize] of packed array [0..4] of char;     byteaddress = -65536..65535;	{ byte address range }var    varf: file of varitem;			{ variable items }    vartab: array [1..varsmax] of varitem;	{ variable items }    varlimit: 0..varsmax;			{ slots used in vartab }    int, dat: file of integer;     nch: integer;    printdata, selectprocs, prnt, done: boolean;    mtab: mtabtype;    blockstack: array [0..10] of record		{ procedure stack }	blockpin: integer;			{ procedure number this lev }	nonblocks: integer;			{ nested non-blocks (modules) }	end;	    blocksequence: integer;			{ block serial number }    blockdepth: integer;			{ current nesting depth }    srcitem: sourceline;			{ source line item }    srcfile: file of sourceline;		{ file of source lines }    lastfnum, lastlnum: integer;		{ last line printed }{	extractsigned  --  extract signed value from 16-bit unsigned quantity.	This routine directly reflects the target machine implementation,	which is 16-bit twos complement.}function extractsigned(i: integer)		{ input value }		      : integer;		{ output signed value }const negbias = 65536;			{ this - value is representation of neg}      posmax = 32767;				{ max positive value }begin    assert(i >= 0);				{ input must be positive }    assert(i <= 65535);				{ and unsigned 16-bit }    if i <= posmax then				{ if positive }	extractsigned := i			{ return given value }    else	extractsigned := i - negbias;		{ return negative int value }end {extractsigned};{	loadvars  --  read var file and create variable table }procedure loadvars;var vitem: varitem;				{ working item }begin    varlimit := 0;				{ slots used in vartab }    reset(varf,vfile);				{ open variable file }    while not eof(varf) do begin		{ reading of varfile }	read(varf,vitem);			{ read a variable item }	    if varlimit < varsmax then begin	{ if room }		varlimit := varlimit + 1;	{ advance }		vartab[varlimit] := vitem;	{ store new item }	    end else begin			{ if full }		writeln('Too many variables.'); { report failure }		halt;		end;	end;    end {loadvars};{	depthconv  --  convert depth to procedure number}function depthconv(d: integer):integer;begin    if d > blockdepth then begin	{ if too big }	write('    [ILLEGAL DEPTH]');        depthconv := -1;    end else begin        depthconv := blockstack[d].blockpin;        end;    end {depthconv};{	finditem -- find an item and print its description   }procedure finditem(var lst: text;		{ file to print on }		  vaddr: addressitem;		{ location, etc. }		  vtype: integer);		{ where to start search }var    workadr: addressitem; 			{ bit address }    quit: boolean;				{ when done }    i: integer;					{ for search }    startitem, stopdepth: integer;		{ for search control }    offset, eltsize: integer;    eltcount, eltnum: integer;begin    if vtype > 0 then begin			{ if field, not variable }	with vartab[vtype] do begin		{ using given variable }	    stopdepth := itemdepth;		{ depth to stop search }	    startitem := vtype+1;		{ place to start search }	    end;    end else begin				{ if variable }	stopdepth := 0;				{ stopdepth meaningless }	startitem := 1;				{ start search at 1 }	end;    i := startitem;    quit := false;				{ prepare to search }    while not quit do begin			{ search }        if i > varlimit then begin		{ if eof }		quit := true;		write(lst,'(UNIDENTIFIED ADDRESS)'); { diagnostic }	    end else if vartab[i].itemdepth < stopdepth then begin		quit := true;			{ field search failed }			write(lst,'(UNIDENTIFIED FIELD)'); { diagnostic }	    end else begin			{ ready to try compare }		with vartab[i] do begin		{ using variable table }		    if (vaddr.blockn = loc.blockn)	{ if right block }		    and(vaddr.relocation = loc.relocation) { and right kind }		    and(vaddr.address >= loc.address) {and within address range}		    and(vaddr.address < loc.address + size) then begin						{ we have a find }			quit := true;		{ search will stop }			write(lst,itemname);	{ write name of item }			offset := vaddr.address - loc.address; { offset into item }			case form of 		{ handle different kinds }		        proceduredata, functiondata,			monitordata, moduledata,			pointerdata, fixeddata,			booleandata,			numericdata, setdata, signaldata: begin			    if offset <> 0 then begin { should match exactly }			        write(lst,'+',offset:0,' (ERROR)');			    end else begin				write(lst,': ');	{ editing type }   				case form of { edit different kinds }				fixeddata: begin				    write(lst,minvalue:1,'..',maxvalue:1);				    write(lst,'/',scale:1);				    end;				numericdata: begin				    write(lst,minvalue:1,'..',maxvalue:1);				    end;				setdata: begin				    write(lst,' set of [',minvalue:1,'..',					maxvalue:1,']');				    end;         				signaldata:  begin				    write(lst,'signal');				    end;				proceduredata: begin				    write(lst,'procedure');				    end;				functiondata: begin     				    write(lst,'function');				    end;				monitordata: begin				    write(lst,'monitor');				    end;				moduledata: begin				    write(lst,'module');				    end;				pointerdata: begin				    write(lst,'pointer');				    end;				booleandata: begin				    write(lst,'Boolean');				    end;				end;			{ of inner cases }				end;			{ of if offset <> 0 }			    end;			{ of case }			recorddata: begin	{ field in record }				    write(lst,'.');	{ indicate record }			    workadr.address := offset; { relative address }			    workadr.blockn := 0;	{ not applicable }			    workadr.relocation := offsetaddr; { kind }			    finditem(lst,workadr,i); { print subfield } 			    end;			arraydata: begin	{ element of array }			    eltcount := (maxvalue-minvalue)+1; { number of elts}			    eltsize := size div eltcount; { size of each elt }			    eltnum := offset div eltsize; { element number }			    write(lst,'[',eltnum+minvalue:1,'].'); { edit }			    workadr.address := offset mod eltsize; { new offset}			    workadr.blockn := 0; { does not apply }			    workadr.relocation := offsetaddr; { kind }			    finditem(lst,workadr,i); { print subfield }			    end;		{ of case }			end;			{ of cases }		    end;			{ of if find }		end;				{ of with }	    end;				{ of if }     	i := i + 1;				{ on to the next }	end;					{ of while }    end {finditem};{	findvar -- find a variable and print its description }procedure findvar(var lst: text;		{ file to print on }		  bdepth: integer;		{ block depth }		  baddress: byteaddress;	{ byte address }		  bclass: addressclass);	{ kind of address }var    bnum: integer;				{ block number }    waddress: addressitem;			{ constructed addr item }begin    bnum := depthconv(bdepth);			{ get procedure number }    if bnum >= 0 then begin			{ if found block }	waddress.blockn := bnum;		{ set owning block }	if bclass <> absoluteaddr then begin	{ if not absolute }	    baddress := extractsigned(baddress); { must handle as signed }	    end;	waddress.address := baddress*8;		{ set actual address in bits }	waddress.relocation := bclass;		{ set class of address }	if prnt then finditem(lst,waddress,0);		{ look up var }	end;    end {findvar };{	findroutine -- find a routine}procedure findroutine(var lst: text;		{ file to print on }		broutine: integer);		{ which routine }var waddress: addressitem;			{ working item }begin    waddress.blockn := broutine;		{ block = routine number }    waddress.address := 0;			{ not applicable }    waddress.relocation := routineaddr;		{ in routine space }    if prnt then finditem(lst,waddress,0);			{ edit the info }end {findroutine};{	printsource --  print source file up to line N}procedure printsource(fnum: integer;		{ file number }		      lnum: integer);		{ line number within file }var i,j: 0..linetextmax;begin    while (fnum <> lastfnum) or (lnum <> lastlnum) do begin	if not eof(srcfile) then begin		{ if more to print }	    read(srcfile,srcitem);		{ read source line }	    lastfnum := srcitem.lineid.filenumber; { get file number }	    lastlnum := srcitem.lineid.linenumber; { get line number }	    writeln(output);			{ finish previous line }	    write(output,srcitem.lineid.linenumber:6,'. ');	    i := linetextmax;		{ find last nonblank }	    while (i>1) and (srcitem.linetext[i] = ' ') do i := i-1;	    for j := 1 to i do write(output,srcitem.linetext[j]); { print line }	    end else begin			{ at EOF }		lastfnum := fnum;		{ force exit }		lastlnum := lnum;		{ force exit }	    end;	end;end { printsource };procedure initprocedure;var i: 0..mtabsize;beginfor i := 0 to mtabsize do mtab[i] := 'error';	{ default value }mtab[  0]:='stnbr'; mtab[  1]:='xch  '; mtab[  2]:='del  '; mtab[  3]:='fix  '; mtab[  4]:='monit'; mtab[  5]:='ident'; mtab[  6]:='proc '; mtab[  7]:='end  '; mtab[  8]:='null '; mtab[  9]:='refer'; mtab[ 10]:='stol '; mtab[ 11]:='stor '; mtab[ 12]:='stof '; mtab[ 13]:='error'; mtab[ 14]:='error'; mtab[ 15]:='error'; mtab[ 16]:='succ '; mtab[ 17]:='pred '; mtab[ 18]:='error'; mtab[ 19]:='error'; mtab[ 20]:='error'; mtab[ 21]:='error'; mtab[ 22]:='error'; mtab[ 23]:='error'; mtab[ 24]:='uceq '; mtab[ 25]:='ucne '; mtab[ 26]:='ucgt '; mtab[ 27]:='ucle '; mtab[ 28]:='ucge '; mtab[ 29]:='uclt '; mtab[ 30]:='umax '; mtab[ 31]:='umin '; mtab[ 32]:='iadd '; mtab[ 33]:='isub '; mtab[ 34]:='imul '; mtab[ 35]:='idiv '; mtab[ 36]:='imod '; mtab[ 37]:='error'; mtab[ 38]:='error'; mtab[ 39]:='error'; mtab[ 40]:='ineg '; mtab[ 41]:='iabs '; mtab[ 42]:='iodd '; mtab[ 43]:='error'; mtab[ 44]:='ceil '; mtab[ 45]:='floor'; mtab[ 46]:='error'; mtab[ 47]:='error'; mtab[ 48]:='sadd '; mtab[ 49]:='ssub '; mtab[ 50]:='smul '; mtab[ 51]:='sdiv '; mtab[ 52]:='error'; mtab[ 53]:='rescl'; mtab[ 54]:='error'; mtab[ 55]:='error'; mtab[ 56]:='iceq '; mtab[ 57]:='icne '; mtab[ 58]:='icgt '; mtab[ 59]:='icle '; mtab[ 60]:='icge '; mtab[ 61]:='iclt '; mtab[ 62]:='imax '; mtab[ 63]:='imin '; mtab[ 64]:='fadd '; mtab[ 65]:='fsub '; mtab[ 66]:='fmul '; mtab[ 67]:='fdiv '; mtab[ 68]:='error'; mtab[ 69]:='error'; mtab[ 70]:='error'; mtab[ 71]:='error'; mtab[ 72]:='fneg '; mtab[ 73]:='fabs '; mtab[ 74]:='float'; mtab[ 75]:='trunc'; mtab[ 76]:='round'; mtab[ 77]:='error'; mtab[ 78]:='error'; mtab[ 79]:='error'; mtab[ 80]:='fxeq '; mtab[ 81]:='fxne '; mtab[ 82]:='fxgt '; mtab[ 83]:='fxle '; mtab[ 84]:='fxge '; mtab[ 85]:='fxlt '; mtab[ 86]:='fxmax'; mtab[ 87]:='fxmin'; mtab[ 88]:='fceq '; mtab[ 89]:='fcne '; mtab[ 90]:='fcgt '; mtab[ 91]:='fcle '; mtab[ 92]:='fcge '; mtab[ 93]:='fclt '; mtab[ 94]:='fmax '; mtab[ 95]:='fmin '; mtab[ 96]:='not  '; mtab[ 97]:='error'; mtab[ 98]:='error'; mtab[ 99]:='error'; mtab[100]:='error'; mtab[101]:='error'; mtab[102]:='error'; mtab[103]:='error'; mtab[104]:='eqv  '; mtab[105]:='xor  '; mtab[106]:='nimp '; mtab[107]:='rimp '; mtab[108]:='imp  '; mtab[109]:='nrimp'; mtab[110]:='or   '; mtab[111]:='and  '; mtab[112]:='compl'; mtab[113]:='union'; mtab[114]:='inter'; mtab[115]:='sdiff'; mtab[116]:='error'; mtab[117]:='sgens'; mtab[118]:='sadel'; mtab[119]:='empty'; mtab[120]:='sceq '; mtab[121]:='scne '; mtab[122]:='scgt '; mtab[123]:='scle '; mtab[124]:='scge '; mtab[125]:='sclt '; mtab[126]:='in   '; mtab[127]:='sany '; mtab[128]:='error'; mtab[129]:='error'; mtab[130]:='signl'; mtab[131]:='field'; mtab[132]:='ofset'; mtab[133]:='indir'; mtab[134]:='index'; mtab[135]:='movem'; mtab[136]:='error'; mtab[137]:='error'; mtab[138]:='invok'; mtab[139]:='error'; mtab[140]:='rtemp'; mtab[141]:='dtemp'; mtab[142]:='error'; mtab[143]:='error'; mtab[144]:='if   '; mtab[145]:='case '; mtab[146]:='entry'; mtab[147]:='loop '; mtab[148]:='exit '; mtab[149]:='for  '; mtab[150]:='block'; mtab[151]:='xhndl'; mtab[152]:='seq  '; mtab[153]:='error'; mtab[154]:='wait '; mtab[155]:='send '; mtab[156]:='tsig '; mtab[157]:='lock '; mtab[158]:='enabl'; mtab[159]:='isgnl'; mtab[160]:='litsc'; mtab[161]:='error'; mtab[162]:='liter'; mtab[163]:='rdata'; mtab[164]:='litd '; mtab[165]:='raise'; mtab[166]:='error'; mtab[167]:='error'; mtab[168]:='vceq '; mtab[169]:='vcne '; mtab[170]:='vcgt '; mtab[171]:='vcle '; mtab[172]:='vcge '; mtab[173]:='vclt '; mtab[174]:='dvad '; mtab[175]:='error'; mtab[176]:='varbl'; mtab[177]:='param'; mtab[178]:='call '; mtab[179]:='icall';mtab[180]:='error'; {	New operators for verifier}mtab[244]:='defar';mtab[246]:='vinit';mtab[247]:='meas ';mtab[248]:='depth';mtab[249]:='defnd';mtab[250]:='old  ';mtab[251]:='vdefn';mtab[252]:='vdecl';mtab[253]:='vhead';mtab[254]:='asert';mtab[255]:='linen';end; procedure nextch;begin  read(int,nch);			{ read next icode byte }end {nextch}; procedure outmne (i: integer); begin {outmne}  write(output,mtab[i]:5,'  ')end {outmne}; procedure outc (c: char);begin  if prnt then write(output,c:1)end {outc}; procedure outnl;begin  if prnt then writeln(output)end  {outnl};procedure out8;begin  nextch; if prnt then write(output,nch:4)end {out8}; procedure out16;var i:integer;begin  nextch; i := nch*256;  nextch; if prnt then write(output, nch+i:6)end {out16}; procedure outlevel;begin  if prnt then write(output, nch mod 16:2)end {outlevel}; procedure outsize;begin  nextch;  if prnt then write(output, ':', nch:3)end {outsize}; procedure outds;begin  outsize;  outc(','); out16end {outds};procedure outbfld;begin  outsize;  outc(','); out8end {outbfld};procedure options;var ch: char;begin  printdata := false;  selectprocs := false;  write(output,'options: ');   if not eoln(input) then  begin    repeat      read(input,ch);      if (ch = 'd') or (ch = 'D')        then printdata := true      else if (ch = 's') or (ch = 'S')        then selectprocs := true      else if ch = ' '        then ch := ch      else writeln(output,'Error in option. Valid options are: S,D');    until eoln(input)  endend {options}; procedure askuser;var ch: char;begin  write(output,'?');   readln(input); ch := input^;  prnt := (ch='Y') or (ch='y');  if (ch='E') or (ch='e') then done := trueend {ask_user};{	block number manipulation	These routines construct the stack of nested block numbers,	allowing the conversion of nesting depth (as found in VARBL	items) into block numbers (as found in the variable file).}procedure pushblock(n: integer ;		    datablock: boolean); { true if proc, not monitor/module }begin    if datablock then begin			{ if real block }        blockdepth := blockdepth + 1;	{ increment nesting depth }        if prnt then            write(' ':14,'(Block ',n:1,', depth ',blockdepth:1,')');        if blockdepth > 10 then begin	{ if too big }	    write('    [BLOCK NESTING DEPTH EXCEEDED]'); 	    halt;	    end;	with blockstack[blockdepth] do begin	    blockpin := n;		{ record block number }	    nonblocks := 0;		{ no dummies at this level yet }		    end;    end else begin			{ block without variables }	blockstack[blockdepth].nonblocks := blockstack[blockdepth].nonblocks+1;	end;    end {pushblock};{	popblock - called upon leaving a block  }procedure popblock;begin    if blockstack[blockdepth].nonblocks > 0 then begin	{ dummy block }	blockstack[blockdepth].nonblocks :=	blockstack[blockdepth].nonblocks -1;        write('    (End monitor/module)');    end else begin        if blockdepth < 1 then begin	{ if too small }	    write('    [EXTRA "end"]');		{ so state }	    end;        if prnt then write('          (End block ',		blockstack[blockdepth].blockpin:1,')');	{ comment listing }        blockdepth := blockdepth - 1;	{ pop stack }	end;	    end { popblock } ;{	outaddress  --  edit an address-type item	used for VARBL, PARAM, and DVAD }procedure outaddress(aclass: addressclass);var vlevel, vsize, vaddress: integer;begin    vlevel := nch mod 16;		{ get block nesting level }    nextch;				{ get next byte }    vsize := nch;			{ object size }    nextch;				{ get next byte }    vaddress := nch * 256;		{ first byte of address }    nextch;				{ get next byte }    vaddress := vaddress + nch;		{ second byte of address }    if prnt then begin			{ if printing }	if aclass = deviceaddr then vlevel := 0; { level 0 for devices }	if (vlevel <> 1) and (aclass = absoluteaddr) then	    aclass := stackaddr;	{ note when stack address }		write(output,vlevel:2,':',vsize:3,',',vaddress:6);	write(output,' ':10);	{ space over }	findvar(output,vlevel,vaddress,aclass); { edit name of var }	end;end {outaddress};{	scancode -- scan and edit icode}procedure scancode;var i, j, n, opcode, opcode2: integer;    vroutine: integer;				{ current routine number }begin {scancode}  writeln(output);				{ blank line }  writeln(output,' Code'); writeln(output,' ----'); writeln(output);  repeat    nextch;    opcode := nch;    if opcode > 239 then opcode2 := opcode      else if opcode > 223 then opcode2 := 179 {icall}      else if opcode > 207 then opcode2 := 178 {call}      else if opcode > 191 then opcode2 := 177 {param}      else if opcode > 175 then opcode2 := 176 {varbl}      else opcode2 := opcode;    if opcode2 = 5 {ident} then    begin      prnt := true;      writeln(output)    end;    if prnt then    begin      writeln(output); write(output,  opcode:4, '  '); {print op code number}      outmne(opcode2)                 {print mnemonic}    end; case opcode2 of  0: begin      out8; outc(','); out8; outc(','); out8; end;{ statement number operator }  1,2: ;  3: begin        out8; outc(','); out16; outc(':');  {range low}      out8; outc(','); out16; outc(' ');    {range high}      outc('p'); out8; outc(','); out16;    {precision}     end;  4: begin        out8; out8;  {monit}      pushblock(blocksequence,false);      blocksequence := blocksequence + 1; { count def nesting levels }     end;   5: begin {ident}       if selectprocs then writeln(output);       nextch; n := nch;       outc('''');       for i := 1 to n do       begin         nextch;	 write(output,chr(nch));	 if selectprocs then write(output,chr(nch))       end;       outc('''');       if selectprocs then askuser;     end;   6: begin      out8; out8; {proc}      pushblock(blocksequence,true);		{ push on stack }      blocksequence := blocksequence + 1;	{ inc block sequence number }     end;   7: begin {end}       out8;  outc(',');       out8;  outc(',');       out16; outc(',');       out16; outc(',');       out16;       popblock;			{ pop block number stack }       outnl; outnl;     end;   8,9,10,11,12,13,14,15,16,17,18,19,20,  21,22,23,24,25,26,27,28,29,30,31,32,33,34,  35,36,37,38,39,40,41,42,43,44,45,46,47,48,  49,50,51,52,54,55,56,57,58,59,60,61,  62,63,64,65,66,67,68,69,70,71,72,73,74,75,  76,77,78,79,80,81,82,83,84,85,86,87,88,89,  90,91,92,93,94,95,96,97,98,99,100,  101,102,103,104,105,106,107,108,109,110,  111,112,113,114,115,116,117,118,119,120,  121,122,123,124,125,126,127,128,129: ;   53: begin  {rescl}      	out8; outc(','); out16; outc(':');	out8; outc(','); out16; outc(' ');	outc('p'); out8; outc(','); out16      end;  130: begin {signl}	out16;  	end;  131: outbfld;  {field}  132,133,134,135: {ofset,indir,index,movem}     outds;   136,137: ;   138: begin {invok}         out8; outc(','); out8       end;   139: ;   140,141: out8; {rtemp,dtemp}   142,143,144: ;   145: begin {case}         out8; outc(','); out8       end;   146,147,152: out8; {entry,loop,seq}   148,149: ; {exit,for}   150: begin { block }	out8;	end;  151,153,154,155,156: ;  157: begin {lock}	out8;	end;  158, 159: begin end;  160: begin  {litsc}         out8; outc(','); out16       end;  161: ;   162: out16; {liter}   163: begin {rdata}         out8; outc(','); out16       end;   164: begin {litd}         for i := 1 to 3 do         begin           out16; outc(',')         end;         out16       end;   165,166,167,168,169,170,171,172,173: ;  174: begin	{ DVAD }		outaddress(deviceaddr);	end;  175: ;   176: begin	{ varbl }	outaddress(absoluteaddr);		end;  177: begin	{ param }	outaddress(paramaddr);	end;   178: begin {call}         outlevel; outsize;         outc(','); out8;         outc('(');  	 nextch;          	     vroutine := nch;		{ get routine number }	     nextch;			{ get more routine number }	     vroutine := vroutine*256 + nch; { get low order byte }	     if prnt then write(output,vroutine:4);	 outc(')');	 if prnt then begin	     write(output,' ':6);		{ space over }	     findroutine(output,vroutine);	{ edit routine name }	     end;       end;   179: begin {icall}         outlevel; 	 outc('('); out8; outc(')')       end;  180,                     {   181 - 238 are special }  239, 240, 241, 242, 243, 245:       begin 	write(output,'?':6);	{ invalid code }	end;  244: begin {defar}		 out16;	 end;  246: begin {vinit}	 nextch;          	 if prnt then write(output,nch:6);	 vroutine := nch;		{ get routine number }	 if prnt then begin	     write(output,' ':17);		{ space over }	     findroutine(output,vroutine);	{ edit routine name }	     end;	end;  247: begin {meas}	end;  248: begin {depth}	end;  249: begin {defnd}	out16;	end;  250: begin {old}	end;  251: begin {vdefn}	end;  252: begin {vdecl}	out8;				{ subtype }	end;	  253: begin {vhead}	end;  254: begin {asert}	outc('('); out8; outc(')');	{ arg count }	out8;				{ subtype }	end;  255: begin {linen}	nextch;				{ get file number }	j := nch;			{ which is one byte }	if prnt then write(output,j:6);	{ file number }	nextch;	i := nch*256;	nextch;	i := i + nch;	if prnt then write(output,i:6);	{ line number }	printsource(j,i);		{ print source up to file j, line i }	endend {case};     if eof(int) then done := true  until done;   printsource(-1,-1);			{ print any remaining source }  writeln(output);			{ finish last line }  if (blockdepth <> 0) or (blockstack[0].nonblocks <> 0) then begin	writeln('MISSING "end"');	{ report trouble }	end;end {scancode};  procedure scandata;const nbytes = 8 {bytes printed per line};var  i, j, n, dataloc, lineloc: integer;  bytes: array [1..nbytes] of byte;  byt: byte;  inch: integer;  finished: boolean;begin {scandata}  page(output);				{ eject as required }  writeln(output); writeln(output,' Data'); writeln(output,' ----'); writeln(output);  dataloc := 0;  lineloc := 0;  finished := eof(dat);  while not finished do  begin    n := 0;    repeat {collect enough data for 1 line}      read(dat,inch);			{ read one byte }      dataloc := dataloc + 1;      n := n + 1;      bytes[n] := inch;      finished := eof(dat)    until finished or (n = nbytes);    if n > 0 then    begin {print the line}      write(output, lineloc:6, ': ');      for i := 1 to n do      {print bytes}      begin        byt := bytes[i];	write(output, byt:4);        if (byt >= 32) and (byt <= 126)	  then write(output, ' ''', chr(byt), ''' ')          else write(output, '     ');      end;      lineloc := lineloc + nbytes;      writeln(output)    end {of print the line}  end {while not finished};  writeln(output); writeln(output, ' *** eof ***')end {scandata};{ main program }begin    initprocedure;				{ initialize constants }    reset(int,'pasf-icode');			{ open icode file }    reset(dat,'pasf-data');			{ open value data file }    reset(srcfile,sfile);			{ open source lines file }    loadvars;					{ read dictionary file }    selectprocs := false;    done := false; prnt := true;    blocksequence := 0; blockdepth := 0;    blockstack[0].nonblocks := 0;		{ level 0 modules }    lastfnum := 0;				{ last file printed }    lastlnum := 0;				{ last line printed }    scancode;					{ edit icode }    writeln(output);end.
+{
+	analyzer1  --  analyzer for outputs of Pass 1 of Verifier
+
+	This is a debugging tool for the Verifier.
+}
+program analyzer1(output);
+const
+#include "P1X-VER00.h"
+    varsmax = 2000;				{ max variables allowed }
+    vfile = 'pasf-vars';			{ variables file }
+    ifile = 'pasf-icode';			{ icode file }
+    sfile = 'pasf-source';			{ source lines file }
+    mtabsize = 255;
+type
+#include "P1X-VER01.h"
+
+     byte = 0 .. 255;
+     mtabtype = array [0..mtabsize] of packed array [0..4] of char;
+     byteaddress = -65536..65535;	{ byte address range }
+var
+    varf: file of varitem;			{ variable items }
+    vartab: array [1..varsmax] of varitem;	{ variable items }
+    varlimit: 0..varsmax;			{ slots used in vartab }
+    int, dat: file of integer; 
+    nch: integer;
+    printdata, selectprocs, prnt, done: boolean;
+    mtab: mtabtype;
+    blockstack: array [0..10] of record		{ procedure stack }
+	blockpin: integer;			{ procedure number this lev }
+	nonblocks: integer;			{ nested non-blocks (modules) }
+	end;	
+    blocksequence: integer;			{ block serial number }
+    blockdepth: integer;			{ current nesting depth }
+    srcitem: sourceline;			{ source line item }
+    srcfile: file of sourceline;		{ file of source lines }
+    lastfnum, lastlnum: integer;		{ last line printed }
+{
+	extractsigned  --  extract signed value from 16-bit unsigned quantity.
+
+	This routine directly reflects the target machine implementation,
+	which is 16-bit twos complement.
+}
+function extractsigned(i: integer)		{ input value }
+		      : integer;		{ output signed value }
+const negbias = 65536;			{ this - value is representation of neg}
+      posmax = 32767;				{ max positive value }
+begin
+    assert(i >= 0);				{ input must be positive }
+    assert(i <= 65535);				{ and unsigned 16-bit }
+    if i <= posmax then				{ if positive }
+	extractsigned := i			{ return given value }
+    else
+	extractsigned := i - negbias;		{ return negative int value }
+end {extractsigned};
+{
+	loadvars  --  read var file and create variable table 
+}
+procedure loadvars;
+var vitem: varitem;				{ working item }
+begin
+    varlimit := 0;				{ slots used in vartab }
+    reset(varf,vfile);				{ open variable file }
+    while not eof(varf) do begin		{ reading of varfile }
+	read(varf,vitem);			{ read a variable item }
+	    if varlimit < varsmax then begin	{ if room }
+		varlimit := varlimit + 1;	{ advance }
+		vartab[varlimit] := vitem;	{ store new item }
+	    end else begin			{ if full }
+		writeln('Too many variables.'); { report failure }
+		halt;
+		end;
+	end;
+    end {loadvars};
+
+{
+	depthconv  --  convert depth to procedure number
+}
+function depthconv(d: integer):integer;
+begin
+    if d > blockdepth then begin	{ if too big }
+	write('    [ILLEGAL DEPTH]');
+        depthconv := -1;
+    end else begin
+        depthconv := blockstack[d].blockpin;
+        end;
+    end {depthconv};
+{
+	finditem -- find an item and print its description   
+}
+procedure finditem(var lst: text;		{ file to print on }
+		  vaddr: addressitem;		{ location, etc. }
+		  vtype: integer);		{ where to start search }
+
+var
+    workadr: addressitem; 			{ bit address }
+    quit: boolean;				{ when done }
+    i: integer;					{ for search }
+    startitem, stopdepth: integer;		{ for search control }
+    offset, eltsize: integer;
+    eltcount, eltnum: integer;
+begin
+    if vtype > 0 then begin			{ if field, not variable }
+	with vartab[vtype] do begin		{ using given variable }
+	    stopdepth := itemdepth;		{ depth to stop search }
+	    startitem := vtype+1;		{ place to start search }
+	    end;
+    end else begin				{ if variable }
+	stopdepth := 0;				{ stopdepth meaningless }
+	startitem := 1;				{ start search at 1 }
+	end;
+    i := startitem;
+    quit := false;				{ prepare to search }
+    while not quit do begin			{ search }
+        if i > varlimit then begin		{ if eof }
+		quit := true;
+		write(lst,'(UNIDENTIFIED ADDRESS)'); { diagnostic }
+	    end else if vartab[i].itemdepth < stopdepth then begin
+		quit := true;			{ field search failed }	
+		write(lst,'(UNIDENTIFIED FIELD)'); { diagnostic }
+	    end else begin			{ ready to try compare }
+		with vartab[i] do begin		{ using variable table }
+		    if (vaddr.blockn = loc.blockn)	{ if right block }
+		    and(vaddr.relocation = loc.relocation) { and right kind }
+		    and(vaddr.address >= loc.address) {and within address range}
+		    and(vaddr.address < loc.address + size) then begin
+						{ we have a find }
+			quit := true;		{ search will stop }
+			write(lst,itemname);	{ write name of item }
+			offset := vaddr.address - loc.address; { offset into item }
+			case form of 		{ handle different kinds }
+		        proceduredata, functiondata,
+			monitordata, moduledata,
+			pointerdata, fixeddata,
+			booleandata,
+			numericdata, setdata, signaldata: begin
+			    if offset <> 0 then begin { should match exactly }
+			        write(lst,'+',offset:0,' (ERROR)');
+			    end else begin
+				write(lst,': ');	{ editing type }
+   				case form of { edit different kinds }
+				fixeddata: begin
+				    write(lst,minvalue:1,'..',maxvalue:1);
+				    write(lst,'/',scale:1);
+				    end;
+				numericdata: begin
+				    write(lst,minvalue:1,'..',maxvalue:1);
+				    end;
+				setdata: begin
+				    write(lst,' set of [',minvalue:1,'..',
+					maxvalue:1,']');
+				    end;         
+				signaldata:  begin
+				    write(lst,'signal');
+				    end;
+				proceduredata: begin
+				    write(lst,'procedure');
+				    end;
+				functiondata: begin     
+				    write(lst,'function');
+				    end;
+				monitordata: begin
+				    write(lst,'monitor');
+				    end;
+				moduledata: begin
+				    write(lst,'module');
+				    end;
+				pointerdata: begin
+				    write(lst,'pointer');
+				    end;
+				booleandata: begin
+				    write(lst,'Boolean');
+				    end;
+				end;			{ of inner cases }
+
+				end;			{ of if offset <> 0 }
+			    end;			{ of case }
+			recorddata: begin	{ field in record }	
+			    write(lst,'.');	{ indicate record }
+			    workadr.address := offset; { relative address }
+			    workadr.blockn := 0;	{ not applicable }
+			    workadr.relocation := offsetaddr; { kind }
+			    finditem(lst,workadr,i); { print subfield } 
+			    end;
+			arraydata: begin	{ element of array }
+			    eltcount := (maxvalue-minvalue)+1; { number of elts}
+			    eltsize := size div eltcount; { size of each elt }
+			    eltnum := offset div eltsize; { element number }
+			    write(lst,'[',eltnum+minvalue:1,'].'); { edit }
+			    workadr.address := offset mod eltsize; { new offset}
+			    workadr.blockn := 0; { does not apply }
+			    workadr.relocation := offsetaddr; { kind }
+			    finditem(lst,workadr,i); { print subfield }
+			    end;		{ of case }
+			end;			{ of cases }
+		    end;			{ of if find }
+		end;				{ of with }
+	    end;				{ of if }     
+	i := i + 1;				{ on to the next }
+	end;					{ of while }
+    end {finditem};
+{
+	findvar -- find a variable and print its description 
+}
+procedure findvar(var lst: text;		{ file to print on }
+		  bdepth: integer;		{ block depth }
+		  baddress: byteaddress;	{ byte address }
+		  bclass: addressclass);	{ kind of address }
+var
+    bnum: integer;				{ block number }
+    waddress: addressitem;			{ constructed addr item }
+begin
+    bnum := depthconv(bdepth);			{ get procedure number }
+    if bnum >= 0 then begin			{ if found block }
+	waddress.blockn := bnum;		{ set owning block }
+	if bclass <> absoluteaddr then begin	{ if not absolute }
+	    baddress := extractsigned(baddress); { must handle as signed }
+	    end;
+	waddress.address := baddress*8;		{ set actual address in bits }
+	waddress.relocation := bclass;		{ set class of address }
+	if prnt then finditem(lst,waddress,0);		{ look up var }
+	end;
+    end {findvar };
+{
+	findroutine -- find a routine
+}
+procedure findroutine(var lst: text;		{ file to print on }
+		broutine: integer);		{ which routine }
+var waddress: addressitem;			{ working item }
+begin
+    waddress.blockn := broutine;		{ block = routine number }
+    waddress.address := 0;			{ not applicable }
+    waddress.relocation := routineaddr;		{ in routine space }
+    if prnt then finditem(lst,waddress,0);			{ edit the info }
+end {findroutine};
+{
+	printsource --  print source file up to line N
+}
+procedure printsource(fnum: integer;		{ file number }
+		      lnum: integer);		{ line number within file }
+var i,j: 0..linetextmax;
+begin
+    while (fnum <> lastfnum) or (lnum <> lastlnum) do begin
+	if not eof(srcfile) then begin		{ if more to print }
+	    read(srcfile,srcitem);		{ read source line }
+	    lastfnum := srcitem.lineid.filenumber; { get file number }
+	    lastlnum := srcitem.lineid.linenumber; { get line number }
+	    writeln(output);			{ finish previous line }
+	    write(output,srcitem.lineid.linenumber:6,'. ');
+	    i := linetextmax;		{ find last nonblank }
+	    while (i>1) and (srcitem.linetext[i] = ' ') do i := i-1;
+	    for j := 1 to i do write(output,srcitem.linetext[j]); { print line }
+	    end else begin			{ at EOF }
+		lastfnum := fnum;		{ force exit }
+		lastlnum := lnum;		{ force exit }
+	    end;
+	end;
+end { printsource };
+
+procedure initprocedure;
+var i: 0..mtabsize;
+begin
+for i := 0 to mtabsize do mtab[i] := 'error';	{ default value }
+mtab[  0]:='stnbr'; mtab[  1]:='xch  '; mtab[  2]:='del  '; mtab[  3]:='fix  '; 
+mtab[  4]:='monit'; mtab[  5]:='ident'; mtab[  6]:='proc '; mtab[  7]:='end  '; 
+mtab[  8]:='null '; mtab[  9]:='refer'; mtab[ 10]:='stol '; mtab[ 11]:='stor '; 
+mtab[ 12]:='stof '; mtab[ 13]:='error'; mtab[ 14]:='error'; mtab[ 15]:='error'; 
+mtab[ 16]:='succ '; mtab[ 17]:='pred '; mtab[ 18]:='error'; mtab[ 19]:='error'; 
+mtab[ 20]:='error'; mtab[ 21]:='error'; mtab[ 22]:='error'; mtab[ 23]:='error'; 
+mtab[ 24]:='uceq '; mtab[ 25]:='ucne '; mtab[ 26]:='ucgt '; mtab[ 27]:='ucle '; 
+mtab[ 28]:='ucge '; mtab[ 29]:='uclt '; mtab[ 30]:='umax '; mtab[ 31]:='umin '; 
+mtab[ 32]:='iadd '; mtab[ 33]:='isub '; mtab[ 34]:='imul '; mtab[ 35]:='idiv '; 
+mtab[ 36]:='imod '; mtab[ 37]:='error'; mtab[ 38]:='error'; mtab[ 39]:='error'; 
+mtab[ 40]:='ineg '; mtab[ 41]:='iabs '; mtab[ 42]:='iodd '; mtab[ 43]:='error'; 
+mtab[ 44]:='ceil '; mtab[ 45]:='floor'; mtab[ 46]:='error'; mtab[ 47]:='error'; 
+mtab[ 48]:='sadd '; mtab[ 49]:='ssub '; mtab[ 50]:='smul '; mtab[ 51]:='sdiv '; 
+mtab[ 52]:='error'; mtab[ 53]:='rescl'; mtab[ 54]:='error'; mtab[ 55]:='error'; 
+mtab[ 56]:='iceq '; mtab[ 57]:='icne '; mtab[ 58]:='icgt '; mtab[ 59]:='icle '; 
+mtab[ 60]:='icge '; mtab[ 61]:='iclt '; mtab[ 62]:='imax '; mtab[ 63]:='imin '; 
+mtab[ 64]:='fadd '; mtab[ 65]:='fsub '; mtab[ 66]:='fmul '; mtab[ 67]:='fdiv '; 
+mtab[ 68]:='error'; mtab[ 69]:='error'; mtab[ 70]:='error'; mtab[ 71]:='error'; 
+mtab[ 72]:='fneg '; mtab[ 73]:='fabs '; mtab[ 74]:='float'; mtab[ 75]:='trunc'; 
+mtab[ 76]:='round'; mtab[ 77]:='error'; mtab[ 78]:='error'; mtab[ 79]:='error'; 
+mtab[ 80]:='fxeq '; mtab[ 81]:='fxne '; mtab[ 82]:='fxgt '; mtab[ 83]:='fxle '; 
+mtab[ 84]:='fxge '; mtab[ 85]:='fxlt '; mtab[ 86]:='fxmax'; mtab[ 87]:='fxmin'; 
+mtab[ 88]:='fceq '; mtab[ 89]:='fcne '; mtab[ 90]:='fcgt '; mtab[ 91]:='fcle '; 
+mtab[ 92]:='fcge '; mtab[ 93]:='fclt '; mtab[ 94]:='fmax '; mtab[ 95]:='fmin '; 
+mtab[ 96]:='not  '; mtab[ 97]:='error'; mtab[ 98]:='error'; mtab[ 99]:='error'; 
+mtab[100]:='error'; mtab[101]:='error'; mtab[102]:='error'; mtab[103]:='error'; 
+mtab[104]:='eqv  '; mtab[105]:='xor  '; mtab[106]:='nimp '; mtab[107]:='rimp '; 
+mtab[108]:='imp  '; mtab[109]:='nrimp'; mtab[110]:='or   '; mtab[111]:='and  '; 
+mtab[112]:='compl'; mtab[113]:='union'; mtab[114]:='inter'; mtab[115]:='sdiff'; 
+mtab[116]:='error'; mtab[117]:='sgens'; mtab[118]:='sadel'; mtab[119]:='empty'; 
+mtab[120]:='sceq '; mtab[121]:='scne '; mtab[122]:='scgt '; mtab[123]:='scle '; 
+mtab[124]:='scge '; mtab[125]:='sclt '; mtab[126]:='in   '; mtab[127]:='sany '; 
+mtab[128]:='error'; mtab[129]:='error'; mtab[130]:='signl'; mtab[131]:='field'; 
+mtab[132]:='ofset'; mtab[133]:='indir'; mtab[134]:='index'; mtab[135]:='movem'; 
+mtab[136]:='error'; mtab[137]:='error'; mtab[138]:='invok'; mtab[139]:='error'; 
+mtab[140]:='rtemp'; mtab[141]:='dtemp'; mtab[142]:='error'; mtab[143]:='error'; 
+mtab[144]:='if   '; mtab[145]:='case '; mtab[146]:='entry'; mtab[147]:='loop '; 
+mtab[148]:='exit '; mtab[149]:='for  '; mtab[150]:='block'; mtab[151]:='xhndl'; 
+mtab[152]:='seq  '; mtab[153]:='error'; mtab[154]:='wait '; mtab[155]:='send '; 
+mtab[156]:='tsig '; mtab[157]:='lock '; mtab[158]:='enabl'; mtab[159]:='isgnl'; 
+mtab[160]:='litsc'; mtab[161]:='error'; mtab[162]:='liter'; mtab[163]:='rdata'; 
+mtab[164]:='litd '; mtab[165]:='raise'; mtab[166]:='error'; mtab[167]:='error'; 
+mtab[168]:='vceq '; mtab[169]:='vcne '; mtab[170]:='vcgt '; mtab[171]:='vcle '; 
+mtab[172]:='vcge '; mtab[173]:='vclt '; mtab[174]:='dvad '; mtab[175]:='error'; 
+mtab[176]:='varbl'; mtab[177]:='param'; mtab[178]:='call '; mtab[179]:='icall';
+mtab[180]:='error'; 
+{
+	New operators for verifier
+}
+mtab[244]:='defar';
+mtab[246]:='vinit';
+mtab[247]:='meas ';
+mtab[248]:='depth';
+mtab[249]:='defnd';
+mtab[250]:='old  ';
+mtab[251]:='vdefn';
+mtab[252]:='vdecl';
+mtab[253]:='vhead';
+mtab[254]:='asert';
+mtab[255]:='linen';
+end;
+
+ 
+procedure nextch;
+begin
+  read(int,nch);			{ read next icode byte }
+end {nextch};
+ 
+procedure outmne (i: integer);
+ 
+begin {outmne}
+  write(output,mtab[i]:5,'  ')
+end {outmne};
+ 
+procedure outc (c: char);
+begin
+  if prnt then write(output,c:1)
+end {outc};
+ 
+procedure outnl;
+begin
+  if prnt then writeln(output)
+end  {outnl};
+
+procedure out8;
+begin
+  nextch; if prnt then write(output,nch:4)
+end {out8};
+ 
+procedure out16;
+var i:integer;
+begin
+  nextch; i := nch*256;
+  nextch; if prnt then write(output, nch+i:6)
+end {out16};
+ 
+procedure outlevel;
+begin
+  if prnt then write(output, nch mod 16:2)
+end {outlevel};
+ 
+procedure outsize;
+begin
+  nextch;
+  if prnt then write(output, ':', nch:3)
+end {outsize};
+ 
+procedure outds;
+begin
+  outsize;
+  outc(','); out16
+end {outds};
+
+procedure outbfld;
+begin
+  outsize;
+  outc(','); out8
+end {outbfld};
+
+procedure options;
+var ch: char;
+begin
+  printdata := false;
+  selectprocs := false;
+  write(output,'options: '); 
+  if not eoln(input) then
+  begin
+    repeat
+      read(input,ch);
+      if (ch = 'd') or (ch = 'D')
+        then printdata := true
+      else if (ch = 's') or (ch = 'S')
+        then selectprocs := true
+      else if ch = ' '
+        then ch := ch
+      else writeln(output,'Error in option. Valid options are: S,D');
+    until eoln(input)
+  end
+end {options};
+ 
+procedure askuser;
+var ch: char;
+begin
+  write(output,'?'); 
+  readln(input); ch := input^;
+  prnt := (ch='Y') or (ch='y');
+  if (ch='E') or (ch='e') then done := true
+end {ask_user};
+{
+	block number manipulation
+
+	These routines construct the stack of nested block numbers,
+	allowing the conversion of nesting depth (as found in VARBL
+	items) into block numbers (as found in the variable file).
+}
+procedure pushblock(n: integer ;
+		    datablock: boolean); { true if proc, not monitor/module }
+begin
+    if datablock then begin			{ if real block }
+        blockdepth := blockdepth + 1;	{ increment nesting depth }
+        if prnt then
+            write(' ':14,'(Block ',n:1,', depth ',blockdepth:1,')');
+        if blockdepth > 10 then begin	{ if too big }
+	    write('    [BLOCK NESTING DEPTH EXCEEDED]'); 
+	    halt;
+	    end;
+	with blockstack[blockdepth] do begin
+	    blockpin := n;		{ record block number }
+	    nonblocks := 0;		{ no dummies at this level yet }	
+	    end;
+    end else begin			{ block without variables }
+	blockstack[blockdepth].nonblocks := blockstack[blockdepth].nonblocks+1;
+	end;
+    end {pushblock};
+{
+	popblock - called upon leaving a block  
+}
+procedure popblock;
+begin
+    if blockstack[blockdepth].nonblocks > 0 then begin	{ dummy block }
+	blockstack[blockdepth].nonblocks :=
+	blockstack[blockdepth].nonblocks -1;
+        write('    (End monitor/module)');
+    end else begin
+        if blockdepth < 1 then begin	{ if too small }
+	    write('    [EXTRA "end"]');		{ so state }
+	    end;
+        if prnt then write('          (End block ',
+		blockstack[blockdepth].blockpin:1,')');	{ comment listing }
+        blockdepth := blockdepth - 1;	{ pop stack }
+	end;	
+    end { popblock } ;
+{
+	outaddress  --  edit an address-type item
+
+	used for VARBL, PARAM, and DVAD 
+}
+procedure outaddress(aclass: addressclass);
+var vlevel, vsize, vaddress: integer;
+begin
+    vlevel := nch mod 16;		{ get block nesting level }
+    nextch;				{ get next byte }
+    vsize := nch;			{ object size }
+    nextch;				{ get next byte }
+    vaddress := nch * 256;		{ first byte of address }
+    nextch;				{ get next byte }
+    vaddress := vaddress + nch;		{ second byte of address }
+    if prnt then begin			{ if printing }
+	if aclass = deviceaddr then vlevel := 0; { level 0 for devices }
+	if (vlevel <> 1) and (aclass = absoluteaddr) then
+	    aclass := stackaddr;	{ note when stack address }	
+	write(output,vlevel:2,':',vsize:3,',',vaddress:6);
+	write(output,' ':10);	{ space over }
+	findvar(output,vlevel,vaddress,aclass); { edit name of var }
+	end;
+end {outaddress};
+{
+	scancode -- scan and edit icode
+}
+
+procedure scancode;
+var i, j, n, opcode, opcode2: integer;
+    vroutine: integer;				{ current routine number }
+begin {scancode}
+  writeln(output);				{ blank line }
+  writeln(output,' Code'); writeln(output,' ----'); writeln(output);
+  repeat
+    nextch;
+    opcode := nch;
+    if opcode > 239 then opcode2 := opcode
+      else if opcode > 223 then opcode2 := 179 {icall}
+      else if opcode > 207 then opcode2 := 178 {call}
+      else if opcode > 191 then opcode2 := 177 {param}
+      else if opcode > 175 then opcode2 := 176 {varbl}
+      else opcode2 := opcode;
+    if opcode2 = 5 {ident} then
+    begin
+      prnt := true;
+      writeln(output)
+    end;
+    if prnt then
+    begin
+      writeln(output); write(output,  opcode:4, '  '); {print op code number}
+      outmne(opcode2)                 {print mnemonic}
+    end;
+ 
+case opcode2 of
+  0: begin
+      out8; outc(','); out8; outc(','); out8; end;{ statement number operator }
+  1,2: ;
+
+  3: begin  
+      out8; outc(','); out16; outc(':');  {range low}
+      out8; outc(','); out16; outc(' ');    {range high}
+      outc('p'); out8; outc(','); out16;    {precision}
+     end;
+
+  4: begin  
+      out8; out8;  {monit}
+      pushblock(blocksequence,false);
+      blocksequence := blocksequence + 1; { count def nesting levels }
+     end;
+ 
+  5: begin {ident}
+       if selectprocs then writeln(output);
+       nextch; n := nch;
+       outc('''');
+       for i := 1 to n do
+       begin
+         nextch;
+	 write(output,chr(nch));
+	 if selectprocs then write(output,chr(nch))
+       end;
+       outc('''');
+       if selectprocs then askuser;
+     end;
+ 
+  6: begin
+      out8; out8; {proc}
+      pushblock(blocksequence,true);		{ push on stack }
+      blocksequence := blocksequence + 1;	{ inc block sequence number }
+     end;
+ 
+  7: begin {end}
+       out8;  outc(',');
+       out8;  outc(',');
+       out16; outc(',');
+       out16; outc(',');
+       out16;
+       popblock;			{ pop block number stack }
+       outnl; outnl;
+     end;
+ 
+  8,9,10,11,12,13,14,15,16,17,18,19,20,
+  21,22,23,24,25,26,27,28,29,30,31,32,33,34,
+  35,36,37,38,39,40,41,42,43,44,45,46,47,48,
+  49,50,51,52,54,55,56,57,58,59,60,61,
+  62,63,64,65,66,67,68,69,70,71,72,73,74,75,
+  76,77,78,79,80,81,82,83,84,85,86,87,88,89,
+  90,91,92,93,94,95,96,97,98,99,100,
+  101,102,103,104,105,106,107,108,109,110,
+  111,112,113,114,115,116,117,118,119,120,
+  121,122,123,124,125,126,127,128,129: ;
+ 
+  53: begin  {rescl}
+      	out8; outc(','); out16; outc(':');
+	out8; outc(','); out16; outc(' ');
+	outc('p'); out8; outc(','); out16
+      end;
+
+  130: begin {signl}
+	out16;
+  	end;
+  131: outbfld;  {field}
+  132,133,134,135: {ofset,indir,index,movem}
+     outds;
+ 
+  136,137: ;
+ 
+  138: begin {invok}
+         out8; outc(','); out8
+       end;
+ 
+  139: ;
+ 
+  140,141: out8; {rtemp,dtemp}
+ 
+  142,143,144: ;
+ 
+  145: begin {case}
+         out8; outc(','); out8
+       end;
+ 
+  146,147,152: out8; {entry,loop,seq}
+ 
+  148,149: ; {exit,for}
+ 
+  150: begin { block }
+	out8;
+	end;
+
+  151,153,154,155,156: ;
+
+  157: begin {lock}
+	out8;
+	end;
+
+  158, 159: begin end;
+
+  160: begin  {litsc}
+         out8; outc(','); out16
+       end;
+
+  161: ;
+
+ 
+  162: out16; {liter}
+ 
+  163: begin {rdata}
+         out8; outc(','); out16
+       end;
+ 
+  164: begin {litd}
+         for i := 1 to 3 do
+         begin
+           out16; outc(',')
+         end;
+         out16
+       end;
+ 
+  165,166,167,168,169,170,171,172,173: ;
+
+  174: begin	{ DVAD }	
+	outaddress(deviceaddr);
+	end;
+
+  175: ;
+ 
+  176: begin	{ varbl }
+	outaddress(absoluteaddr);	
+	end;
+  177: begin	{ param }
+	outaddress(paramaddr);
+	end;
+ 
+  178: begin {call}
+         outlevel; outsize;
+         outc(','); out8;
+         outc('(');  
+	 nextch;          
+	     vroutine := nch;		{ get routine number }
+	     nextch;			{ get more routine number }
+	     vroutine := vroutine*256 + nch; { get low order byte }
+	     if prnt then write(output,vroutine:4);
+	 outc(')');
+	 if prnt then begin
+	     write(output,' ':6);		{ space over }
+	     findroutine(output,vroutine);	{ edit routine name }
+	     end;
+       end;
+ 
+  179: begin {icall}
+         outlevel; 
+	 outc('('); out8; outc(')')
+       end;
+
+  180,                   
+  {   181 - 238 are special }
+  239, 240, 241, 242, 243, 245:
+       begin 
+	write(output,'?':6);	{ invalid code }
+	end;
+  244: begin {defar}	
+	 out16;
+	 end;
+
+  246: begin {vinit}
+	 nextch;          
+	 if prnt then write(output,nch:6);
+	 vroutine := nch;		{ get routine number }
+	 if prnt then begin
+	     write(output,' ':17);		{ space over }
+	     findroutine(output,vroutine);	{ edit routine name }
+	     end;
+	end;
+
+  247: begin {meas}
+	end;
+
+  248: begin {depth}
+	end;
+
+  249: begin {defnd}
+	out16;
+	end;
+
+  250: begin {old}
+	end;
+
+  251: begin {vdefn}
+	end;
+
+  252: begin {vdecl}
+	out8;				{ subtype }
+	end;
+	
+  253: begin {vhead}
+	end;
+
+  254: begin {asert}
+	outc('('); out8; outc(')');	{ arg count }
+	out8;				{ subtype }
+	end;
+
+  255: begin {linen}
+	nextch;				{ get file number }
+	j := nch;			{ which is one byte }
+	if prnt then write(output,j:6);	{ file number }
+	nextch;
+	i := nch*256;
+	nextch;
+	i := i + nch;
+	if prnt then write(output,i:6);	{ line number }
+	printsource(j,i);		{ print source up to file j, line i }
+	end
+end {case};
+ 
+    if eof(int) then done := true
+  until done;
+ 
+  printsource(-1,-1);			{ print any remaining source }
+  writeln(output);			{ finish last line }
+  if (blockdepth <> 0) or (blockstack[0].nonblocks <> 0) then begin
+	writeln('MISSING "end"');	{ report trouble }
+	end;
+end {scancode};
+ 
+ 
+procedure scandata;
+const nbytes = 8 {bytes printed per line};
+var
+  i, j, n, dataloc, lineloc: integer;
+  bytes: array [1..nbytes] of byte;
+  byt: byte;
+  inch: integer;
+  finished: boolean;
+begin {scandata}
+  page(output);				{ eject as required }
+  writeln(output); writeln(output,' Data'); writeln(output,' ----'); writeln(output);
+  dataloc := 0;
+  lineloc := 0;
+  finished := eof(dat);
+  while not finished do
+  begin
+    n := 0;
+    repeat {collect enough data for 1 line}
+      read(dat,inch);			{ read one byte }
+      dataloc := dataloc + 1;
+      n := n + 1;
+      bytes[n] := inch;
+      finished := eof(dat)
+    until finished or (n = nbytes);
+    if n > 0 then
+    begin {print the line}
+      write(output, lineloc:6, ': ');
+      for i := 1 to n do
+      {print bytes}
+      begin
+        byt := bytes[i];
+	write(output, byt:4);
+        if (byt >= 32) and (byt <= 126)
+	  then write(output, ' ''', chr(byt), ''' ')
+          else write(output, '     ');
+      end;
+      lineloc := lineloc + nbytes;
+      writeln(output)
+    end {of print the line}
+  end {while not finished};
+  writeln(output); writeln(output, ' *** eof ***')
+end {scandata};
+{ main program }
+begin
+    initprocedure;				{ initialize constants }
+    reset(int,'pasf-icode');			{ open icode file }
+    reset(dat,'pasf-data');			{ open value data file }
+    reset(srcfile,sfile);			{ open source lines file }
+    loadvars;					{ read dictionary file }
+    selectprocs := false;
+    done := false; prnt := true;
+    blocksequence := 0; blockdepth := 0;
+    blockstack[0].nonblocks := 0;		{ level 0 modules }
+    lastfnum := 0;				{ last file printed }
+    lastlnum := 0;				{ last line printed }
+    scancode;					{ edit icode }
+    writeln(output);
+end.

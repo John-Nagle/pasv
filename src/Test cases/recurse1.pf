@@ -1,1 +1,19 @@
-program recurse1;procedure p1(n: integer);procedure p2(nx: integer);depth nx+1;entry nx > 0;      nx <= 1000;begin    if nx > 1 then p1(nx-1);end {p2};depth n;entry n >= 0;      n < 1000;begin    if n > 2 then p2(n-2);end {p1};begin    p1(20);end.
+program recurse1;
+
+procedure p1(n: integer);
+procedure p2(nx: integer);
+depth nx+1;
+entry nx > 0;
+      nx <= 1000;
+begin
+    if nx > 1 then p1(nx-1);
+end {p2};
+depth n;
+entry n >= 0;
+      n < 1000;
+begin
+    if n > 2 then p2(n-2);
+end {p1};
+begin
+    p1(20);
+end.

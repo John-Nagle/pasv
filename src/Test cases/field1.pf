@@ -1,1 +1,36 @@
-{	Nested record test		Version 1.4 of 1/15/82	Records with one field create special problems in decoding icode.}program field1;type   rec1 = record	f1: char;	end;    rec2 = record	f2: rec1;	end;    rec3 = record	f3: rec2;	end;    rec4 = array [1..10] of rec3;    rec5 = record	f5: rec4;	end;    rec6 = record	f6: rec5;	end;var    a,b: rec6;   c: rec3;begin   c.f3.f2.f1 := 'z';   a.f6.f5[3].f3.f2.f1 := c.f3.f2.f1;   assert(a.f6.f5[3].f3.f2.f1 = 'z');end.
+{
+	Nested record test		Version 1.4 of 1/15/82
+
+	Records with one field create special problems in decoding icode.
+}
+program field1;
+type
+   rec1 = record
+	f1: char;
+	end;
+
+    rec2 = record
+	f2: rec1;
+	end;
+
+    rec3 = record
+	f3: rec2;
+	end;
+
+    rec4 = array [1..10] of rec3;
+
+    rec5 = record
+	f5: rec4;
+	end;
+
+    rec6 = record
+	f6: rec5;
+	end;
+var 
+   a,b: rec6;
+   c: rec3;
+begin
+   c.f3.f2.f1 := 'z';
+   a.f6.f5[3].f3.f2.f1 := c.f3.f2.f1;
+   assert(a.f6.f5[3].f3.f2.f1 = 'z');
+end.

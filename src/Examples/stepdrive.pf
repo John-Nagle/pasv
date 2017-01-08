@@ -1,1 +1,94 @@
- {         Verifier Demonstration Program          Stepping motor drive example.                                          Version 1.5 of 2/24/82 } program stepdrive; const maxint = 32767;                   { biggest integer } type     dir = (down,up);                    { direction of motion }     pos = -5000..5000;                  { range of positions }     rate = 0..2000;                     { steps/compute cycle rate }     motion = -2000..2000;               { signed rate } {     log2  --  extract log to base 2 of number, except at 0 and 1      Takes in numbers from 0 to maxint/2 and returns numbers from     0 to 15;      Note that the exit conditions of log2 do not fully describe     what it does; they just impose some constraints on the result. } function log2(var n: integer): integer; exit return <= 15; return >=0;            { bounds on n }      return <= n.old;                     { log2(n) <= n }      (n.old = 0) implies (return = 0);    { log2(0) = 0 }      (n.old = 1) implies (return = 1);    { log2(1) = 1 }      (n.old > 0) implies (return > 0);    { nonzero if nonzero input } entry n >= 0;                             { only on positive numbers }       n <= maxint div 2;                  { upper bound for n } type smallint = 0 .. 15; var i: smallint;                          { loop counter }     log: smallint;                        { resulting log }     twotoi: 1..maxint;                    { number to double } begin     if n <= 1 then log := smallint(n)     { log(0) = 0 by convention }					   { log(1) = 1 by convention }     else begin         twotoi := 2;                      { 2**i }	 log := 0;                         { log lags behind i }         for i := 1 to 15 do begin         { for maximum needed cycles }             if twotoi <= n then begin     { if not big enough yet }                 log := log + 1;           { increment log }                 twotoi := twotoi * 2;     { double value }                 end;             state (defined(twotoi), defined(log),                    0 < log,		    log < twotoi, log <= n, log <= i);             end;	 end;     log2 := log;                          { return log } end {log2}; {         calcsteprate  --  calculate stepping rate for stepping motor          Called once per 100ms to calculate stepping rate to be used         during next 100ms. } procedure calcsteprate(currentpos,          { current shaft position }                    desiredpos: pos;         { desired shaft position }                    var steprate: motion;    { step rate to use }                    var stepdir: dir);       { direction to step } exit     (currentpos.old = desiredpos.old) implies        (steprate = 0);                           { must stop }     (currentpos.old <> desiredpos.old) implies        (steprate <> 0);                          { no stall }     (currentpos.old > desiredpos.old) implies         (stepdir = down);                         { direction check }     (currentpos.old < desiredpos.old) implies         (stepdir = up);                           { direction check }     (stepdir = up) implies                       { no overshoot }        (currentpos.old + steprate <= desiredpos.old);     (stepdir = down) implies                     { position }        (currentpos.old + steprate >= desiredpos.old); var move: integer;                               begin     move := desiredpos - currentpos;    { steps to goal }     stepdir := up;                      { assume upward move }     if move < 0 then begin              { if downward direction }         stepdir := down;                { so note }         move := - move;                 { make move positive }         end;     steprate := motion(log2(move));     { reduce exponentially }     if stepdir = down then              { if down direction }         steprate := -steprate;          { step other way } end {calcsteprate} ;  begin {main} {   No main program, just a demonstration of procedures this time.  } end.
+ {
+         Verifier Demonstration Program
+ 
+         Stepping motor drive example.
+ 
+                                         Version 1.5 of 2/24/82
+ }
+ program stepdrive;
+ const maxint = 32767;                   { biggest integer }
+ type
+     dir = (down,up);                    { direction of motion }
+     pos = -5000..5000;                  { range of positions }
+     rate = 0..2000;                     { steps/compute cycle rate }
+     motion = -2000..2000;               { signed rate }
+ {
+     log2  --  extract log to base 2 of number, except at 0 and 1
+ 
+     Takes in numbers from 0 to maxint/2 and returns numbers from
+     0 to 15;
+ 
+     Note that the exit conditions of log2 do not fully describe
+     what it does; they just impose some constraints on the result.
+ }
+ function log2(var n: integer): integer;
+ exit return <= 15; return >=0;            { bounds on n }
+      return <= n.old;                     { log2(n) <= n }
+      (n.old = 0) implies (return = 0);    { log2(0) = 0 }
+      (n.old = 1) implies (return = 1);    { log2(1) = 1 }
+      (n.old > 0) implies (return > 0);    { nonzero if nonzero input }
+ entry n >= 0;                             { only on positive numbers }
+       n <= maxint div 2;                  { upper bound for n }
+ type smallint = 0 .. 15;
+ var i: smallint;                          { loop counter }
+     log: smallint;                        { resulting log }
+     twotoi: 1..maxint;                    { number to double }
+ begin
+     if n <= 1 then log := smallint(n)     { log(0) = 0 by convention }
+					   { log(1) = 1 by convention }
+     else begin
+         twotoi := 2;                      { 2**i }
+	 log := 0;                         { log lags behind i }
+         for i := 1 to 15 do begin         { for maximum needed cycles }
+
+             if twotoi <= n then begin     { if not big enough yet }
+                 log := log + 1;           { increment log }
+                 twotoi := twotoi * 2;     { double value }
+                 end;
+
+             state (defined(twotoi), defined(log),
+                    0 < log,
+		    log < twotoi, log <= n, log <= i);
+             end;
+	 end;
+     log2 := log;                          { return log }
+ end {log2};
+ {
+         calcsteprate  --  calculate stepping rate for stepping motor
+ 
+         Called once per 100ms to calculate stepping rate to be used
+         during next 100ms.
+ }
+ procedure calcsteprate(currentpos,          { current shaft position }
+                    desiredpos: pos;         { desired shaft position }
+                    var steprate: motion;    { step rate to use }
+                    var stepdir: dir);       { direction to step }
+ exit
+     (currentpos.old = desiredpos.old) implies
+        (steprate = 0);                           { must stop }
+     (currentpos.old <> desiredpos.old) implies
+        (steprate <> 0);                          { no stall }
+     (currentpos.old > desiredpos.old) implies 
+        (stepdir = down);                         { direction check }
+     (currentpos.old < desiredpos.old) implies 
+        (stepdir = up);                           { direction check }
+     (stepdir = up) implies                       { no overshoot }
+        (currentpos.old + steprate <= desiredpos.old);
+     (stepdir = down) implies                     { position }
+        (currentpos.old + steprate >= desiredpos.old);
+ var move: integer;                              
+ begin
+     move := desiredpos - currentpos;    { steps to goal }
+     stepdir := up;                      { assume upward move }
+     if move < 0 then begin              { if downward direction }
+         stepdir := down;                { so note }
+         move := - move;                 { make move positive }
+         end;
+     steprate := motion(log2(move));     { reduce exponentially }
+     if stepdir = down then              { if down direction }
+         steprate := -steprate;          { step other way }
+ end {calcsteprate} ;
+ 
+ begin {main}
+ {   No main program, just a demonstration of procedures this time.  }
+ end.
