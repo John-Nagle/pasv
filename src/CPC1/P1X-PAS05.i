@@ -49,8 +49,8 @@ function searchid ( fs: setclass ) : itp;
       p := searchlevel(display[disx].fname);
       if p <> nil then
 	begin   { found a lexical match on this level }
-	  if  not(p^.class in fs)  then
-	    if p^.class = xports then
+	  if  not(p^.klass in fs)  then
+	    if p^.klass = xports then
 	      begin  {examine enclosed identifier}
 		p := p^.enclosedident;
 		foreign := true;
@@ -59,7 +59,7 @@ function searchid ( fs: setclass ) : itp;
 		    errf := 109;
 		    p := udptrs[vars]
 		  end
-	  	else if not (p^.class in fs)  then
+	  	else if not (p^.klass in fs)  then
 		  errf := 103
 	      end
 	    else
@@ -102,19 +102,20 @@ function searchid ( fs: setclass ) : itp;
 
 
 
-procedure newid{(fc: classes; fq: stp; fn: itp; var fp: itp)};
+procedure newid(fc: classes; fq: stp; fn: itp; var fp: itp);
 var
   p, p1, p2: itp;
   i: integer;
   lleft: boolean;
 begin {newid}
 case fc of
-  types: new(p,types);
-  konst: new(p,konst);
-  vars:  new(p,vars);
-  field: new(p,field);
-  proc:  new(p,proc);
-  modul: new(p,modul);
+  { Free Pascal does not support the variant form of new }
+  types: begin new(p); p^.klass := types; end;
+  konst: begin new(p); p^.klass := konst; end;
+  vars:  begin new(p); p^.klass := vars; end;
+  field: begin new(p); p^.klass := field; end;
+  proc:  begin new(p); p^.klass := proc; end;
+  modul: begin new(p); p^.klass := modul; end;
   xports:new(p)   {allocate a record with unspecified class - variant filled in later}
 end;
 if verifier then stampid(p);		{ stamp with source line number }
@@ -122,7 +123,7 @@ with p^ do
  begin
   idserial := idserial+1;	{make a new serial number}
   iserial  := idserial;		{and assign it to this identifier}
-  class := fc;
+  klass := fc;
   new(name);				{ REMOVED variable-size dynamic array }
   with name^ do begin
     l := id.l;
@@ -333,8 +334,8 @@ procedure printident( idtree: itp );
 	  else write(symfil,itype^.tserial:5,' ');
 	  if next = nil then write(symfil,0:5,' ')
 	  else write(symfil,next^.iserial:5,' ');
-	  write( symfil, ord( class):2 );
-	  case class of
+	  write( symfil, ord( klass):2 );
+	  case klass of
 	    types: ;
 	    vars:  write( symfil,' ',ord(vkind):2,
 			  ' ', vlev:2,
@@ -444,7 +445,7 @@ procedure markstp (fp: stp);
 	markctp  --  mark identifier nodes
 }
 
-procedure markctp  {(fp: itp)} ;
+procedure markctp(fp: itp);
 begin {markctp}
   if  fp <> nil then with fp^ do begin
     writeln(lst,'c:',ord(fp):8,ord(llink):8,ord(rlink):8,ord(itype):8); break(lst); {lst}
@@ -519,7 +520,7 @@ begin {followstp}
   end {if <> nil}
 end {followstp};
 
-  procedure followctp { (fp: itp) };
+  procedure followctp(fp: itp);
   begin {followctp}
     if  fp <> nil then with fp^ do begin
       followctp(llink);
@@ -527,7 +528,7 @@ end {followstp};
       if name^.l <> 0 then
 	write(lst, name^.s:ord(name^.l));
       write(lst,' ':16-ord(name^.l),ord(llink):8,ord(rlink):10,ord(itype):10,ord(next):10,' ':4);
-      case class of
+      case klass of
         types:write(lst,'type');
         konst:begin
           write(lst,'constant':13);

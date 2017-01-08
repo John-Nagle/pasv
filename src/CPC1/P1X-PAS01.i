@@ -185,7 +185,7 @@ type
     next: itp;		{used to build lists of identifiers}
     fileser: integer;		{ file number in which declared (for diags) }
     lineser: integer;		{ line number on which declared (for diags) }
-    case class: classes of
+    case klass: classes of
     types: ();
     konst: (kvalue: valu);
     vars:(

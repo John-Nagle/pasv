@@ -73,7 +73,7 @@ procedure assignment(fp: itp);
 var
   q:stp;
 begin {assignment}
-if (fp^.class = proc) and (fp^.itype <> nil) then
+if (fp^.klass = proc) and (fp^.itype <> nil) then
  begin		{assignment to a function name}
   if blkname <> fp then	{ .. assigning to THIS function?? }
     error( 169  { assign to fn not allowed outside function } );
@@ -469,7 +469,7 @@ case sym.sy of
   ident: begin
     p := searchid([vars,field,proc]);
     insymbol;
-    if (p^.class = proc) and (p^.itype = nil)
+    if (p^.klass = proc) and (p^.itype = nil)
     then call(p)	{ procedure call }
     else
       begin
@@ -898,13 +898,13 @@ genbyte( 3	{ nrargs - TEMPORarily = three } );
 if verifier then genbyte(253 {VHEAD});	{ blocks ver header and block together }
 if odd(dc) then gendbyte(0);	{ round dc to word boundary }
 genbyte(7 {end});  {  generate END psuedo operator  }
-  if blkname^.class = proc then
+  if blkname^.klass = proc then
     genbyte (blkname^.paddr {proc number} )
   else   { assume module/monitor }
     genbyte (blkname^.maddr {module number} );
   rvsize := typsize(blkname^.itype);
   genbyte(rvsize);
-  if blkname^.class = proc then
+  if blkname^.klass = proc then
     genaddressword(lc)			{ lc (local counter) is negative }
   else
     genword(0);		{module variables belong to containing scope - allocate none here}

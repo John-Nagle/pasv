@@ -175,7 +175,7 @@ end {setsize};
 
 
 
-function typsize { (fq: stp): integer };
+function typsize(fq: stp): integer;
 		{ This function returns the size, in bytes, required
 		  for the unpacked representation of the type
 		  designated by its argument.			    }
@@ -755,7 +755,7 @@ with fp^ do begin
   lastvclass := executablevar;		{ assume result will be executable }
 					{ following line should be unnneded }
   if itype = nil then  error( 105  {"identifier type unknown"} );
-  case class of
+  case klass of
     konst: begin
       lastaccess := reference;		{ constants are read-only, of course }
       gattr.akind := cst;
@@ -896,7 +896,7 @@ repeat
 	    p := searchlevel(gattr.atype^.fstdfld);
 	  if p <> nil then
 	   begin
-	    assert(p^.class = field);	{ must be field }
+	    assert(p^.klass = field);	{ must be field }
 					  { if EXTRA and not FREE var }
 	    if (p^.fvclass = extravar) and (lastvclass = executablevar) then
 	        lastvclass := p^.fvclass;	{ change to EXTRA }
@@ -976,7 +976,7 @@ end {selector};
 
 
 
-procedure binop(fop: operator; var fattr: attr);
+procedure binop(fop: operatorenum; var fattr: attr);
 var
   q: stp;
   s: stndsetptr;

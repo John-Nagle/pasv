@@ -89,7 +89,7 @@ procedure fieldaddr(fp: itp);
 begin {fieldaddr}
 if fp <> nil then with fp^ do
  begin
-  assert(class = field);			{ must be field }
+  assert(klass = field);			{ must be field }
   assert(ispacked = packit);			{ check rec/state sync }
   if (fvclass <> executablevar) and (not verifier) then
     begin					{ if EXTRA field in compiler }
@@ -158,7 +158,7 @@ while sym.sy = ident do
   while p2 <> p3 do begin
     with p2^ do begin		{ for fields of this field set }	
 	itype := q;		{ set field }
-	assert(class = field);	{ must be field }
+	assert(klass = field);	{ must be field }
 				{ note if EXTRA }
 	if extrafield then fvclass := extravar else fvclass := executablevar;
 	end;	
@@ -309,7 +309,7 @@ case sym.sy of
 
 ident: begin
   p := searchid([types,konst,proc]);
-  if p^.class = types then begin
+  if p^.klass = types then begin
     q := p^.itype;  insymbol;
     if sym.sy = lbrack then
      if (q^.form <> devicet) and (q^.form <> signalt)  then

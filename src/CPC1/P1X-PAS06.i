@@ -19,21 +19,22 @@ end {ceil};
 procedure newtyp(var typnode: stp; subtype: forms);
 begin
     case subtype of				{ allocate node }
-	scalar:   	begin new(typnode,scalar); end;
-	booleant:   	begin new(typnode,booleant); end;
-	chart:   	begin new(typnode,chart); end;
-	integert:   	begin new(typnode,integert); end;
-	longintt:   	begin new(typnode,longintt); end;
-	fixedt:   	begin new(typnode,fixedt); end;
-	signalt:   	begin new(typnode,signalt); end;
-	pointer:   	begin new(typnode,pointer); end;
-	sett:   	begin new(typnode,sett); end;
-	arrayt:   	begin new(typnode,arrayt); end;
-	recordt:   	begin new(typnode,recordt); end;
-	devicet:   	begin new(typnode,devicet); end;
-	tagfield:   	begin new(typnode,tagfield); end;
-	xcptnt:   	begin new(typnode,xcptnt); end;
-	variant:   	begin new(typnode,variant); end;
+    {   Variant initialization in new is not supported in freepascal. }
+	scalar:   	begin new(typnode); typnode^.form := scalar; end;
+	booleant:   begin new(typnode); typnode^.form := booleant; end;
+	chart:   	begin new(typnode); typnode^.form := chart; end;
+	integert:   begin new(typnode); typnode^.form := integert; end;
+	longintt:   begin new(typnode); typnode^.form := longintt; end;
+	fixedt:   	begin new(typnode); typnode^.form := fixedt; end;
+	signalt:   	begin new(typnode); typnode^.form := signalt; end;
+	pointer:   	begin new(typnode); typnode^.form := pointer; end;
+	sett:   	begin new(typnode); typnode^.form := sett; end;
+	arrayt:   	begin new(typnode); typnode^.form := arrayt; end;
+	recordt:   	begin new(typnode); typnode^.form := recordt; end;
+	devicet:   	begin new(typnode); typnode^.form := devicet; end;
+	tagfield:   begin new(typnode); typnode^.form := tagfield; end;
+	xcptnt:   	begin new(typnode); typnode^.form := xcptnt; end;
+	variant:   	begin new(typnode); typnode^.form := variant; end;
 	end;
     with typnode^ do begin			{ using new item }
 	form := subtype;			{ set variant id }
@@ -55,7 +56,7 @@ begin
 	end;					{ of cases }
 	end;					{ with }
 end {newtyp};
-procedure talloc{( Var TY:stp; fm: forms; sbrng:boolean )};
+procedure talloc( Var TY:stp; fm: forms; sbrng:boolean );
 	 {-------	allocate & partly initialize a type record }
   begin
     newtyp(ty,fm);			{ allocate and clear type }
@@ -103,7 +104,7 @@ begin
 	end;
       end;
 end;
-procedure formatflit{ ( x: valu;  VAR m,s: integer ) };
+procedure formatflit( x: valu;  VAR m,s: integer );
 	 {-----------		This procedure converts a fixed point
 			literal from its internal form (real) to  an
 			integer mantissa and a scale factor	      }

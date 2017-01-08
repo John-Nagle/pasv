@@ -73,7 +73,7 @@ begin {calluser}
    begin	{ parse actual parameter list }
    repeat
     if p <> nil then begin	 	{ if next formal arg exists }
-	assert(p^.class = vars);	{ must be a var }
+	assert(p^.klass = vars);	{ must be a var }
 					{ is formal arg EXTRA? }
 	formalextra := (p^.vclass = extravar) or (fp^.pvclass = extravar);
 	end;
@@ -341,7 +341,7 @@ with fp^ do begin
 					{ look up ident }
 	    pid := searchid([types,konst,vars,modul,field,proc]);
 	    if (pid <> udptrs[types]) and { if ident found }
-	      (pid^.class = modul) then begin { if found as module }
+	      (pid^.klass = modul) then begin { if found as module }
 	      genbyte( 246 {VINIT} );	{ initialization test for module }
 	      genbyte(pid^.maddr);	{ number of module }
 	      insymbol;			{ use up module name }

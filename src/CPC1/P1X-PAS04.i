@@ -57,22 +57,27 @@ function firstclass( setc: setclass ): classes;
 
 procedure english( n: integer );
 	 {-------		prints an error message in english }
-  var i: integer;  c: char;
+  var i: integer; 
+  // c: char;
+  var s: string;    { new }
   begin
     if option['L'] or not option['N']  then
       begin
 	resetmsgfile(errormsg);		{ go to beginning of message file }
 	read( errormsg, i );
 	while i <> n do
-	  begin  readln(errormsg); read( errormsg, i) end;
+	  begin  readln(errormsg); read( errormsg, i) end; { reading up to desired record }
 	if option['L'] then write(lst,i:4,':');
 	if not option['N'] then write(output,i:4,':');
-	repeat
-	  get(errormsg);
-	  c := errormsg^;
-	  if option['L'] then write(lst,c);
-	  if not option['N'] then write(output,c);
-	until eoln(errormsg);
+	readln(errormsg, s);        { read rest of line as entire error message }
+    if option['L'] then write(lst,s);
+	if not option['N'] then write(output,s);
+	//repeat
+	// get(errormsg);
+	//  c := errormsg^;
+	//  if option['L'] then write(lst,c);
+	//  if not option['N'] then write(output,c);
+	//  until eoln(errormsg);
 	if option['L'] then writeln(lst);
 	if not option['N'] then writeln(output);
       end
@@ -429,7 +434,7 @@ repeat
 	  nextch;
 	  if not maxstr then
 	    if k < strlen then begin
-	      string[k] := ch; k := succ(k)
+	      stringvar[k] := ch; k := succ(k)
 	      end
 	    else begin
 	      error(205);
@@ -439,7 +444,7 @@ repeat
 	nextch
       until ch <> terminator;
       if terminator = '"' then begin
-	string[k-1] := chr(0); lgth := k
+	stringvar[k-1] := chr(0); lgth := k
 	end
       else lgth := pred(k);
       getnuchar := false; literalcase := false;

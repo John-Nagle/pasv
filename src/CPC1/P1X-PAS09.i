@@ -2,20 +2,20 @@
 procedure expression;
 var
   lattr: attr;
-  lop: operator;
+  lop: operatorenum;
 
 
 procedure simpleexpression;
 var
   lattr: attr;
-  lop: operator;
+  lop: operatorenum;
   issigned: boolean;
 
 
 procedure term;
 var
   lattr: attr;
-  lop: operator;
+  lop: operatorenum;
 
 
 procedure factor;
@@ -44,7 +44,7 @@ case sym.sy of
 	p := udptrs[proc]	{ just for better error recovery }
       else
 	p := udptrs[vars];
-    case p^.class of
+    case p^.klass of
       types: begin
 	if sym.sy = lparen then insymbol else error(9);
 	expression;
@@ -97,7 +97,7 @@ case sym.sy of
     if lgth = 1 then begin {character constant}
       gattr.atype := charptr;
       gattr.avalue.kind := lit;
-      gattr.avalue.ival := ord(string[0])
+      gattr.avalue.ival := ord(stringvar[0])
       end
     else begin {string constant}
       talloc(gattr.atype, arrayt, false );
@@ -112,7 +112,7 @@ case sym.sy of
       gattr.avalue.kind := data;
       gattr.avalue.daddr := dc;
       for n := 0 to lgth-1 do
-	gendbyte(ord(string[n]))
+	gendbyte(ord(stringvar[n]))
       end;
     insymbol
     end;

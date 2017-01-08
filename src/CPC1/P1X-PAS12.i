@@ -52,7 +52,7 @@ if sym.sy = lparen then begin
       p3 := p2;
       while p2 <> nil do begin	{ assign type }
 	with p2^ do begin	{ using identifier item }
-	    assert(class = vars); { was just created }
+	    assert(klass = vars); { was just created }
  	    itype := q;		{ associate type }
 	    if procextra or argextra then begin { if extra mode }
 		vclass := extravar;	{ is extra formal arg }	
@@ -78,7 +78,7 @@ end {parmlist};
 procedure parmaddr(fp: itp);
 begin {parmaddr}
 with fp^ do begin
-  assert(class = vars);		{ must be var }
+  assert(klass = vars);		{ must be var }
   if (not verifier) and (vclass = extravar) then begin { if EXTRA in compl }
       vaddr := illegaladdress;	{ purely for internal debug }
   end else begin		{ not dummy, will assign address }
@@ -112,7 +112,7 @@ if sym.sy = ident then
     p4 := searchlevel(display[top].fname);
     if p4 <> nil then
      begin	{ check to see if previous declared forward }
-      if (p4^.class = proc) and (p4^.pkind = forw) then wasforward := true
+      if (p4^.klass = proc) and (p4^.pkind = forw) then wasforward := true
       else error(160)		{ ident has already been used }
      end;
     if not wasforward then
@@ -341,7 +341,7 @@ begin  {moddecl}
       p := searchlevel(display[top].fname);
       if p <> nil then
 	begin		{it's either forward or an error}
-	  if (p^.class=modul) and (p^.mkind = forw) then
+	  if (p^.klass=modul) and (p^.mkind = forw) then
 	    wasforward := true
 	  else
 	    error(101  {"identifier previously declared"} )
@@ -476,7 +476,7 @@ begin  {moddecl}
 	      rx^.next := erlist;
 	      erlist := rx
 	    end
-	  else if standalone and (p^.class <> proc) then
+	  else if standalone and (p^.klass <> proc) then
 	    begin	{ ident is illegally exported in this context }
 	      new(rx);
 	      rx^.this := exl^.this;

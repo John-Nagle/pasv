@@ -64,11 +64,11 @@ procedure monitorscopechk(p: itp;	{ variable ident to be checked }
 var vtype: stp;				{ type of variable }
 begin
     if enforce then begin		{ if we care }
-	if p^.class = xports then p := p^.enclosedident; { get real ident }
+	if p^.klass = xports then p := p^.enclosedident; { get real ident }
 	assert(p <> nil);		{ must be linked }
-	assert(p^.class <> xports);	{ only one level of indirection }
+	assert(p^.klass <> xports);	{ only one level of indirection }
 	with p^ do begin		{ using ident item }
-	    if class = vars then begin	{ if this is a variable }
+	    if klass = vars then begin	{ if this is a variable }
 		vtype := itype;		{ get type of var }
 		if vtype^.form = arrayt then { if array }
 		    vtype := vtype^.aeltyp; { use element type }
