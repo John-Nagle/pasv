@@ -5,14 +5,14 @@
 }
 program analyzer1(output);
 const
-#include "P1X-VER00.h"
+{$I P1X-VER00.h }
     varsmax = 2000;				{ max variables allowed }
     vfile = 'pasf-vars';			{ variables file }
     ifile = 'pasf-icode';			{ icode file }
     sfile = 'pasf-source';			{ source lines file }
     mtabsize = 255;
 type
-#include "P1X-VER01.h"
+{$I P1X-VER01.h }
 
      byte = 0 .. 255;
      mtabtype = array [0..mtabsize] of packed array [0..4] of char;
@@ -21,27 +21,27 @@ var
     varf: file of varitem;			{ variable items }
     vartab: array [1..varsmax] of varitem;	{ variable items }
     varlimit: 0..varsmax;			{ slots used in vartab }
-    int, dat: file of integer; 
-    nch: integer;
+    int, dat: file of byte; 
+    nch: byte;
     printdata, selectprocs, prnt, done: boolean;
     mtab: mtabtype;
     blockstack: array [0..10] of record		{ procedure stack }
-	blockpin: integer;			{ procedure number this lev }
-	nonblocks: integer;			{ nested non-blocks (modules) }
+	blockpin: longint;			{ procedure number this lev }
+	nonblocks: longint;			{ nested non-blocks (modules) }
 	end;	
-    blocksequence: integer;			{ block serial number }
-    blockdepth: integer;			{ current nesting depth }
+    blocksequence: longint;			{ block serial number }
+    blockdepth: longint;			{ current nesting depth }
     srcitem: sourceline;			{ source line item }
     srcfile: file of sourceline;		{ file of source lines }
-    lastfnum, lastlnum: integer;		{ last line printed }
+    lastfnum, lastlnum: longint;		{ last line printed }
 {
 	extractsigned  --  extract signed value from 16-bit unsigned quantity.
 
 	This routine directly reflects the target machine implementation,
 	which is 16-bit twos complement.
 }
-function extractsigned(i: integer)		{ input value }
-		      : integer;		{ output signed value }
+function extractsigned(i: longint)		{ input value }
+		      : longint;		{ output signed value }
 const negbias = 65536;			{ this - value is representation of neg}
       posmax = 32767;				{ max positive value }
 begin
@@ -59,7 +59,8 @@ procedure loadvars;
 var vitem: varitem;				{ working item }
 begin
     varlimit := 0;				{ slots used in vartab }
-    reset(varf,vfile);				{ open variable file }
+    assign(varf, vfile);
+    reset(varf);				        { open variable file }
     while not eof(varf) do begin		{ reading of varfile }
 	read(varf,vitem);			{ read a variable item }
 	    if varlimit < varsmax then begin	{ if room }
@@ -75,7 +76,7 @@ begin
 {
 	depthconv  --  convert depth to procedure number
 }
-function depthconv(d: integer):integer;
+function depthconv(d: longint):longint;
 begin
     if d > blockdepth then begin	{ if too big }
 	write('    [ILLEGAL DEPTH]');
@@ -89,15 +90,15 @@ begin
 }
 procedure finditem(var lst: text;		{ file to print on }
 		  vaddr: addressitem;		{ location, etc. }
-		  vtype: integer);		{ where to start search }
+		  vtype: longint);		{ where to start search }
 
 var
     workadr: addressitem; 			{ bit address }
     quit: boolean;				{ when done }
-    i: integer;					{ for search }
-    startitem, stopdepth: integer;		{ for search control }
-    offset, eltsize: integer;
-    eltcount, eltnum: integer;
+    i: longint;					{ for search }
+    startitem, stopdepth: longint;		{ for search control }
+    offset, eltsize: longint;
+    eltcount, eltnum: longint;
 begin
     if vtype > 0 then begin			{ if field, not variable }
 	with vartab[vtype] do begin		{ using given variable }
@@ -202,11 +203,11 @@ begin
 	findvar -- find a variable and print its description 
 }
 procedure findvar(var lst: text;		{ file to print on }
-		  bdepth: integer;		{ block depth }
+		  bdepth: longint;		{ block depth }
 		  baddress: byteaddress;	{ byte address }
 		  bclass: addressclass);	{ kind of address }
 var
-    bnum: integer;				{ block number }
+    bnum: longint;				{ block number }
     waddress: addressitem;			{ constructed addr item }
 begin
     bnum := depthconv(bdepth);			{ get procedure number }
@@ -224,7 +225,7 @@ begin
 	findroutine -- find a routine
 }
 procedure findroutine(var lst: text;		{ file to print on }
-		broutine: integer);		{ which routine }
+		broutine: longint);		{ which routine }
 var waddress: addressitem;			{ working item }
 begin
     waddress.blockn := broutine;		{ block = routine number }
@@ -235,8 +236,8 @@ end {findroutine};
 {
 	printsource --  print source file up to line N
 }
-procedure printsource(fnum: integer;		{ file number }
-		      lnum: integer);		{ line number within file }
+procedure printsource(fnum: longint;		{ file number }
+		      lnum: longint);		{ line number within file }
 var i,j: 0..linetextmax;
 begin
     while (fnum <> lastfnum) or (lnum <> lastlnum) do begin
@@ -328,7 +329,7 @@ begin
   read(int,nch);			{ read next icode byte }
 end {nextch};
  
-procedure outmne (i: integer);
+procedure outmne (i: longint);
  
 begin {outmne}
   write(output,mtab[i]:5,'  ')
@@ -350,9 +351,9 @@ begin
 end {out8};
  
 procedure out16;
-var i:integer;
+var i:longint;
 begin
-  nextch; i := nch*256;
+  nextch; i := longint(nch)*256;
   nextch; if prnt then write(output, nch+i:6)
 end {out16};
  
@@ -404,7 +405,7 @@ procedure askuser;
 var ch: char;
 begin
   write(output,'?'); 
-  readln(input); ch := input^;
+  read(input, ch); 
   prnt := (ch='Y') or (ch='y');
   if (ch='E') or (ch='e') then done := true
 end {ask_user};
@@ -415,7 +416,7 @@ end {ask_user};
 	allowing the conversion of nesting depth (as found in VARBL
 	items) into block numbers (as found in the variable file).
 }
-procedure pushblock(n: integer ;
+procedure pushblock(n: longint;
 		    datablock: boolean); { true if proc, not monitor/module }
 begin
     if datablock then begin			{ if real block }
@@ -458,7 +459,7 @@ begin
 	used for VARBL, PARAM, and DVAD 
 }
 procedure outaddress(aclass: addressclass);
-var vlevel, vsize, vaddress: integer;
+var vlevel, vsize, vaddress: longint;
 begin
     vlevel := nch mod 16;		{ get block nesting level }
     nextch;				{ get next byte }
@@ -481,8 +482,8 @@ end {outaddress};
 }
 
 procedure scancode;
-var i, j, n, opcode, opcode2: integer;
-    vroutine: integer;				{ current routine number }
+var i, j, n, opcode, opcode2: longint;
+    vroutine: longint;				{ current routine number }
 begin {scancode}
   writeln(output);				{ blank line }
   writeln(output,' Code'); writeln(output,' ----'); writeln(output);
@@ -741,13 +742,12 @@ end {scancode};
 procedure scandata;
 const nbytes = 8 {bytes printed per line};
 var
-  i, j, n, dataloc, lineloc: integer;
+  i, j, n, dataloc, lineloc: longint;
   bytes: array [1..nbytes] of byte;
   byt: byte;
-  inch: integer;
+  inch: byte;
   finished: boolean;
 begin {scandata}
-  page(output);				{ eject as required }
   writeln(output); writeln(output,' Data'); writeln(output,' ----'); writeln(output);
   dataloc := 0;
   lineloc := 0;
@@ -783,9 +783,12 @@ end {scandata};
 { main program }
 begin
     initprocedure;				{ initialize constants }
-    reset(int,'pasf-icode');			{ open icode file }
-    reset(dat,'pasf-data');			{ open value data file }
-    reset(srcfile,sfile);			{ open source lines file }
+    assign(int,'pasf-icode');
+    reset(int);			        { open icode file }
+    assign(dat,'pasf-data');
+    reset(dat);			        { open value data file }
+    assign(srcfile, sfile); 
+    reset(srcfile);	            { open source lines file }
     loadvars;					{ read dictionary file }
     selectprocs := false;
     done := false; prnt := true;

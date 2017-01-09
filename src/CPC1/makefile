@@ -52,9 +52,8 @@ pascmp: P1X-CMP.p \
 #	Verifier Pass One Output Analyzer
 #
 analyzer1: analyzer1.p P1X-VER00.h P1X-VER01.h
-	fpc $(POPTIONS) analyzer1.p | tee errs
 	rm -f analyzer1
-	mv a.out analyzer1
+	fpc $(POPTIONS) analyzer1.p | tee errs
 	chmod 555 analyzer1
 #
 #	Compiler Icode Printer

@@ -795,9 +795,9 @@ var valid: boolean;			{ true if symbol valid }
 begin
     headerasserts := 0;			{ clear count of header asserts }
     depthdecls := 0;			{ number of DEPTH declarations }
-    if verifier then rewrite(headericode); { open file for assert code }
     if verifier then begin		{ if verifier only }
-	rewrite(headericode);		{ open temp file for this block }
+        assign(headericode,GetTempFileName('','TMPver'));   { pick temporary file name }
+	    rewrite(headericode);		{ open temp file for this block }
 	end;
     while not (sym.sy in [beginsy, eofsy]) do begin { until BEGIN }
     case blktype of		{ different types of block }

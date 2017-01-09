@@ -4,14 +4,15 @@
 }
 program printvars(output);
 const
-#include "P1X-VER00.h"
+{$I P1X-VER00.h}
 type
-#include "P1X-VER01.h"
+{$I P1X-VER01.h}
 var
     f: file of varitem;				{ input file }
-    vitem: varitem;				{ working item }
+    vitem: varitem;				    { working item }
 begin
-    reset(f,'pasf-vars');			{ get file }
+    assign(f,'pasf-vars');
+    reset(f);			            { get file }
     while not eof(f) do begin			{ until eof }
         read(f,vitem);				{ read one item }
 						{ ***DEBUG VERSION*** }  
