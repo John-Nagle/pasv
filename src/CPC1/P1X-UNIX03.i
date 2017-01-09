@@ -129,7 +129,6 @@ end { pushfile };
 procedure popfile;
 var argwork: pathname;			{ pathname-size string }
 begin
-    writeln('Calling popfile'); { ***TEMP*** }
 					{ find another file if required }
     if filestackdepth > 0 then begin	{ if file open now }
 	filestackdepth := pred(filestackdepth); { done with this one }
