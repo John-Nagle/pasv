@@ -10,12 +10,12 @@ procedure block (blkname: itp; blktype: unittype );
 var
   fwptr, varlst, p: itp;
   headerasserts: compoundtally;		{ count of assertions in header }
-  depthdecls: integer;			{ count of DEPTH declarations }
+  depthdecls: longint;			{ count of DEPTH declarations }
   headericode: fint;			{ holding file for ENTRY, etc. }
   diverticode: boolean;			{ divert to headericode if on }
   ecount,		{ count of exception handlers in this block }
-  rvsize : integer;	{ size of returned value }
-  hmarker: integer;	{ place holder for mark and release }
+  rvsize : longint;	{ size of returned value }
+  hmarker: longint;	{ place holder for mark and release }
 {
 	code output routines -- here to allow reference to local file
 	headericode.
@@ -25,8 +25,8 @@ var
 
 	The representation is twos complement signed, 16 bits.
 }
-function signedvalue(n: integer)	{ input value }
-		: integer;		{ output value }
+function signedvalue(n: longint)	{ input value }
+		: longint;		{ output value }
 const negbias = 65536;			{ this - value is representation of neg}
 begin
     if n >= 0 then signedvalue := n	{ positive case }
@@ -39,7 +39,7 @@ end {signedvalue};
 	output goes to headericode file.
 	Diversion occurs only for the verifier.
 }
-procedure genbyte(fi: integer);
+procedure genbyte(fi: longint);
 begin
 if vmodes.generatecode then begin	{ if code generation on }
    if diverticode then putbyte(fi, headericode) else putbyte(fi,int);
@@ -51,7 +51,7 @@ end {genbyte};
 	As with genbyte, diversion applies.
 	Note that a word is 0..65535
 }
-procedure genword(fi: integer);
+procedure genword(fi: longint);
 begin
 if vmodes.generatecode then begin	{ if code generation on }
    if diverticode then putword(fi, headericode) else putword(fi,int);
@@ -60,7 +60,7 @@ end {genword};
 {
 	gensignedword  --  generate signed icode word
 }
-procedure gensignedword(fi: integer);
+procedure gensignedword(fi: longint);
 begin
 					{ check for machine overflow }
     if fi > 32767 then error(203 {integer constant exceeds range});
@@ -75,7 +75,7 @@ end {gensignedword};
 	If the value given is positive, the value may be as large
 	as 65535, so normal conversion does not apply.
 }
-procedure genaddressword(fi: integer);		{ word to generate }
+procedure genaddressword(fi: longint);		{ word to generate }
 begin
     if fi < 0 then				{ if negative }
 	gensignedword(fi)			{ signed form }
@@ -89,10 +89,10 @@ procedure genflit( x: valu);
 	 {-------	fixed point literal generator}
   {generate a fixed point literal}
   { note: expects that x.kind = reel }
-  var  scldval, pshift : integer;
+  var  scldval, pshift : longint;
 
 begin
-    formatflit( x, scldval, pshift );  { get a scaled integer}
+    formatflit( x, scldval, pshift );  { get a scaled longint}
     begin
       genbyte (pshift+128);	{offset scale factor by 128}
       gensignedword (scldval);
@@ -103,7 +103,7 @@ end  {genflit} ;
 	be countenanced, since the results would be machine dependent.
 	This code is therefore TEMPORARY.
 }
-function log2(r: real): integer;
+function log2(r: real): longint;
 const expmax = 125;				{ maximum exponent in machine }
 var hi, lo, x: -expmax..expmax;			{ bounds }
 begin
@@ -124,12 +124,12 @@ begin
     if power2(lo) > r then log2 := 999;		{ if out of range }
     if power2(lo+1) <= r then log2 := 999;	{ if out of range }
 end {log2};
-function typsize(fq: stp): integer; forward;
+function typsize(fq: stp): longint; forward;
 
 
 
 
-function typalign(fq: stp): integer;
+function typalign(fq: stp): longint;
 begin {typalign}
 if fq <> nil then with fq^ do case form of
   scalar, booleant, chart, longintt, fixedt,
@@ -156,7 +156,7 @@ end {typalign};
 
 
 
-function setsize(fq: stp): integer;
+function setsize(fq: stp): longint;
 begin {setsize}
 if fq <> nil then with fq^ do
   case form of
@@ -175,7 +175,7 @@ end {setsize};
 
 
 
-function typsize(fq: stp): integer;
+function typsize(fq: stp): longint;
 		{ This function returns the size, in bytes, required
 		  for the unpacked representation of the type
 		  designated by its argument.			    }
@@ -194,20 +194,20 @@ else typsize := 0
 end {typsize};
 
 
-function typwidth (tp:stp) : integer;
+function typwidth (tp:stp) : longint;
 		{ This function returns the width required in bits
 		  for the packed representation of the type
 		  designated by its argument.			  }
 
-  var t : integer;
+  var t : longint;
 
 {
 	nbits  --  returns the number of bits required to represent
 		   a quantity as a twos complement binary number WITHOUT
 		   a sign bit.
 }
-function nbits(quantity: integer): integer;
-var n, twoton: integer;			{ n, 2**n }
+function nbits(quantity: longint): longint;
+var n, twoton: longint;			{ n, 2**n }
 begin
     if quantity < 0 then quantity := (-quantity)-1; { handle negatives }
     n := 1; twoton := 2;
@@ -253,7 +253,7 @@ begin {typwidth}
 	typwidth := 8*size
     end
 end  {typwidth};
-    function getatomsize( z: stp ): integer;
+    function getatomsize( z: stp ): longint;
 	{ size of var or element size if array }
       begin
 	if z^.form = arrayt then
@@ -262,16 +262,16 @@ end  {typwidth};
 	  getatomsize := typsize( z )
       end;
 
-procedure genlit(fi: integer);
+procedure genlit(fi: longint);
 	 {------		generate a literal }
 begin
-  if fi >= numlimit then error( 203 {integer constant too large});
+  if fi >= numlimit then error( 203 {longint constant too large});
   genbyte(162); gensignedword(fi)
 end {genlit};
 
 
 
-procedure genscl( op: integer; targettype: stp);
+procedure genscl( op: longint; targettype: stp);
 	 {------		generate FIX & RESCL operators }
 	 {	this procedure assumes the first operator has  }
 	 {	been generated.				       }
@@ -297,8 +297,8 @@ end;	{genscl}
 
 procedure gendat(var fattr: attr);
 var
-  i, j, n: integer;
-  ssize: integer;		{ size of set }
+  i, j, n: longint;
+  ssize: longint;		{ size of set }
 begin {gendat}
 if (fattr.akind = cst) and (fattr.avalue.kind = setc) then
   if fattr.atype <> nil then with fattr.atype^ do begin
@@ -352,14 +352,14 @@ end {gencon};
 
 
 
-procedure gendif(fi: integer);
+procedure gendif(fi: longint);
 begin
 if fi <> 0 then if fi > 0
   then begin genlit(fi); genbyte(32 {IADD}) end
   else begin genlit(-fi); genbyte(33 {ISUB}) end
 end {gendif};
 
-procedure gendbyte(fi: integer);
+procedure gendbyte(fi: longint);
 begin
 if vmodes.generatecode then begin	{ if not in some verifier mode }
    putbyte(fi,dat);
@@ -369,7 +369,7 @@ end {gendbyte};
 {
 	gendword  --  generate an unsigned word in the data file
 }
-procedure gendword(fi: integer);
+procedure gendword(fi: longint);
 begin
 if vmodes.generatecode then begin	{ if not in some verifier mode }
   putword(fi,dat);
@@ -381,7 +381,7 @@ end {gendword};
 
 	The signed representation is that of the target machine.
 }
-procedure gendsignedword(fi: integer);
+procedure gendsignedword(fi: longint);
 begin
     gendword(signedvalue(fi));		{ generate in signed form }
 end {gendsignedword};
@@ -392,7 +392,7 @@ end {gendsignedword};
 
 procedure genid(fid: idp);
 var
-  i: integer;
+  i: longint;
 begin
 if fid <> nil then with fid^ do begin
   genbyte(l);
@@ -408,7 +408,7 @@ end {genid};
 	Used when errors are detected in processing expressions
 	to keep constructs valid.
 
-	The error expression is an integer constant, value
+	The error expression is an longint constant, value
 	0, type 0..0
 }
 procedure errorexpr;
@@ -584,7 +584,7 @@ begin
 	  at.avalue := nval
 	end
       else
-	begin  {set fx. pt. range equal to subrange of integer }
+	begin  {set fx. pt. range equal to subrange of longint }
 	  rlow := at.atype^.minvalue;  rhigh := at.atype^.maxvalue
 	end
     end;
@@ -659,7 +659,7 @@ procedure selector (fp: itp;
 var
   lattr: attr;
   p: itp;
-  loffset: integer;
+  loffset: longint;
   more: boolean;
   finalload: boolean;			{ is final genload requried? }
 
@@ -667,7 +667,7 @@ var
 
 
 procedure genload;
-    function getatomsize( z: stp ): integer;
+    function getatomsize( z: stp ): longint;
 	{ size of var or element size if array }
       begin
 	if z^.form = arrayt then
@@ -735,7 +735,7 @@ if gattr.atype <> nil then
 end {genload};
 
 
-procedure genfield (size, displace: integer);
+procedure genfield (size, displace: longint);
 		{generate a field modifier}
 begin
   genbyte(131 {FIELD});

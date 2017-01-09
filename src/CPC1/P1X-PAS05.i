@@ -4,7 +4,7 @@
 function searchlevel(fp: itp): itp;
 var
   p: itp;
-  i: integer;
+  i: longint;
   found: boolean;
 begin {searchlevel}
 p := fp;
@@ -23,7 +23,7 @@ end {searchlevel};
 
 function searchid ( fs: setclass ) : itp;
 	{--------  			** identifier  monkey  ** }
-  var p: itp;  il: chain;  m, errf: integer;
+  var p: itp;  il: chain;  m, errf: longint;
 	
 	{This function searches trees in the identifier forest for the
 	 ident in the global variable "id".  If id is not found, the routine
@@ -105,7 +105,7 @@ function searchid ( fs: setclass ) : itp;
 procedure newid(fc: classes; fq: stp; fn: itp; var fp: itp);
 var
   p, p1, p2: itp;
-  i: integer;
+  i: longint;
   lleft: boolean;
 begin {newid}
 case fc of
@@ -167,7 +167,7 @@ function  exporter (candidate: itp ): boolean;
 			If a match is found, the "enclosed_ident"
 			field of the matched identifier is made to point
 			to the identifier being declared.              }
-  var p: chain;  m: integer;
+  var p: chain;  m: longint;
 
   begin
     exporter := false;	{initial assumption is not exported}
@@ -206,14 +206,14 @@ function  exporter (candidate: itp ): boolean;
 	**************************************************************
 	*************************************************************}
 
-procedure formatflit( x: valu; var m,s: integer);  forward;
+procedure formatflit( x: valu; var m,s: longint);  forward;
 
 
 procedure printyp( t:stp );
 	 {-------			}
 	 {output a type definition to the symbol table, including all of
 	  its subtypes which have not been printed.	}
-  var tman, tskal: integer;		{temps for fixed point output}
+  var tman, tskal: longint;		{temps for fixed point output}
   begin
     if t <> nil then with t^ do
       if not marked then
@@ -317,7 +317,7 @@ procedure printident( idtree: itp );
 			of identifiers 		}
 
   const sfw = 4;	{field width for serial numbers of types}
-  var iman,iskal: integer;	{temps for fix pt mantissa, scale}
+  var iman,iskal: longint;	{temps for fix pt mantissa, scale}
   begin
     if idtree <> nil then
       with idtree^ do

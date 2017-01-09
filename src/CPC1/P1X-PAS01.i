@@ -1,7 +1,7 @@
 type
   lltype = 0..maxlevel;
-  addrrange = integer;		{address type}
-  fint =file of integer;
+  addrrange = longint;		{address type}
+  fint =file of longint;
 
 				{value information}
 				{*****************}
@@ -10,8 +10,8 @@ type
   stndsetptr = ^stndset;	{ strong typing requires this }
   cstclass = (lit,data,reel,setc);
   valu = record case kind: cstclass of
-    lit: (ival: integer);
-    data: (daddr: integer);
+    lit: (ival: longint);
+    data: (daddr: longint);
     reel: (rval, prcsn: real);
     setc: (sval: stndsetptr)
   end;
@@ -101,15 +101,15 @@ type
 				{*****************}
   stp = ^struct;		{pointer to type information}
   struct = record
-    size: integer;
+    size: longint;
     marked: boolean;	{used by printtables}
-    tserial: integer;	{ external type identification}
+    tserial: longint;	{ external type identification}
     typeid: itp;			{ link to id for named types }
     case form: forms of
     scalar, booleant, chart, integert, longintt: (
       maxconst: itp;
-      maxvalue: integer;		{ upper bound }
-      minvalue: integer);		{ lower bound }
+      maxvalue: longint;		{ upper bound }
+      minvalue: longint);		{ lower bound }
     fixedt: (
       rlow,rhigh,precsn: real);
     signalt: (
@@ -138,7 +138,7 @@ type
 				{ currently an empty variant }
 	);
     variant: (
-      varval: integer;		{tagfield value for this variant}
+      varval: longint;		{tagfield value for this variant}
       firstvfld: itp;		{1st idnt in fieldlst for this varnt}
       nxtvar,			{next variant in record containing this vrnt}
       subvar: stp)		{analog of recvar for the variant fieldlist}
@@ -178,13 +178,13 @@ type
 			for example, the parameter list of a procedure
 			or the field list of a record.		}
   idents = record
-    iserial: integer;	{serial number - used by PrintIdent}
+    iserial: longint;	{serial number - used by PrintIdent}
     name: idp;	{address of identifier string}
     llink, rlink: itp;	{pointers to build binary tree}
     itype: stp;		{pointer to type information}
     next: itp;		{used to build lists of identifiers}
-    fileser: integer;		{ file number in which declared (for diags) }
-    lineser: integer;		{ line number on which declared (for diags) }
+    fileser: longint;		{ file number in which declared (for diags) }
+    lineser: longint;		{ line number on which declared (for diags) }
     case klass: classes of
     types: ();
     konst: (kvalue: valu);
@@ -192,13 +192,13 @@ type
       vkind: varkinds;
       vlev: lltype;
       vaddr: addrrange;
-      typserial: integer;	{type serial number for this variable}
+      typserial: longint;	{type serial number for this variable}
       vclass: verclass);	{ normal, EXTRA, or FREE }
     field:(
       fvclass: verclassdoers;	{ EXTRA or executable }
       case ispacked: boolean of
       false: (fdisp: addrrange);
-      true: (bdisp: integer));
+      true: (bdisp: longint));
     proc:(
       pvclass: verclassdoers;	{ EXTRA or executable }
       restrictor: itp;	{ if this proc is exported from a monitor, then
@@ -208,9 +208,9 @@ type
 	plev: lltype;
 	paddr: addrrange);
       stnd: (
-	psinx: integer);
+	psinx: longint);
       extn: (
-	pxinx: integer));
+	pxinx: longint));
     modul:(
       exportlist, importlist: chain;
       exclusion : mkinds;		{module or monitor}
@@ -220,7 +220,7 @@ type
 	  mlev: lltype;
 	  maddr: addrrange);
         extn: (
-	  mxinx: integer)  );
+	  mxinx: longint)  );
     xports: (
       enclosedident: itp;	{^ to ident in scope from which it's exported}
       fromclass: classes)
@@ -250,7 +250,7 @@ type
       ref: (
 	access: accessmodes;
 	alevel: lltype;
-	addr: integer)
+	addr: longint)
     end;
 
   signalinfo = record
@@ -272,10 +272,10 @@ type
     sym: symtype
   end;
   nametab = array[0..nrbuiltin1] of idtype;
-  sizetables = array[forms] of integer;
+  sizetables = array[forms] of longint;
   binoptab = array[forms,operatorenum] of 0..255;
   doargtab = array[0..nrbuiltin1] of set of (hasarg, getarg);
-  litshfttab = array[0..auword] of integer;
+  litshfttab = array[0..auword] of longint;
   options =array['A'..'Z'] of boolean;
 
 		{type which defines file parameters passed by GET_DIRECTIVES}

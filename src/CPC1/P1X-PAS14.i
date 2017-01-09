@@ -5,7 +5,7 @@
 	procedure block, to allow diversion to the icode diversion
 	file for verifier reordering of icode.
 }
-procedure genintbyte(n: integer); begin putbyte(n,int); end;
+procedure genintbyte(n: longint); begin putbyte(n,int); end;
 {
 	Main Program of Pass One
 }

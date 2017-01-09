@@ -3,20 +3,20 @@
 var
   sym: symtype;			{symbol type and classification}
   val: valu;			{value of constant}
-  lgth: integer;		{length of string}
+  lgth: longint;		{length of string}
   stringvar: packed array[0..strlen1] of char;	{value of string}
   id: idtype;			{last identifier}
   ch: char;			{last character}
   atendoffile: boolean;		{ true after EOF detected in source }
-  lstfilen: integer;		{ serial of last file name printed }
-  outputfilen: integer;		{ ditto for terminal output }
+  lstfilen: longint;		{ serial of last file name printed }
+  outputfilen: longint;		{ ditto for terminal output }
   validpathchars: set of char;	{ chars allowed in include file names }
-  lastlinenumber: integer;	{ within-file number of last line read }
-  lastfilenumber: integer;	{ file number of last line read }
+  lastlinenumber: longint;	{ within-file number of last line read }
+  lastfilenumber: longint;	{ file number of last line read }
   chavail: 0..mbuf;		{ characters available on current input line }
   symbolsprohibited: boolean;	{ true after include detected until next EOL }
   chcnt: 0..mbuf;			{character counter} {ecn}
-  linenum,pagenum: integer;		{line counter}
+  linenum,pagenum: longint;		{line counter}
   linenr : pack5;
   chartab:chartabtype;
   bline :  array[1..mbuf] of char; {line buffer} { MUST BEGIN AT 0 W/NEW PAS05 }
@@ -39,7 +39,7 @@ var
  
                                {error messages:}
                                {***************}
-  errtot: integer;             {total number of errors}
+  errtot: longint;             {total number of errors}
   errinx: 0..7;                {number of errors in current line}
   errlist: array [1..7] of record pos: 1..mbuf;  nmr: 1..1500 end;
   errorfreecharacter: boolean;	{a switch used to suppress
@@ -56,7 +56,7 @@ var
 				{pointers to builtin types:}
 				{**************************}
   boolptr, charptr, intptr, realptr, xcptnptr, signalptr, textptr, nilptr: stp;
-  typeserial: integer;		{a global serial number for types}
+  typeserial: longint;		{a global serial number for types}
   notypeptr: stp;			{ undefined type pointer }
  
  
@@ -65,7 +65,7 @@ var
 				{dummy identifiers for undeclareds:}
 				{**********************************}
   udptrs: array[classes] of itp;
-  idserial: integer;		{a global serial number for identifiers}
+  idserial: longint;		{a global serial number for identifiers}
  
  
  
@@ -92,14 +92,14 @@ var
 	cdev: (			{direct access to a device (ABSOLUTE)}
 	  dvaddr: addrrange);
 	vrec: (			{indirect (variable) access}
-	  tnum: integer)
+	  tnum: longint)
 	  )
     end;
   top, disx, level: disprange;	{indices into display}
 
 				{blockstack - indexed by mem alloc level }
   blockstack: array[disprange] of record
-	blockpin: integer;	{ procedure number of this block }
+	blockpin: longint;	{ procedure number of this block }
 	end;
 
   pin,			{procedure number}
@@ -107,7 +107,7 @@ var
   ac,			{parameter address counter}
   dc,			{fixed data address counter}
   lc,			{local variable address counter}
-  tc: integer;		{temporary (with ...) variable counter}
+  tc: longint;		{temporary (with ...) variable counter}
 
 				{** conditions returned by searchid **}
   foreign: boolean;	{true if ident is imported or exported; else false}
@@ -126,17 +126,17 @@ var
   gattr: attr;		{ attributes of current expression }
   lcp: itp;		{ points to main program ident structure }
   prioritycontext: 0 .. maxprio;	{priority of current context }
-  signalcount: integer;
+  signalcount: longint;
   signallist: array[1..maxsignal] of signalinfo;
   nl: char;		{ the new line character (LF, CR, .. whatever) }
-  i: integer;
+  i: longint;
 		{scratch variables to process outer level export list}
   endxlist: boolean;	{loop control variable}
   mchain,mchain1: chain;	{links for export list}
   idptr: itp;
 
    stmntnmr,			{ current stmt # - set in statement }
-   firststmnt: integer;	{ first stmnt on a given line set by getnxtline}
+   firststmnt: longint;	{ first stmnt on a given line set by getnxtline}
   chartok: chartoktab;
   keyword: keywords;
   names:nametab;
@@ -145,7 +145,7 @@ var
   usize,ualign : sizetables;
   shfttab : litshfttab;
   fname : pack6; {primary name of source file,returned by getf}
-  numline : integer; {number of entries in debug file}
+  numline : longint; {number of entries in debug file}
   literalcase,xxfile,xfile:boolean;
 
   sourceinfo,objinfo,buginfo : pack80;	{file names for pass2 & listing}

@@ -53,7 +53,7 @@ end {assertion};
 procedure statement;
 var
   p: itp;
-  lclstmntnmr: integer;	{save the startement number locally}
+  lclstmntnmr: longint;	{save the startement number locally}
   genstmntnmr: boolean;	{ TRUE if we must generate stmt nr (~NULL)}
 
 
@@ -173,7 +173,7 @@ end {ifstatement};
 procedure casestatement;
 var
   q: stp;
-  lmin, lmax, nrent, nrval: integer;
+  lmin, lmax, nrent, nrval: longint;
   statementsparsed, labelsparsed: boolean;  {parser loop control}
 begin {casestatement}
 valueexpression;	{ parse case selector expression }
@@ -296,7 +296,7 @@ end {forstatement};
 procedure withstatement;
 var
   p: itp;
-  nrwiths: integer;
+  nrwiths: longint;
   done: boolean;
 begin {withstatement}
 nrwiths := 0;
@@ -396,7 +396,7 @@ begin
 	insymbol;			{ discard ( }
         valueexpression;		{ parse the expression }
         if not assignable(gattr.atype, intptr) then { if bad expr type }
-	    error(1041 {integer expression required}); { diagnose }
+	    error(1041 {longint expression required}); { diagnose }
 	if sym.sy = rparen then begin	{ if ) found }
 	    insymbol;			{ skip over it }
 	end else begin			{ if no ) after expr }
@@ -417,8 +417,8 @@ end {measurestatement};
 
 	This handles ASSERT, STATE, and SUMMARY statements.
 }
-procedure assertionstring(subcode: integer);	{ STATE, ASSERT, etc. }
-var cnt: integer;				{ count of ASSERT parts }
+procedure assertionstring(subcode: longint);	{ STATE, ASSERT, etc. }
+var cnt: longint;				{ count of ASSERT parts }
 begin
     if sym.sy <> lparen then begin		{ if not left paren }
 	error(9 { expected '(' });		{ diagnose }
@@ -543,7 +543,7 @@ procedure  exception;
  			{parse an exception handler  }
 			{****************************}
 
-  var  namecount: integer;
+  var  namecount: longint;
 
   procedure  exceptionname;
 				{scan current symbol for exception name}
@@ -643,7 +643,7 @@ end {ruledecl};
 	after the block header has been completely processed.
 	When running as the compiler, code generation is turned off
 }
-procedure assertionsequence(subcode: integer);	{ class of assertion }
+procedure assertionsequence(subcode: longint);	{ class of assertion }
 begin
     diverticode := true;		{ diver this to holding file }
     while sym.sy in			{ while possible beginning of expr }
@@ -721,7 +721,7 @@ begin
     if verifier then genlineid;		{ line number for error messages }
     valueexpression;			{ parse depth expression }
     if not assignable(gattr.atype, intptr) then { if bad expr type }
-	error(1041 {integer expression required}); { diagnose }
+	error(1041 {longint expression required}); { diagnose }
     genbyte(248 {DEPTH} );		{ DEPTH operator }
     seqcount(headerasserts);		{ generate SEQ if needed }
     if sym.sy <> semicolon then error(14 {expected ';'});
@@ -742,7 +742,7 @@ end {depthdecl};
 	so that all the header code for the block will be together.
 }
 procedure verheader;
-var icodebyte: integer;			{ actually 0..255 }
+var icodebyte: longint;			{ actually 0..255 }
 begin
     assert(verifier);			{ called only in verifier }
     assert(not diverticode);		{ done diverting }

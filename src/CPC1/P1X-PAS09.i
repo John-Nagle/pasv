@@ -21,10 +21,10 @@ var
 procedure factor;
 var
   coffset: addrrange;
-  cvalue: integer;
+  cvalue: longint;
   p: itp;
   q: stp;
-  n, nmax: integer;
+  n, nmax: longint;
   s: stndsetptr;
   cstpart, varpart: boolean;
   endoflist: boolean;
@@ -65,9 +65,9 @@ case sym.sy of
     gattr.akind := cst;
     talloc( gattr.atype, integert, true );
     with gattr.atype^ do
-      begin  {define the type as a single point subrange of integer}
-        form := integert;		{ base type is integer }
-	size := 2;	{integer size}
+      begin  {define the type as a single point subrange of longint}
+        form := integert;		{ base type is longint }
+	size := 2;	{longint size}
 	maxconst := nil;		{ not a scalar }
 	maxvalue := val.ival;
 	minvalue := val.ival

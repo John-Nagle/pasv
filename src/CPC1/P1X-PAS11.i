@@ -85,7 +85,7 @@ procedure valuedecl;
 
 var
   p, tn : itp;
-  coffset : addrrange;  cvalue : integer;
+  coffset : addrrange;  cvalue : longint;
   b: boolean;	{ dummy }
 
   procedure structconst( fq: stp; emit: boolean );
@@ -101,10 +101,10 @@ var
     var
 	nxtfld: itp;	{used to step through fields of a record}
 	caddr:  addrrange;	{temp to save start address of array/record}
-	nrelts, eltsize: integer;
-	lmax, lmin: integer;		{ bounds of index type }
-	tvalue, tscale: integer;  	{temps for fixed point conversion}
-	k: integer;
+	nrelts, eltsize: longint;
+	lmax, lmin: longint;		{ bounds of index type }
+	tvalue, tscale: longint;  	{temps for fixed point conversion}
+	k: longint;
 	qq: stp;	{temp for searching variants}
 	ptg: itp;	{temp pointer to tag field }
 	foundit: boolean;
@@ -126,7 +126,7 @@ var
 	      if fq^.form = fixedt then
 		begin	{scale and output }
 		  transfertype( fq, gattr );  { get the scaling correct}
-		  formatflit( gattr.avalue, tvalue, tscale ); {convert to scaled integer}
+		  formatflit( gattr.avalue, tvalue, tscale ); {convert to scaled longint}
 		  if emit then gendword( tvalue)
 		end
 	      else  if emit then

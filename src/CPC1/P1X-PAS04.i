@@ -4,12 +4,12 @@
 	System-dependent routines have been removed from this file.
 }
  
-function match(var s1: buffer; l1: integer; var s2:buffer; l2 :integer):integer;
+function match(var s1: buffer; l1: longint; var s2:buffer; l2 :longint):longint;
     { Lexical compare of two identifiers  .................}
 	{ RETURNS: match=0 if s1=s2; match<0 if s1<s2; match> 0 if s1>s2}
 	{ RESTRICTION: must call with L1<=alfaleng,L2<=alfaleng  }
 var
-  i, n: integer;
+  i, n: longint;
 begin {match}
   n := imin(l1, l2);
   i := 1;
@@ -28,7 +28,7 @@ end {match};
 }
  
  
-procedure error(n: integer);
+procedure error(n: longint);
 begin {error}
   if (errinx < 7) and errorfreecharacter  then 
    begin
@@ -55,9 +55,9 @@ function firstclass( setc: setclass ): classes;
 	english  --  retrieve error message text from ERMSG-TXT file
 }
 
-procedure english( n: integer );
+procedure english( n: longint );
 	 {-------		prints an error message in english }
-  var i: integer; 
+  var i: longint; 
   // c: char;
   var s: string;    { new }
   begin
@@ -82,12 +82,12 @@ procedure english( n: integer );
 	if not option['N'] then writeln(output);
       end
   end;		{english}
-procedure printlist( k: chain; nm: integer {error number} );
+procedure printlist( k: chain; nm: longint {error number} );
 	 {---------		procedure to print a list of identifiers
 				according to the error message options.
 				(used to list undeclared exported idents)}
   const indent = 6; linelimit = 65;
-  var i: integer;
+  var i: longint;
       o,t: boolean;
       sep: char;
   begin
@@ -135,7 +135,7 @@ procedure printlist( k: chain; nm: integer {error number} );
 }
 procedure endofline;
   const  margin = 7;	{see also getnextline,  below}
-  var k: integer;
+  var k: longint;
 begin {endofline}
     symbolsprohibited := false;		{ symbols allowed now }
     if option['L'] then writesourceline(lst,lstfilen); { listing file }
@@ -171,7 +171,7 @@ const
   ten = 10.0;  {***TEMP***}
 var
   quitloop: boolean;                    { LOOP statement removal }
-  i, j, k, n, scale, radix: integer;
+  i, j, k, n, scale, radix: longint;
   r, sf, fac: real;
   digits: array[1..digmax] of 0..9;
   terminator: char;

@@ -9,14 +9,14 @@
 {
 	imin - minimum of two integers
 }
-function imin(a,b: integer): integer;		{ Perhaps should be built-in }
+function imin(a,b: longint): longint;		{ Perhaps should be built-in }
 begin {imin}
     if a>b then imin := b else imin := a;
 end {imin};
 {
 	imax - maximum of two integers
 }
-function imax(a,b: integer): integer;		{ Perhaps should be built-in }
+function imax(a,b: longint): longint;		{ Perhaps should be built-in }
 begin {imax}
     if a<b then imax := b else imax := a;
 end {imax};
@@ -50,11 +50,11 @@ end {makeuppercase};
 
 	This really doesn't do anything
 }
-procedure mark(n: integer); {covers built in procedure of TOPS-20 pascal}
+procedure mark(n: longint); {covers built in procedure of TOPS-20 pascal}
   begin
   end;
  
-procedure release(n: integer);
+procedure release(n: longint);
   begin
   end;
 {
@@ -280,7 +280,7 @@ end {initoutput};
 	writesourceline  --  write current source line to specified file
 }
 procedure writesourceline(var outf: text;		{ use specified file }
-			var lastheader: integer);	{ last hdr printed }
+			var lastheader: longint);	{ last hdr printed }
 const margin = 10;				{ margin before source line }
 var i: 1..mbuf;					{ for printing line }
 begin

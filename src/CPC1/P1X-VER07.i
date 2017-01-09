@@ -37,8 +37,8 @@ procedure vitembuild(vdepth: vitemdepth;	{ depth into type def }
 		     vtype: stp;		{ type of var or field }
 		     vpack: boolean;		{ true if packing }
 		     vby: paramkind;		{ kind of param }
-		     vfile: integer;		{ file number }
-		     vline: integer);		{ source line number }
+		     vfile: longint;		{ file number }
+		     vline: longint);		{ source line number }
 const
     setelement = 'SET_ELEMENT    ';		{ dummy identifier }  
     anontype =   'UNNAMED_TYPE   ';		{ dummy record type }
@@ -354,10 +354,10 @@ begin
 	String constants and structured data constants are data constants unless
 	used in VALUE or CONST declarations.
 }
-procedure vdataconst(vaddr: integer;		{ address in data space }
+procedure vdataconst(vaddr: longint;		{ address in data space }
 		       vtype: stp;		{ type of subscript }
-		       vfile: integer;		{ which source file }
-		       vline: integer);		{ source line number }
+		       vfile: longint;		{ which source file }
+		       vline: longint);		{ source line number }
 const
     bitsperchar = 8;				{ bits per character }
 var                                                     

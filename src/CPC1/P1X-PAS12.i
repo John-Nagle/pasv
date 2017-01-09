@@ -2,8 +2,8 @@ procedure procdecl (procextra: boolean;  isfunction: boolean);
 var
   p1, p2, p3, p4: itp;
   oldfwptr, oldvarlst: itp;
-  oldac, olddc, oldlc, oldpin: integer;
-  rvsize: integer;
+  oldac, olddc, oldlc, oldpin: longint;
+  rvsize: longint;
   oldlevel, oldtop: disprange;
   wasforward, isexported: boolean;
   ptype: unittype;
@@ -273,7 +273,7 @@ const exprt = true;  imprt = false;
       saveid: idtype; 	{for export undeclared check}
       oldtop: disprange;
       oldfwptr: itp;
-      oldpin: integer;
+      oldpin: longint;
       oldprio: 0 .. maxprio;	{priority of containing context}
       ptype: unittype;
 
@@ -372,7 +372,7 @@ begin  {moddecl}
 	insymbol;	{eat the keyword}
 	expression;		{parse priority value}
 	if gattr.akind <> cst then  error( 106 {constant expected})
-	else if gattr.avalue.kind <> lit then error( 15  {integer expected})
+	else if gattr.avalue.kind <> lit then error( 15  {longint expected})
 	else if (gattr.avalue.ival<0) or (gattr.avalue.ival>maxprio) then
 	  error( 172 {invalid priority level})
 	else

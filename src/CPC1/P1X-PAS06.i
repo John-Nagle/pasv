@@ -1,11 +1,11 @@
 {*******************************************************************
  *			UTILITY  ROUTINES			   *
  *******************************************************************}
-function ceil(fa, fb: integer): integer;	{***ALSO SHOULD BE BUILT-IN?}
+function ceil(fa, fb: longint): longint;	{***ALSO SHOULD BE BUILT-IN?}
 begin {ceil}
   ceil := (fa + (fb - 1)) div fb * fb
 end {ceil};
-  function power2 (p : integer) : real;
+  function power2 (p : longint) : real;
 	  {-------			computes  2**p  }
   begin
     if p = 0 then power2 := 1.0
@@ -70,7 +70,7 @@ procedure talloc( Var TY:stp; fm: forms; sbrng:boolean );
 
 
 
-procedure getbounds(fq: stp; var fmin, fmax: integer);
+procedure getbounds(fq: stp; var fmin, fmax: longint);
 begin {getbounds}
 fmin := 0; fmax := 0;	{ until shown otherwise }
 if fq <> nil then with fq^ do
@@ -83,7 +83,7 @@ end {getbounds};
 	putbyte  --  put out byte.
 		     A byte is 0..255
 }
-procedure putbyte(i:integer; var f:fint);
+procedure putbyte(i:longint; var f:fint);
 begin
   if i > 255 then  error( 400  {compiler error} )
   else begin if i < 0   then  error( 400  {compiler error} )
@@ -94,7 +94,7 @@ end;
 	putword  --  put out word
 		     A word is 0..65535
 }
-procedure putword(i:integer; var f:fint);
+procedure putword(i:longint; var f:fint);
 begin
   if i > 65535 then  error( 400  {compiler error} )
   else begin if i < 0   then  error( 400  {compiler error} )
@@ -113,12 +113,12 @@ end;
     mantissas are always 0 < m < 0.5
     ***CHECK THIS***
 }
-function expo(x: real) : integer;
+function expo(x: real) : longint;
 begin    
     expo := trunc(log2(abs(x)))+1;     { calculate equivalent mantissa }
 end {expo};
 
-procedure formatflit( x: valu;  VAR m,s: integer );
+procedure formatflit( x: valu;  VAR m,s: longint );
 	 {-----------		This procedure converts a fixed point
 			literal from its internal form (real) to  an
 			integer mantissa and a scale factor	      }
@@ -149,7 +149,7 @@ procedure formatflit( x: valu;  VAR m,s: integer );
 procedure verclasschk(thisclass: verclass;	{ class of identifier }
 		      reqkind: refchg);		{ request, change, or both }
 var isok: boolean;			{ result from table }
-    errno: integer;			{ error number }
+    errno: longint;			{ error number }
     changemsg: boolean;			{ diagnose change not allowed, vs ref }
 begin
 

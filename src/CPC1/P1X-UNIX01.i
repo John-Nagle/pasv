@@ -17,7 +17,7 @@ pathname = array [1..pathnamemax] of char;
 fileitem = record
 	infile: text;			{ the file itself }
 	fname: pathname;		{ file name string }
-	linenumber: integer;		{ current position in file }
-	filenumber: integer;		{ serial of this file }
+	linenumber: longint;		{ current position in file }
+	filenumber: longint;		{ serial of this file }
 	state: filestate;		{ state of this file }
 	end;

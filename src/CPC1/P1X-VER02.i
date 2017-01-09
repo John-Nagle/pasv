@@ -5,7 +5,7 @@ varfile: file of varitem;		{ variables file for pass 2 }
 srcfile: file of sourceline;		{ source lines for later passes }
 filfile: text;				{ file of file names read }
 srcitem: sourceline;			{ source line for source file }
-srcserial: integer;			{ ties source lines to icode }
+srcserial: longint;			{ ties source lines to icode }
 {
 	Verifier data initialization procedures
 }

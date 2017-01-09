@@ -53,7 +53,7 @@ procedure calluser (fp: itp);
 var
   p: itp;
   q: stp;
-  nrofparm, retvsize: integer;
+  nrofparm, retvsize: longint;
   formalextra: boolean;		{ true if formal arg is EXTRA }
   want: verclass;		{ desired verclass of formal arg }
 begin {calluser}
@@ -209,7 +209,7 @@ with fp^ do begin
 	if (gattr.atype <> nil) and (gattr.atype^.form > integert) then
 	  error(125);
 	if gattr.atype^.form <> integert then
-	  begin  {change type to (subrange of) integer}
+	  begin  {change type to (subrange of) longint}
 	    ptem := gattr.atype;
 	    talloc( gattr.atype, integert, true );
 	    with gattr.atype^ do
@@ -229,7 +229,7 @@ with fp^ do begin
       4: begin				{ trunc }
 	   if gattr.atype^.form <> fixedt then error(125)
 	   else if rmax( abs(gattr.atype^.rlow), abs(gattr.atype^.rhigh) ) > maxfix then
-	     error( 207   {fixed point overflow in integer conversion});
+	     error( 207   {fixed point overflow in longint conversion});
 	   if gattr.akind = cst then
 	    begin
 	     gattr.avalue.ival := trunc(gattr.avalue.rval);
@@ -242,7 +242,7 @@ with fp^ do begin
       5: begin				{ round }
 	   if gattr.atype^.form <> fixedt  then error(125 {illegal parameter type})
 	   else if rmax( abs(gattr.atype^.rlow), abs(gattr.atype^.rhigh) ) > maxfix then
-	     error( 207   {fixed point overflow on conversion to integer});
+	     error( 207   {fixed point overflow on conversion to longint});
 	   if gattr.akind = cst then
 	     begin
 	       gattr.avalue.ival:=round(gattr.avalue.rval);

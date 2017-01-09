@@ -366,7 +366,7 @@ end {initvmodetab};
 
 procedure initglobal;
 var
-  i:integer;
+  i:longint;
 begin
 
 			{initialize values of control characters}
@@ -416,7 +416,7 @@ procedure inittables; {initialized symbol tables with standard
  
 var
   p: itp;
-  i: integer;
+  i: longint;
 begin {inittables}
 {Initialize display}
   level := 0;  top := 0;
@@ -427,8 +427,8 @@ begin {inittables}
     blockpin := 0;				{ serial number of outer block }
     end;
 {***integer***}
-  talloc( intptr, integert, false );  {allocate type integer}
-  with intptr^ do begin  			{ define type integer }
+  talloc( intptr, integert, false );  {allocate type longint}
+  with intptr^ do begin  			{ define type longint }
 	size := 2;				{ 2 bytes }
 	minvalue := -32768;         		{ minimum in 16-bit 2s comp }  
 	maxvalue := +32767;			{ maximum integer }

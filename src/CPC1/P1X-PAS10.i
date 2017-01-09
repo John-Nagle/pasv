@@ -1,19 +1,19 @@
 
 procedure typ (var fq: stp);	{ parse type definitions }
 var
-  fldoffset, bitoffset: integer;
+  fldoffset, bitoffset: longint;
   p: itp;
   q, q1, q2 : stp;
-  oldtop, n, lmin, lmax: integer;
+  oldtop, n, lmin, lmax: longint;
   packrequest : boolean;
-  pw : integer;  	{temporary for adjusting fixed point precision}
+  pw : longint;  	{temporary for adjusting fixed point precision}
   endoflist: boolean;
 
 
 procedure subrange(var fq: stp);
 var
   q, q1: stp;
-  lmin: integer;
+  lmin: longint;
 begin {sub_range}
 expression;
 if gattr.akind <> cst then error(106);
@@ -54,7 +54,7 @@ fq := q
 end {sub_range};
 
 
-function checklegal( adr: integer ): boolean;
+function checklegal( adr: longint ): boolean;
 	 {-----------		check the validity of a device or signal
 				address.  At present this only implies
 				checking that the value is a valid
@@ -79,7 +79,7 @@ var
   p, p1, p2, p3: itp;
   q, q1, q2, q3, q4, q5: stp;
   maxbits, minbits,
-  maxsize, minsize: integer;
+  maxsize, minsize: longint;
   lid: idtype;
   needsemi: boolean;    	{used to ensure correct parsing for semicolons}
   continue: boolean;		{used to parse a list}
@@ -235,7 +235,7 @@ if sym.sy = casesy then
 			   variants in this fieldlist.  The subvar
 			   field (q2) is used to link those
 			   variants declared together
-			   (e.g., a & b in ... a,b:(x:integer);
+			   (e.g., a & b in ... a,b:(x:longint);
 						 c:(y:real);      )
 			   Once the fieldlist for a given set of
 			   variants is parsed (by calling fieldlist),
@@ -405,7 +405,7 @@ fixedsy:
         if avalue.kind in [reel,lit] then
 	case  avalue.kind of
 	  reel: rlow := avalue.rval;
-	  lit : rlow := avalue.ival;    { convert integer }
+	  lit : rlow := avalue.ival;    { convert longint }
 	end else begin			{ if illegal type }
 	            error(fxptrange);
 		    rlow := minfix  	{a default to stop more errors}
@@ -477,7 +477,7 @@ arraysy: begin
       begin form := arrayt; aeltyp := q1; inxtyp := nil end;
     q1 := q;
     typ(q2);
-    {  We allow "array[integer]", but it means "array[-32768..32767]" }
+    {  We allow "array[longint]", but it means "array[-32768..32767]" }
     if q2 <> nil then if q2^.form > integert then begin
       error(113);
       q2 := nil

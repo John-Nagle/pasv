@@ -32,7 +32,7 @@ procedure writefilfile(s: pathname);
 begin
     assert(false);				{ unreachable }
 end {writefilfile};
-procedure vdataconst(vaddr:integer; vtype:stp; vfile: integer; vline: integer); 
+procedure vdataconst(vaddr:longint; vtype:stp; vfile: longint; vline: longint); 
 begin
     assert(false);				{ unreachable }
 end {vdataconst};
