@@ -87,7 +87,7 @@ procedure putbyte(i:integer; var f:fint);
 begin
   if i > 255 then  error( 400  {compiler error} )
   else begin if i < 0   then  error( 400  {compiler error} )
-      else f^ := i; put(f) end;
+      else write(f,i); end; { FreePascal conversion - should write one binary byte. Needs testing. }
 end;
 
 {
@@ -99,11 +99,25 @@ begin
   if i > 65535 then  error( 400  {compiler error} )
   else begin if i < 0   then  error( 400  {compiler error} )
     else begin
-  	f^ :=i div 256; put(f);
-  	f^ :=i mod 256; put(f)
+  	putbyte(i div 256, f);
+  	putbyte(i mod 256, f);
 	end;
       end;
 end;
+{
+    expo - get floating point exponent from a real
+    
+    Not in Free Pascal
+    
+    Get log in base 2, round down, add 1 because
+    mantissas are always 0 < m < 0.5
+    ***CHECK THIS***
+}
+function expo(x: real) : integer;
+begin    
+    expo := trunc(log2(abs(x)))+1;     { calculate equivalent mantissa }
+end {expo};
+
 procedure formatflit( x: valu;  VAR m,s: integer );
 	 {-----------		This procedure converts a fixed point
 			literal from its internal form (real) to  an

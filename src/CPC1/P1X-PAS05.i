@@ -413,7 +413,7 @@ procedure markctp (fp: itp); forward;
 procedure markstp (fp: stp);
   begin {markstp}
     if  fp <> nil then with fp^ do begin
-      writeln(lst,'s:',ord(fp):8); break(lst); {lst}
+      writeln(lst,'s:',Qword(Addr(fp)):8); break(lst); {lst}
       marked := true;
 				{ CASE with OTHERS converted to IF statements }
       if form = sett then
@@ -448,7 +448,7 @@ procedure markstp (fp: stp);
 procedure markctp(fp: itp);
 begin {markctp}
   if  fp <> nil then with fp^ do begin
-    writeln(lst,'c:',ord(fp):8,ord(llink):8,ord(rlink):8,ord(itype):8); break(lst); {lst}
+    writeln(lst,'c:',Qword(Addr(fp)):8,Qword(Addr(llink)):8,Qword(Addr(rlink)):8,Qword(Addr(itype)):8); break(lst); {lst}
     markctp(llink);
     markctp(rlink);
     markstp(itype)
@@ -526,8 +526,8 @@ end {followstp};
       followctp(llink);
       write(lst, '  ');
       if name^.l <> 0 then
-	write(lst, name^.s:ord(name^.l));
-      write(lst,' ':16-ord(name^.l),ord(llink):8,ord(rlink):10,ord(itype):10,ord(next):10,' ':4);
+	write(lst, name^.s:Qword(Addr(name^.l)));
+      write(lst,' ':16-Qword(Addr(name^.l)),Qword(Addr(llink)):8,Qword(Addr(rlink)):10,Qword(Addr(itype)):10,Qword(Addr(next)):10,' ':4);
       case klass of
         types:write(lst,'type');
         konst:begin
