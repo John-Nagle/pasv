@@ -137,7 +137,7 @@ begin
 		wfield := fstfld;		{ get first field of rec }
 		while wfield <> nil do begin	{ for all fields }
 		    with wfield^ do begin       { using field item }
-		        assert(class = field);	{ must be a field }
+		        assert(klass = field);	{ must be a field }
 		        case ispacked of	{ packed or unpacked? }
 			true: fieldaddr.address := bdisp; { packed is in bits}
    			false: fieldaddr.address := 8*fdisp; {unpacked in bytes}
@@ -162,7 +162,7 @@ begin
 		wfield := fstfld;		{ get first field of rec }
 		while wfield <> nil do begin	{ for all fields }
 		    with wfield^ do begin       { using field item }
-		        assert(class = field);	{ must be a field }
+		        assert(klass = field);	{ must be a field }
 		        case ispacked of	{ packed or unpacked? }
 			true: fieldaddr.address := bdisp; { packed is in bits}
    			false: fieldaddr.address := 8*fdisp; {unpacked in bytes}
@@ -211,7 +211,7 @@ begin
     if varid <> nil then begin			{ if something to do }
 	with varid^ do begin			{ using variable item }
  	    idchain(llink);			{ left chain recursive }
-	    if class = vars then begin		{ if this is a variable }
+	    if klass = vars then begin		{ if this is a variable }
 		if vkind = local then begin	{ and not a parameter }
 	            assert(name <> nil);	{ name must exist }
                     assert(itype <> nil);	{ type must exist }
@@ -239,7 +239,7 @@ begin
 			end;			{ end interrupt loc }
 		    end;			{ end vkind=local }
 		end;				{ end class=vars }
-	    if class = konst then		{ if constant }
+	    if klass = konst then		{ if constant }
 		if kvalue.kind = data then begin	{ if VALUE clause constant }
 		    varlocation.blockn := 0;	{ block is irrelevant }
 		    varlocation.address := 8*kvalue.daddr; { address }
@@ -282,7 +282,7 @@ begin
 	rwork.vrsource.linenumber := lineser; { line number of proc decl }
 	case blkkind of			{ different kinds of block }   
 	proctyp: begin			{ procedure or function }
-	    assert(class = proc);
+	    assert(klass = proc);
 	    assert(pkind = decl);	{ check variant }
 	    rwork.loc.blockn := paddr;	{ routine serial number }
 	    rwork.form := proceduredata;{ indicate procedure or function }
@@ -291,13 +291,13 @@ begin
 	    wparam := next;		{ head of arg chain }	
 	    end;
 	montyp: begin		{ monitor }
-	    assert(class = modul);	{ monitor or module variant }
+	    assert(klass = modul);	{ monitor or module variant }
 	    assert(mkind = decl);	{ check variant }
 	    rwork.loc.blockn := maddr;	{ routine serial number }
 	    rwork.form := monitordata;	{ must be a monitor }
 	    end;
 	modtyp: begin		{ module }  
-	    assert(class = modul);	{ monitor or module variant }
+	    assert(klass = modul);	{ monitor or module variant }
 	    assert(mkind = decl);	{ check variant }
 	    rwork.loc.blockn := maddr;	{ routine serial number }
 	    rwork.form := moduledata;	{ is a module }
@@ -311,7 +311,7 @@ begin
     putvitem(rwork);			{ generate item }
     while wparam <> nil do begin	{ for all parameters }
 	with wparam^ do begin		{ using this param }
-	    assert(class = vars);	{ must be variable }
+	    assert(klass = vars);	{ must be variable }
 	    assert((vkind = param) or (vkind = formal)); { must be param }
 					{ generate argument entry }
 	    paramlocation.address := vaddr*8; { get address of param }

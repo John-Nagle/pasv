@@ -11,9 +11,12 @@ srcserial: longint;			{ ties source lines to icode }
 }
 procedure vinitialize;
 begin
-  rewrite(varfile,'pasf-vars');			{ ***TEMP*** }
-  rewrite(srcfile,'pasf-source');		{ ***TEMP*** }
-  rewrite(filfile,'pasf-files');		{ ***TEMP*** }
+  assign(varfile,'pasf-vars');
+  rewrite(varfile);			            { ***TEMP*** }
+  assign(srcfile,'pasf-source');
+  rewrite(srcfile);		                { ***TEMP*** }
+  assign(filfile,'pasf-files');
+  rewrite(filfile);		                { ***TEMP*** }
   srcserial := 0;				{ at line zero in file }
 end {vinitialize};
 {
