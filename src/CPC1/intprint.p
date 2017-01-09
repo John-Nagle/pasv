@@ -27,8 +27,8 @@ file on the terminal.
 const mtabsize = 180;
 type mtabtype = array [0..mtabsize] of packed array [0..4] of char;
      byte = 0 .. 255;
-var int, dat: file of integer; 
-    nch: integer;
+var int, dat: file of byte; 
+    nch: byte;
     printdata, selectprocs, prnt, done: boolean;
     mtab: mtabtype;
  
@@ -89,7 +89,7 @@ begin
   read(int,nch);			{ read next icode byte }
 end {nextch};
  
-procedure outmne (i: integer);
+procedure outmne (i: longint);
  
 begin {outmne}
   write(output,mtab[i]:5,'  ')
@@ -111,9 +111,9 @@ begin
 end {out8};
  
 procedure out16;
-var i:integer;
+var i:longint;
 begin
-  nextch; i := nch*256;
+  nextch; i := longint(nch)*256;
   nextch; if prnt then write(output, nch+i:6)
 end {out16};
  
@@ -173,14 +173,14 @@ procedure askuser;
 var ch: char;
 begin
   write(output,'?'); 
-  readln(input); ch := input^;
+  read(input,ch); 
   prnt := (ch='Y') or (ch='y');
   if (ch='E') or (ch='e') then done := true
 end {ask_user};
  
  
 procedure scancode;
-var i, n, opcode, opcode2: integer;
+var i, n, opcode, opcode2: longint;
 begin {scancode}
   writeln(output);				{ blank line }
   writeln(output,' Code'); writeln(output,' ----'); writeln(output);
@@ -341,13 +341,12 @@ end {scancode};
 procedure scandata;
 const nbytes = 8 {bytes printed per line};
 var
-  i, n, dataloc, lineloc: integer;
+  i, n, dataloc, lineloc: longint;
   bytes: array [1..nbytes] of byte;
   byt: byte;
-  inch: integer;
+  inch: byte;
   finished: boolean;
 begin {scandata}
-  page(output);				{ eject as required }
   writeln(output); writeln(output,' Data'); writeln(output,' ----'); writeln(output);
   dataloc := 0;
   lineloc := 0;
@@ -383,10 +382,12 @@ end {scandata};
  
  
 begin {INTPRINT}
-  initprocedure;                        { initialize constants }
-  options;				{ read options from terminal }
-  reset(int,'pasf-icode');			{ ***TEMP*** set input file }
-  reset(dat,'pasf-data');			{ ***TEMP*** set input file }
+  initprocedure;                    { initialize constants }
+  options;				            { read options from terminal }
+  assign(int,'pasf-icode');
+  reset(int);			            { ***TEMP*** set input file }
+  assign(dat,'pasf-data');			{ ***TEMP*** set input file }
+  reset(dat);
 
   done := false; prnt := true;
   scancode;

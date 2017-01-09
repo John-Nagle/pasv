@@ -1,7 +1,7 @@
 type
   lltype = 0..maxlevel;
   addrrange = longint;		{address type}
-  fint =file of longint;
+  fint =file of byte;
 
 				{value information}
 				{*****************}

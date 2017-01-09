@@ -742,15 +742,15 @@ end {depthdecl};
 	so that all the header code for the block will be together.
 }
 procedure verheader;
-var icodebyte: longint;			{ actually 0..255 }
+var icodebyte: byte;			{ actually 0..255 }
 begin
     assert(verifier);			{ called only in verifier }
     assert(not diverticode);		{ done diverting }
     reset(headericode);			{ rewind diversion file }
     while not eof(headericode) do begin { for entire diversion file }
-	read(headericode,icodebyte);	{ read a byte }
-	genbyte(icodebyte);		{ generate into main file }
-	end;
+	    read(headericode,icodebyte);	{ read a byte }
+	    genbyte(icodebyte);		{ generate into main file }
+	    end;
     seqend(headerasserts);		{ combine into one ``statement'' }
 end {verheader};
 {

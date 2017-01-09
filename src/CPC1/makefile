@@ -1,10 +1,12 @@
 #		Makefile for verifier pass one
 #
 #					Version 1.6 of 2/6/86
+#                   Revised January 2017 for Free Pascal
 #
 SOURCE=..
 DEST=../bin
 PASS1=$(SOURCE)/cpc1/src
+POPTIONS=-gl -Co -Cr
 #
 #	make 		with no arguments makes pasver1.
 #	make install	makes and installs pasver1
@@ -30,9 +32,9 @@ pasver1: P1X-VER.p P1X-PAS00.i P1X-VER00.i  P1X-UNIX00.i P1X-VER00.h \
     P1X-VER02.i P1X-PAS03.i P1X-UNIX03.i P1X-PAS04.i P1X-PAS05.i \
     P1X-PAS06.i P1X-VER07.i P1X-PAS07.i P1X-PAS08.i P1X-PAS09.i \
     P1X-PAS10.i P1X-PAS11.i P1X-PAS12.i P1X-PAS13.i P1X-PAS14.i
-	pc -w -C -g P1X-VER.p | tee errs
+	fpc $(POPTIONS) P1X-VER.p | tee errs
 	rm -f pasver1
-	mv a.out pasver1
+	mv P1X-VER pasver1
 	chmod 555 pasver1
 #
 #	Compiler Pass One
@@ -42,15 +44,15 @@ pascmp: P1X-CMP.p \
     P1X-PAS02.i P1X-UNIX02.i P1X-PAS03.i P1X-CMP03.i P1X-UNIX03.i \
     P1X-PAS04.i P1X-PAS05.i P1X-PAS06.i P1X-PAS07.i P1X-PAS08.i \
     P1X-PAS09.i P1X-PAS10.i P1X-PAS11.i P1X-PAS12.i P1X-PAS13.i P1X-PAS14.i
-	pc -w -C -g P1X-CMP.p | tee errs
+	fpc $(POPTIONS)  P1X-CMP.p | tee errs
 	rm -f pascmp
-	mv a.out pascmp
+	mv P1X-CMP pascmp
 	chmod 555 pascmp
 #
 #	Verifier Pass One Output Analyzer
 #
 analyzer1: analyzer1.p P1X-VER00.h P1X-VER01.h
-	pc -w -C -g analyzer1.p | tee errs
+	fpc $(POPTIONS) analyzer1.p | tee errs
 	rm -f analyzer1
 	mv a.out analyzer1
 	chmod 555 analyzer1
@@ -58,93 +60,17 @@ analyzer1: analyzer1.p P1X-VER00.h P1X-VER01.h
 #	Compiler Icode Printer
 #
 intprint: intprint.p
-	pc -w -C -g intprint.p | tee errs
 	rm -f intprint
-	mv a.out intprint
+	fpc $(POPTIONS) intprint.p | tee errs
 	chmod 555 intprint
 #
 #	Verifier Dictionary Printer
 #
 varprint: varprint.p P1X-VER00.h P1X-VER01.h
-	pc -w -C -g varprint.p | tee errs
 	rm -f varprint
-	mv a.out varprint
+	fpc $(POPTIONS) varprint.p | tee errs
 	chmod 555 varprint
-#
-#	Source File Retrieval
-#
-P1X-CMP.p: $(PASS1)/s.P1X-CMP.p 
-	get $(PASS1)/s.P1X-CMP.p
-P1X-CMP00.i: $(PASS1)/s.P1X-CMP00.i 
-	get $(PASS1)/s.P1X-CMP00.i
-P1X-CMP03.i: $(PASS1)/s.P1X-CMP03.i 
-	get $(PASS1)/s.P1X-CMP03.i
-P1X-PAS.p: $(PASS1)/s.P1X-PAS.p 
-	get $(PASS1)/s.P1X-PAS.p
-P1X-PAS00.i: $(PASS1)/s.P1X-PAS00.i 
-	get $(PASS1)/s.P1X-PAS00.i
-P1X-PAS01.i: $(PASS1)/s.P1X-PAS01.i 
-	get $(PASS1)/s.P1X-PAS01.i
-P1X-PAS02.i: $(PASS1)/s.P1X-PAS02.i 
-	get $(PASS1)/s.P1X-PAS02.i
-P1X-PAS03.i: $(PASS1)/s.P1X-PAS03.i 
-	get $(PASS1)/s.P1X-PAS03.i
-P1X-PAS04.i: $(PASS1)/s.P1X-PAS04.i 
-	get $(PASS1)/s.P1X-PAS04.i
-P1X-PAS05.i: $(PASS1)/s.P1X-PAS05.i 
-	get $(PASS1)/s.P1X-PAS05.i
-P1X-PAS06.i: $(PASS1)/s.P1X-PAS06.i 
-	get $(PASS1)/s.P1X-PAS06.i
-P1X-PAS07.i: $(PASS1)/s.P1X-PAS07.i 
-	get $(PASS1)/s.P1X-PAS07.i
-P1X-PAS08.i: $(PASS1)/s.P1X-PAS08.i 
-	get $(PASS1)/s.P1X-PAS08.i
-P1X-PAS09.i: $(PASS1)/s.P1X-PAS09.i 
-	get $(PASS1)/s.P1X-PAS09.i
-P1X-PAS10.i: $(PASS1)/s.P1X-PAS10.i 
-	get $(PASS1)/s.P1X-PAS10.i
-P1X-PAS11.i: $(PASS1)/s.P1X-PAS11.i 
-	get $(PASS1)/s.P1X-PAS11.i
-P1X-PAS12.i: $(PASS1)/s.P1X-PAS12.i 
-	get $(PASS1)/s.P1X-PAS12.i
-P1X-PAS13.i: $(PASS1)/s.P1X-PAS12.i 
-	get $(PASS1)/s.P1X-PAS13.i
-P1X-PAS14.i: $(PASS1)/s.P1X-PAS12.i 
-	get $(PASS1)/s.P1X-PAS14.i
-P1X-UNIX00.i: $(PASS1)/s.P1X-UNIX00.i 
-	get $(PASS1)/s.P1X-UNIX00.i
-P1X-UNIX01.i: $(PASS1)/s.P1X-UNIX01.i 
-	get $(PASS1)/s.P1X-UNIX01.i
-P1X-UNIX02.i: $(PASS1)/s.P1X-UNIX02.i 
-	get $(PASS1)/s.P1X-UNIX02.i
-P1X-UNIX03.i: $(PASS1)/s.P1X-UNIX03.i 
-	get $(PASS1)/s.P1X-UNIX03.i
-P1X-UNIX1.i: $(PASS1)/s.P1X-UNIX1.i 
-	get $(PASS1)/s.P1X-UNIX1.i
-P1X-VER.p: $(PASS1)/s.P1X-VER.p 
-	get $(PASS1)/s.P1X-VER.p
-P1X-VER00.h: $(PASS1)/s.P1X-VER00.h 
-	get $(PASS1)/s.P1X-VER00.h
-P1X-VER00.i: $(PASS1)/s.P1X-VER00.i 
-	get $(PASS1)/s.P1X-VER00.i
-P1X-VER01.h: $(PASS1)/s.P1X-VER01.h 
-	get $(PASS1)/s.P1X-VER01.h
-P1X-VER02.i: $(PASS1)/s.P1X-VER02.i 
-	get $(PASS1)/s.P1X-VER02.i
-P1X-VER03.i: $(PASS1)/s.P1X-VER03.i 
-	get $(PASS1)/s.P1X-VER03.i
-P1X-VER05.i: $(PASS1)/s.P1X-VER05.i 
-	get $(PASS1)/s.P1X-VER05.i
-P1X-VER07.i: $(PASS1)/s.P1X-VER07.i 
-	get $(PASS1)/s.P1X-VER07.i
-analyzer1.p: $(PASS1)/s.analyzer1.p 
-	get $(PASS1)/s.analyzer1.p
-intprint.p: $(PASS1)/s.intprint.p 
-	get $(PASS1)/s.intprint.p
-varprint.p: $(PASS1)/s.varprint.p 
-	get $(PASS1)/s.varprint.p
-ERMSG-TXT: $(PASS1)/s.ERMSG-TXT
-	get $(PASS1)/s.ERMSG-TXT
+
 #
 #	Everything Maker
 #
