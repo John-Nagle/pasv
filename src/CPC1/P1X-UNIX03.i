@@ -129,12 +129,13 @@ end { pushfile };
 procedure popfile;
 var argwork: pathname;			{ pathname-size string }
 begin
+    writeln('Calling popfile'); { ***TEMP*** }
 					{ find another file if required }
     if filestackdepth > 0 then begin	{ if file open now }
 	filestackdepth := pred(filestackdepth); { done with this one }
 	end;
     if filestackdepth = 0 then begin	{ if out of include files }
-	while (currentarg < ParamCount) and (filestackdepth < 1) do begin
+	while (currentarg <= ParamCount) and (filestackdepth < 1) do begin
 	    argwork := ParamStr(currentarg); { read next argument }
 	    if argwork[1] <> '-' then begin { if not a flag }
 		filestackdepth := 1;	{ put on the file stack }
@@ -159,19 +160,22 @@ var argwork: pathname;			{ working argument string }
     i: 0..1000;				{ arg count }
     key: char;
 begin
-    for i := 1 to ParamCount-1 do begin	{ scan for keyletters }
-    argwork := ParamStr(i);  { read an argument }
-	if argwork[1] = '-' then begin	{ this is a keyletter }
-	    key := argwork[2];		{ get keyletter }   
-	    makeuppercase(key);		{ force into upper case }
-	    if (argwork[3] = ' ') and (key in validkeyletters) then begin
-		option[key] := true;	{ set keyletter }
-	    end else begin		{ if not }
-		write(output,'Bad keyletter argument: ',argwork);
-		terminateprogram;	{ considered fatal }
+    for i := 1 to ParamCount do begin	{ scan for keyletters }
+        argwork := ParamStr(i);  { read an argument }
+        key := '-';                     { invalid keyletter }
+        if argwork[1] = '-' then begin	{ this is a keyletter }
+	        if length(argwork) > 1 then begin
+	            key := argwork[2];		{ get keyletter }   
+	            makeuppercase(key);		{ force into upper case }
+	            end;
+	        if key in validkeyletters then begin
+		        option[key] := true;	{ set keyletter }
+	            end else begin		{ if not }
+		        writeln(output,'Bad keyletter argument: ',argwork);
+		        terminateprogram;	{ considered fatal }
 	        end;
 	    end;
-        end;
+    end;
 end {readargs};
 {
 	readline  --  read one line from indicated file
