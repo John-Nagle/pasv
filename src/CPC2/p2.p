@@ -1,11 +1,11 @@
-{    *************************************************
-    *                        *
-    *                        *
-    *         The Pascal-F Verifier         *
-    *                        *
-    *         DECOMPILER - PASS 2        *
-    *                        *
-    *                        *
+{   *************************************************
+    *                                               *
+    *                                               *
+    *         The Pascal-F Verifier                 *
+    *                                               *
+    *         DECOMPILER - PASS 2                   *
+    *                                               *
+    *                                               *
     *************************************************  }
 
 {
@@ -25,44 +25,44 @@
     Communications Corporation's Western Development Laboratories
     in Palo Alto, California.
 }
-#include "p2consts.i"
-#include "p2iconst.h"
-#include "P1X-VER00.h"
+{$I p2consts.i}
+{$I p2iconst.h}
+{$I ../CPC1/P1X-VER00.h}
 type
-#include "P1X-VER01.h"
-#include "p2defs.i"
-#include "p2vars.i"
-#include "p2tables.i"
-#include "p2tprint.i"
-#include "p2errors.i"
-#include "p2util.i"
-#include "p2dump.i"
-#include "p2varfile.i"
-#include "p2block.i"
-#include "p2enforce.i"
-#include "p2build.i"
-#include "p2augment.i"
-#include "p2spec.i"
-#include "p2trutil.i"
-#include "p2trvar.i"
-#include "p2trinvar.i"
-#include "p2trshare.i"
-#include "p2trmain.i"
-#include "p2jgen.i"
-#include "p2rdata.i"
-#include "p2jvars.i"
-#include "p2select.i"
-#include "p2jcommon.i"
-#include "p2bound.i"
-#include "p2alias.i"
-#include "p2routine.i"
-#include "p2recurse.i"
-#include "p2call.i"
-#include "p2icall.i"
-#include "p2expr.i"
-#include "p2case.i"
-#include "p2wait.i"
-#include "p2loop.i"
-#include "p2stmt.i"
-#include "p2junit.i"
-#include "p2main.i"
+{$I ../CPC1/P1X-VER01.h}
+{$I p2defs.i}
+{$I p2vars.i}
+{$I p2tables.i}
+{$I p2tprint.i}
+{$I p2errors.i}
+{$I p2util.i}
+{$I p2dump.i}
+{$I p2varfile.i}
+{$I p2block.i}
+{$I p2enforce.i}
+{$I p2build.i}
+{$I p2augment.i}
+{$I p2spec.i}
+{$I p2trutil.i}
+{$I p2trvar.i}
+{$I p2trinvar.i}
+{$I p2trshare.i}
+{$I p2trmain.i}
+{$I p2jgen.i}
+{$I p2rdata.i}
+{$I p2jvars.i}
+{$I p2select.i}
+{$I p2jcommon.i}
+{$I p2bound.i}
+{$I p2alias.i}
+{$I p2routine.i}
+{$I p2recurse.i}
+{$I p2call.i}
+{$I p2icall.i}
+{$I p2expr.i}
+{$I p2case.i}
+{$I p2wait.i}
+{$I p2loop.i}
+{$I p2stmt.i}
+{$I p2junit.i}
+{$I p2main.i}
