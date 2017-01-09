@@ -261,6 +261,8 @@ end {varfilegen};
 }
 procedure paramfilegen(routine: itp;	{ routine to generate arg list for }
 		       blkkind: unittype); { proc, fn, etc. }
+const
+    notypename = '               ';		{ no record type }
 var
     wparam: itp;			{ working pointer in arg list }
     paramlocation: addressitem;		{ address of param }
@@ -278,6 +280,7 @@ begin
 	rwork.maxvalue := 0;		{ not applicable }
 	rwork.scale := 0;		{ not applicable }
 	rwork.by := bynothing;		{ not applicable }
+	rwork.recordname := notypename;  { not applicable }
 	rwork.vrsource.filenumber := fileser; { file number of proc decl }
 	rwork.vrsource.linenumber := lineser; { line number of proc decl }
 	case blkkind of			{ different kinds of block }   

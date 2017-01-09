@@ -73,4 +73,4 @@ varprint: varprint.p P1X-VER00.h P1X-VER01.h
 #
 #	Everything Maker
 #
-all: pasver pascmp analyzer1 intprint varprint ERMSG-TXT
+all: pasver1 pascmp analyzer1 intprint varprint 
