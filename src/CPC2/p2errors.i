@@ -92,7 +92,8 @@ var fnames: text;                { file of file names }
     ch: char;                    { for copying }
 begin
     if n <> lastfilepath.lpfnum then begin    { if not the current one }
-    reset(fnames,'pasf-files');        { open file name file }
+    assign(fnames,'pasf-files');     
+    reset(fnames);              { open file name file }
     for i := 1 to n-1 do readln(fnames);    { skip n-1 lines }
     lastfilepath.lpsize := 0;        { chars in path name }
         while not (eoln(fnames) or eof(fnames)) do begin { for one line }
@@ -149,7 +150,8 @@ begin
         if srcbuf.lineid.linenumber = 0 then begin    { if source not open }
         if resets > 0 then         { if more than one reset }
             internalerror(254);        { cannot find source line }
-        reset(src,srcfilename);        { rewind source file }
+        assign(src,srcfilename);
+        reset(src);                 { rewind source file }
         resets := resets + 1;        { count resets }
         end;
         read(src,srcbuf);            { read next record }
