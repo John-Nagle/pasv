@@ -1,29 +1,29 @@
-{	*************************************************
-	*						*
-	*						*
-	*	     The Pascal-F Verifier 		*
-	*						*
-	*	     DECOMPILER - PASS 2		*
-	*						*
-	*						*
-	*************************************************  }
+{    *************************************************
+    *                        *
+    *                        *
+    *         The Pascal-F Verifier         *
+    *                        *
+    *         DECOMPILER - PASS 2        *
+    *                        *
+    *                        *
+    *************************************************  }
 
 {
-	Permission is hereby given to modify or use, but not for profit,
-	any or all of this program provided that this copyright notice 
-	is included:
+    Permission is hereby given to modify or use, but not for profit,
+    any or all of this program provided that this copyright notice 
+    is included:
 
-	Copyright 1985
+    Copyright 1985
 
-		Ford Motor Company
-		The American Road
-		Dearborn, Michigan  48121
+        Ford Motor Company
+        The American Road
+        Dearborn, Michigan  48121
 
-	This work was supported by the Long Range Research Program of
-	the Ford Motor Company, and was carried out at Ford Scientific
-	Research Labs in Dearborn, Michigan and Ford Aerospace and
-	Communications Corporation's Western Development Laboratories
-	in Palo Alto, California.
+    This work was supported by the Long Range Research Program of
+    the Ford Motor Company, and was carried out at Ford Scientific
+    Research Labs in Dearborn, Michigan and Ford Aerospace and
+    Communications Corporation's Western Development Laboratories
+    in Palo Alto, California.
 }
 #include "p2consts.i"
 #include "p2iconst.h"
