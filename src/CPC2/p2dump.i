@@ -7,7 +7,7 @@ procedure WHATdump; const WHAT = '@(#)p2dump.i    2.1'; begin SINK := WHAT; end;
 {
     dumpsubvar  --  print description of one variable
 }
-procedure dumpsubvar(var f: text; p: varnodep; dir: char; depth: integer;
+procedure dumpsubvar(var f: text; p: varnodep; dir: char; depth: longint;
         siblings: boolean);        { print siblings? }
 begin
     if p <> nil then                 { if node exists }
@@ -55,7 +55,7 @@ procedure dumpallvars(var f: text);        { dump onto indicated file }
 {
     dumpvars  --  debugging aid to dump the variable tree 
 }
-procedure dumpvars(p: varnodep; dir: char; depth: integer);
+procedure dumpvars(p: varnodep; dir: char; depth: longint);
 begin
     if p <> nil then                 { if node exists }
     with p^ do begin                { for the given node }

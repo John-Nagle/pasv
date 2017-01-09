@@ -8,23 +8,23 @@ var
                 {Miscellaneous variables}
                 {***********************}
 
-  namesize: integer;             {length of current procedure name}
+  namesize: longint;             {length of current procedure name}
   name: array[1..15] of char;        {current procedure name}
   programloadtype: loadtype;        {internal/external indicator}
   seriouserror: boolean;        {true if badnode or internalerror}
   fatalerror: boolean;            {fatal error has occured}
-  usererrors: integer;            {non-internal errors}
+  usererrors: longint;            {non-internal errors}
   gencnt: 0..jlinelengthmax;        {position on jcode line }
   firstline: lineinfo;            {first line number in routine}
   currentblockp: blocknodep;        {pointer to current block info }
   lastblockp: blocknodep;        {pointer to last block info }
-  nodesallocated: integer;        {count of allocated nodes}
-  lastsourcefile: integer;        {last file number printed in diag}
+  nodesallocated: longint;        {count of allocated nodes}
+  lastsourcefile: longint;        {last file number printed in diag}
   srcbuf: sourceline;            {last source line printed}
   labelserial: labelid;            {label counter for jcode labels}
   tempserial: tempid;            {last TEMP$ number}
   clockserial: timestamp;        {last clock tick}
-  lastrdataaddr: integer;        {current byte addr in constant data }
+  lastrdataaddr: longint;        {current byte addr in constant data }
   lastrdatabyte: byte;            {current byte read at lastrdataaddr}
   blockdepthtid: tempid;        {TEMP number of DEPTH expression}
   zeroexpr: ptn;            {dummy icode node for zero constant}
@@ -34,7 +34,7 @@ var
   sideeffectinthisstmt: boolean;    {true if side effect in current stmt}
   lastfilepath: record            {last file pathname cache}
     lppath: filepath;        {the pathname}
-    lpfnum: integer;        {its number}
+    lpfnum: longint;        {its number}
     lpsize: 0..maxfilepath;        {its lengt}
     end;
                 {Files used in pass2}
@@ -49,8 +49,8 @@ var
 {
     Files read by second pass
 }
-  int: file of integer;        { file of intermediate code}
-  dat: file of integer;        { intermediate home for data and case tables}
+  int: file of longint;        { file of intermediate code}
+  dat: file of longint;        { intermediate home for data and case tables}
   vars: file of varitem;    { variable definitions }
   src: file of sourceline;    { file of source lines}
 {
@@ -70,12 +70,12 @@ nulllineinfo: lineinfo;            { null line number for genlineid }
     to the static procedure nest.       
 }
     scopestack: array [0..scopedepthmax] of record{ procedure stack }
-    scopepin: integer;            { procedure number this lev }
-    nonscopes: integer;            { nested non-scopes (modules) }
+    scopepin: longint;            { procedure number this lev }
+    nonscopes: longint;            { nested non-scopes (modules) }
     end;    
     scopedepth: 0..scopedepthmax;        { current nesting depth }
     blockdepth: 0..blockdepthmax;        { depth into block stack }
-    blocksequence: integer;            { scope serial number }
+    blocksequence: longint;            { scope serial number }
 {
     WITH information  --  state of enclosing WITH statements
 }

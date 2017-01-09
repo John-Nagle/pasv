@@ -5,7 +5,7 @@ procedure WHATjunit; const WHAT = '@(#)p2junit.i    2.4'; begin SINK := WHAT; en
             inner modules if this is an initialization block.
 }
 procedure valdefined(blk: blocknodep);        { routine entry }
-var rparens: integer;                { number of args }
+var rparens: longint;                { number of args }
 {
     blkundefined  --  assume immediately inner blocks undefined
 

@@ -20,22 +20,22 @@ const stacksize=256;
 var
   s: 0..stacksize;
   stack: array[1..stacksize] of ptn;
-  argn,addrn: integer;  coden: byte;
+  argn,addrn: longint;  coden: byte;
   naddr: addressitem;    { working address }
   temp: ptn;
   sizen: sizeinbits;    { size of operand in bits }
   segn,ch,t: byte;
   psuedo: boolean;    { do not generate node if set }
-  currentfile: integer;    { current file number for diagnostics }
-  currentline: integer;    { current source line number for diagnostics }
-  programunittype: integer; { procedure, monitor, etc. }
-  prioritylev: integer;    { priority of monitor }
+  currentfile: longint;    { current file number for diagnostics }
+  currentline: longint;    { current source line number for diagnostics }
+  programunittype: longint; { procedure, monitor, etc. }
+  prioritylev: longint;    { priority of monitor }
   scaleit: scalp;    {temp to point to scaling information}
-  i: integer;        { for loops }
+  i: longint;        { for loops }
   lastblock: blocknode;    { block info from end operator }
   blk: varnodep;    { working entry for block varnode }
   needlookup: boolean;    { true if node has address needing lookup }
-  sink: integer;    { sink for dumping unwanted getword/getbyte }
+  sink: longint;    { sink for dumping unwanted getword/getbyte }
 {
     getbyte  --  get an 8-bit byte from the icode file
 }
@@ -47,8 +47,8 @@ end{getbyte};
 {
     getword  --  read a 16-bit word from the intermediate file
 }
-function getword: integer;
-var temp: integer;
+function getword: longint;
+var temp: longint;
 begin
  temp:=int^*256; get(int);
  temp:=int^+temp; get(int);

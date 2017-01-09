@@ -98,12 +98,12 @@ begin
     end;
 end {genstring15};
 {
-    geninteger -- generate signed decimal integer
+    geninteger -- generate signed decimal longint
 
     Note that this will not work for numbers < -maxint
 }
-procedure geninteger(n: integer);
-const maxdigits = 12;                { largest possible integer }
+procedure geninteger(n: longint);
+const maxdigits = 12;                { largest possible longint }
 var s: array [1..maxdigits] of char;        { string for reverse edit }
     i: 0..maxdigits;                { position in s }  
     j: 1..maxdigits;                { for loop }
@@ -205,9 +205,9 @@ begin
     end;
 end {genname};    
 {
-    genintconst  --  generate integer constant
+    genintconst  --  generate longint constant
 }
-procedure genintconst(n: integer);
+procedure genintconst(n: longint);
 begin
     genstring15('(consti!');            { (consti! n ) }
     genspace;

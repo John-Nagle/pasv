@@ -16,7 +16,7 @@ procedure findrefs(blk: blocknodep;        { blocknode to use }
 procedure noteref(p: ptn;            { node of reference }
           rkind: varrefkind;        { kind of reference }
           proc: varnodep;        { proc if varref }
-          procarg: integer);        { which arg if varref }
+          procarg: longint);        { which arg if varref }
 var sink: boolean;                { sink for addref return }
     formal: varnodep;                { formal arg found }
     actual: varnodep;                { actual arg }
@@ -76,7 +76,7 @@ end {noteref};
 procedure findreference(p: ptn;            { subtree being examined }
             rkind: varrefkind;    { storekind, etc }
             proc: varnodep;        { proc if inside VAR arg }
-            procarg: integer);    { which arg number }
+            procarg: longint);    { which arg number }
 var i: 0..maxarg;                { for arg loop }
 begin
     if p <> nil then begin

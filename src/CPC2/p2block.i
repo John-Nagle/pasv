@@ -7,7 +7,7 @@ procedure WHATblock; const WHAT = '@(#)p2block.i    2.3'; begin SINK := WHAT; en
 
     Terminates program if fails.
 }
-function findblock(pin: integer): blocknodep;    { returns block node }
+function findblock(pin: longint): blocknodep;    { returns block node }
 var addr: addressitem;            { working address item }
     v: varnodep;            { node of block }
 begin
@@ -100,9 +100,9 @@ end {resetscopes};
 {
     pushblock  --  enter new block
 }
-procedure pushblock(n: integer ;
+procedure pushblock(n: longint ;
             programunittype: unittype; { type of unit }
-            priority: integer;    { priority of program unit }
+            priority: longint;    { priority of program unit }
             datablock: boolean); { true if proc, not monitor/module }
 var blk: blocknodep;            { working block node }
 begin
@@ -183,7 +183,7 @@ end { popblock } ;
 {
     depthconv  --  convert depth to procedure number
 }
-function depthconv(d: integer):integer;
+function depthconv(d: longint):longint;
 begin
     if d > scopedepth then begin    { if too big }
     internalerror(23);        { scope in address out of range }

@@ -59,8 +59,8 @@ begin
     genchar('(');                { enclose in parentheses }
     with v^ do begin                { using given varnode }
     case vardata.form of            { kinds of data }
-    numericdata: begin            { integer and fixed }
-        if vardata.scale = 0 then begin    { if integer }
+    numericdata: begin            { longint and fixed }
+        if vardata.scale = 0 then begin    { if longint }
         genstring15('subrange');    { (subrange <min> <max>) }
         genspace;
         geninteger(vardata.minvalue);
@@ -168,7 +168,7 @@ begin
             genjtypeonly(down);        { generate boolean }
             end;
         numericdata: begin        { numeric data }
-            genstring15('(integer)');    { never subrange }
+            genstring15('(longint)');    { never subrange }
             if down^.vardata.scale <> 0 then begin { if scaled }
             usererrorstart(vardata.vrsource); { diagnose }
             write(output,'RULE function cannot return FIXED');
@@ -178,7 +178,7 @@ begin
             end;            { end cases }
         end else begin            { illegal form of rule fn }
             usererrorstart(vardata.vrsource);    { diagnose }
-            write(output,'RULE functions must be Boolean or integer');
+            write(output,'RULE functions must be Boolean or longint');
             usererrorend;
             end;
           end else begin            { if not rule fn }
@@ -222,7 +222,7 @@ end {genvardecl};
 procedure genjvars(blk: blocknodep);        { which block }
 var r: refnodep;                { for scanning ref list }
     vwork: varnodep;                { working variable node }
-    uniquer: integer;                { unique generated id }
+    uniquer: longint;                { unique generated id }
 {
     clearidunique  --  clear idunique field of a variable
 

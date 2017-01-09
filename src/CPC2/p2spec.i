@@ -53,7 +53,7 @@ end {addio};
 function searchio(var list: iolist;        { list to search }
           key: varnodep)        { search target }
           : iolistindex;        { find position }
-var i: integer;                    { for search }
+var i: longint;                    { for search }
 begin
     searchio := 0;                { default return - no find }
     i := 1;                    { start search }
@@ -131,7 +131,7 @@ end {buildiolist};
 }
 procedure checkvaruse(p: ptn;            { location for message }
               v: varnodep;        { base variable }
-              subcode: integer;        { kind of assertion }
+              subcode: longint;        { kind of assertion }
               isold: boolean);        { true if .old }
 procedure checkprocvaruse;            { case for procedure/fn }
     var needin, needout: boolean;        { if in or out var }
@@ -221,7 +221,7 @@ end {checkvarvisiblecaller};
                    monitors and modules
 }
 procedure checkmodulevaruse;
-var vardepth: integer;                { nesting depth of var use }
+var vardepth: longint;                { nesting depth of var use }
 begin
     if not (subcode in                 { limit valid types }
     [invariantsubcode, initentrysubcode, initexitsubcode]) then
@@ -298,7 +298,7 @@ end {notedefined};
               varbl
 }
 procedure adddefined(v: varnodep;        { variable to add }
-             subcode: integer);        { subcode to use }
+             subcode: longint);        { subcode to use }
 var p1, p2, p3: ptn;                { working varnodes }
 begin
      if debugg then begin            { if debugging }
@@ -362,7 +362,7 @@ end {adddefineds};
     checkassertion  --  check single assertion against i/o lists
 }
 procedure checkassertion(p: ptn;        { single assertion }
-             subcode: integer);    { kind of vardecl }
+             subcode: longint);    { kind of vardecl }
 var i: 1..maxarg;                { for arg loop }
     base: varnodep;                { base variable of item }
 begin

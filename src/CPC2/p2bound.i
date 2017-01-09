@@ -44,7 +44,7 @@ procedure getnumericbounds(p: ptn;        { node for debug location }
                val: ptn;        { relevant icode node if any }
                v: varnodep;        { relevant varnode if any }
                m: machinetype;    { relevant machine type }
-               var lo, hi: integer); { bounds returned }
+               var lo, hi: longint); { bounds returned }
 begin
     with mttab[m] do begin            { using mtype }
     if mtkind <> numericdata then badnode(p,132); { mtype not numeric }
@@ -147,7 +147,7 @@ end {explainbound};
     genboundrequire  --  generate require for bound test
 }
 procedure genboundrequire(p: ptn;        { expression }
-              bound: integer;    { bound }
+              bound: longint;    { bound }
               op: byte;        { icode operator for compare }
               explainop: ptn);    { operator for explaination }
 begin
@@ -159,7 +159,7 @@ begin
     genspace;
     genjexpr(p);                { expression }
     genspace;
-    genstring15('(consti!');            { integer constant }
+    genstring15('(consti!');            { longint constant }
     genspace;
     geninteger(bound);                { bound }
     genchar(')');                { close consti }
@@ -170,7 +170,7 @@ begin
     genchar(' ');
     genstring15(optab[op].opmcode);        { compare operator (infix) }
     genchar(' ');                { space before bound }
-    geninteger(bound);                { integer }
+    geninteger(bound);                { longint }
     explainbound(explainop);            { explain source of bound }
     genmsgend;                    { end message }
     genline;                    { end REQUIRE }
@@ -183,7 +183,7 @@ procedure requirecompat(p: ptn;            { node for debug location }
             destm: machinetype;    { destination mtype }
             source: ptn);        { source expression }
 var errorpossible: boolean;            { true if any err possible }
-    srcmin, srcmax, dstmin, dstmax: integer;     { bounds }
+    srcmin, srcmax, dstmin, dstmax: longint;     { bounds }
 begin
     assert(source <> nil);            { source must exist }
     assert(p <> nil);                { diag node must exist }
@@ -237,7 +237,7 @@ end {requirecompat};
 }
 procedure subscriptcheck(p: ptn);        { index operator }
 const lolim = 0;                { low index limit }
-var losub, hisub, hilim: integer;        { bounds }
+var losub, hisub, hilim: longint;        { bounds }
     arrayid: varnodep;                 { array item }
     subscript: ptn;                { working pointers }
 begin

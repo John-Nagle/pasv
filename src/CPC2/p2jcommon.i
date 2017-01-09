@@ -40,9 +40,9 @@ end {genrequire};
                    SUMMARY, STATE, and ASSERT operators
 }
 procedure genassertrequires(p: ptn);
-var subcode: integer;                { ASERT subcode }
+var subcode: longint;                { ASERT subcode }
     i: 0..maxarg;                { for arg count }
-    scode: integer;                { subcode for explain }
+    scode: longint;                { subcode for explain }
 {
     explainassert   --  explaination generator
 }

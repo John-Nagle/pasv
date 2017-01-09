@@ -2,9 +2,9 @@ procedure WHATtprint; const WHAT = '@(#)p2tprint.i    2.1'; begin SINK := WHAT; 
 {
     treeprint  --  print the code tree for one procedure
 }
-procedure treeprint(p: ptn; indent: integer);
+procedure treeprint(p: ptn; indent: longint);
 const tabstop = 12;            { where to end indentation }
-var i: integer;                { for indentation }
+var i: longint;                { for indentation }
 begin
     for i := 1 to indent do write(dbg,' ');{ indent 1 space per indent }
     if p = nil then begin        { if nil node }

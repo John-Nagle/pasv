@@ -9,14 +9,14 @@ procedure WHATerrors; const WHAT = '@(#)p2errors.i    2.2'; begin SINK := WHAT; 
 {
     max - maximum
 }
-function max(i,j: integer): integer;
+function max(i,j: longint): longint;
 begin
     if i > j then max := i else max := j;    { usual maximum function }
 end {max};
 {
     min - minimum
 }
-function min(i,j: integer): integer;
+function min(i,j: longint): longint;
 begin
     if i < j then min := i else min := j;    { usual minimum function }
 end {min};
@@ -26,8 +26,8 @@ end {min};
     This routine directly reflects the target machine implementation,
     which is 16-bit twos complement.
 }
-function extractsigned(i: integer)        { input value }
-              : integer;        { output signed value }
+function extractsigned(i: longint)        { input value }
+              : longint;        { output signed value }
 const negbias = 65536;            { this - value is representation of neg}
       posmax = 32767;                { max positive value }
 begin
@@ -75,7 +75,7 @@ end {errorterminate};
 
     Not to be used for internalerrors which the user could induce.
 }
-procedure internalerror(n: integer);
+procedure internalerror(n: longint);
 begin {internalerror}
     writeln(output,'Pass 2 internal error ',n:1,' in ',name: namesize); 
     errorterminate;
@@ -86,9 +86,9 @@ end {internalerror};
     The returned name is left in the global variable
     "lastfilepath".
 }
-procedure getpathname(n: integer);        { the pathname }
+procedure getpathname(n: longint);        { the pathname }
 var fnames: text;                { file of file names }
-    i: integer;                    { for line loop }
+    i: longint;                    { for line loop }
     ch: char;                    { for copying }
 begin
     if n <> lastfilepath.lpfnum then begin    { if not the current one }
@@ -113,9 +113,9 @@ end {getpathname};
     printsourcefile  --  print source file name in diagnostic message
 }
 procedure printsourcefile(var f: text;        { output file }
-              n: integer);        { file number }
+              n: longint);        { file number }
 var fnames: text;                { file of file names }
-    i: integer;                    { for line loop }
+    i: longint;                    { for line loop }
     ch: char;                    { for copying }
 begin
     if n <> lastsourcefile then begin        { if new source file }
@@ -135,7 +135,7 @@ procedure printsourceline(var f: text;        { output file }
               n: lineinfo);        { desired line }
 const
     srcfilename = 'pasf-source';        { ***TEMP*** }
-var i,j: integer;
+var i,j: longint;
     resets: 0..1;                { number of resets done }
 begin
     resets := 0;                { no resets yet }
@@ -237,7 +237,7 @@ end {unimplemented};
     Not to be used for errors which the user could cause from
     source language.
 }
-procedure badnode(p: ptn; errno: integer);
+procedure badnode(p: ptn; errno: longint);
 var badop: string6;
     i: 1..6;
     nline: lineinfo;                { troubled line }
@@ -260,7 +260,7 @@ end {badnode};
     badvarnode  --  bad variable node
 }
 procedure badvarnode(v: varnodep;        { the bad varnode }
-             errno: integer);        { error number }
+             errno: longint);        { error number }
 var i: 0..15;                    { for loop }
     nline: lineinfo;                { troubled line }
 begin
@@ -280,7 +280,7 @@ end {badvarnode};
 {
     verybadnode  --  fatal badnode
 }
-procedure verybadnode(p: ptn; errno: integer);
+procedure verybadnode(p: ptn; errno: longint);
 begin
     badnode(p,errno);            { print message }
     errorterminate;            { terminate and dump }
@@ -291,7 +291,7 @@ end {verybadnode};
     Always terminates program.
 }
 procedure verybadvarnode(v: varnodep;        { relevant variable }
-             errno: integer);    { error number }
+             errno: longint);    { error number }
 begin
     badvarnode(v, errno);            { report error }
     errorterminate;                { consider as fatal }

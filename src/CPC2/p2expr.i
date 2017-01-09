@@ -171,7 +171,7 @@ end {genjexpr};
     FIXED-POINT NOT IMPLEMENTED
 }
 procedure genmliteral(p: ptn);            { literal to generate }
-var val: integer;                { working set value }
+var val: longint;                { working set value }
     needcomma: boolean;                { comma needed }
     i: 0..15;                    { for loop }
 begin

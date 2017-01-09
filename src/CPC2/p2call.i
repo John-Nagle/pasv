@@ -441,7 +441,7 @@ procedure routinecall(fcallnode: ptn;        { fcall node if function }
 var tinfo: temptab;                { temporary variable info }
     callee: blocknodep;                { block being called }
     anyout: boolean;                { any output arguments }
-    parens: integer;                { parens needed in jcode }
+    parens: longint;                { parens needed in jcode }
 {
     outputformals  --  output formal arguments 
 }

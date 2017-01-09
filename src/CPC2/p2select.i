@@ -210,7 +210,7 @@ procedure substitute(varkey: varnodep;        { input variable }
              oldkey: boolean;        { if var.old in source }
              var subid: tempid;        { returned temp id or 0 }
              var subnew: gennewmode);    { returns true if new! req }
-var i: integer;                    { for loops }
+var i: longint;                    { for loops }
 begin
     subid := 0;                    { assume no find }
     subnew := genwithoutnew;            { these are defaults }
@@ -269,7 +269,7 @@ end {gendataref};
 }
 procedure subscript(v: varnodep;        { item being subscripted }
             p: ptn);            { subscript expression }
-var lowbound: integer;                { low bound of array }
+var lowbound: longint;                { low bound of array }
 begin
     assert(v^.vardata.form = arraydata);    { must subscript array only }
     lowbound :=  v^.vardata.minvalue;        { initial subscript bias }
@@ -292,7 +292,7 @@ end {subscript};
     Used for both select and store operations
 }
 procedure substackselect(var stk: selstack;    { working stack (unmodified) }
-             lowlim: integer);    { limit for stack scan }
+             lowlim: longint);    { limit for stack scan }
 var i: 1..maxselstack;                { stack position }
 begin
     for i := lowlim to stk.top do begin        { forward pass }
@@ -383,7 +383,7 @@ Jcode:        NEW (a)
            2 = gen defined store expression, new value is true
            3 = gen normal store expression, new value is tempid
 }
-procedure genrepcommon( fn: integer;        { function }
+procedure genrepcommon( fn: longint;        { function }
             lhs: ptn;        { left hand side of := }
                 rhs: ptn;        { right hand side }
             tnum: tempid);        { temp id if any }

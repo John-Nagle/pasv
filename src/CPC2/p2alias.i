@@ -181,7 +181,7 @@ var r: refnodep;                { working ref node }
     base1: varnodep;                { base of arg }
     out1: boolean;                { true if arg is output }
     i: 1..maxarg;                { for arg loop }
-    j: integer;                    { want 1..maxarg + 1 }
+    j: longint;                    { want 1..maxarg + 1 }
     outvar: array [1..maxarg] of boolean;    { true if output arg }
     formal: varnodep;                { for formal arg chaining }
 begin

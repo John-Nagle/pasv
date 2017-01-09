@@ -13,7 +13,7 @@ procedure statement(p: ptn); forward;
 }
 procedure genconjunction(p: ptn;        { node to start at }
              accept: subcodeset);    { subcodes for assertions }
-var terms: integer;                { count of terms }
+var terms: longint;                { count of terms }
 {
     genconjunct1    --  generate one term of conjunction
 }
@@ -117,8 +117,8 @@ end {gentempasg};
 }
 function searcholdtab(var tab: oldargtab;    { relevant table }
               arg: varnodep)        { search key }
-              : integer;        { find index or 0 if no find }
-var i: integer;                    { for search }
+              : longint;        { find index or 0 if no find }
+var i: longint;                    { for search }
 begin
     i := 1;
     searcholdtab := 0;                { assume fail }
@@ -143,7 +143,7 @@ procedure saveoldarg(var tab: oldargtab;    { relevant table }
               actual: ptn;        { new value or nil }
               var tnum: tempid);    { returned new temp id }
 var basearg: varnodep;                { base var of arg }
-    i: integer;                    { for search }
+    i: longint;                    { for search }
 begin
                         { generate assign of temp dummy}
     basearg := basevariable(arg);        { get base of arg }
@@ -199,7 +199,7 @@ end {bindoldargs};
 {
     gensubcode  --  generate assertion subcode for message
 }
-procedure gensubcode(n: integer);        { subcode }
+procedure gensubcode(n: longint);        { subcode }
 begin
     case n of                    { fan out on subcode }
     entrysubcode:     genstring15('entry assertion');

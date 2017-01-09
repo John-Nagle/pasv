@@ -597,7 +597,7 @@ end {loopstatechk};
     Invoked, in sequence, on each statement in the loop.
 }
 procedure genloopbody(w: ptn);
-var exitid: integer;                { generated exit number }
+var exitid: longint;                { generated exit number }
 begin
     with w^ do begin                { using this statement }
     if (code = asertop) and (disp = statesubcode) then begin { if STATE }

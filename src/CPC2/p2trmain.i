@@ -67,7 +67,7 @@ end {diagnoseunset};
 }
 procedure findrecursion;
 var b: blocknodep;                { working block }
-    pass: integer;                { pass number }
+    pass: longint;                { pass number }
 {
     explorerecursive  --  explore for recursive node
 

@@ -395,7 +395,7 @@ function findvar(diagptn: ptn;        { relevant icode node for diag }
 var p: varnodep;            { working pointer }
     state: compresult;            { result of comparison }
     quit: boolean;            { when to quit }
-    offset: integer;            { offset into variable }
+    offset: longint;            { offset into variable }
 {
     compaddr  --   compare address with address and size
 }

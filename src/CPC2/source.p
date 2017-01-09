@@ -8,8 +8,8 @@ type
     print routines for printing source files
 }
 var
-    lastsourcefile: integer;            { last source file printed }
-    lastsourceline: integer;            { last source line printed }
+    lastsourcefile: longint;            { last source file printed }
+    lastsourceline: longint;            { last source line printed }
     src: file of sourceline;            { file of source statements }
 
 #include "source.h"
@@ -27,9 +27,9 @@ end {initsourceprint};
     printsourcefile  --  print source file name
 }
 procedure printsourcefile(var f: text;        { output file }
-              n: integer);        { file number }
+              n: longint);        { file number }
 var fnames: text;                { file of file names }
-    i: integer;                    { for line loop }
+    i: longint;                    { for line loop }
     ch: char;                    { for copying }
 begin
     if n <> lastsourcefile then begin        { if new source file }
@@ -49,7 +49,7 @@ end {printsourcefile};
     Standard Pascal Dumb Non-Random-Access Version
 }
 procedure printsourceline;
-var i,j: integer;
+var i,j: longint;
     srcbuf: sourceline;                { source line record }
 begin
     if n <= 0 then begin            { if no such line }

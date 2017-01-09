@@ -24,13 +24,13 @@
 
   srep  = record    {fixed point representation descriptor}
         point: -31 .. 31;
-        magnitude: integer
+        magnitude: longint
       end;
 
 {
     Generally useful types
 }
-   cardinal = 0..maxint;            { nonnegative integer }
+   cardinal = 0..maxint;            { nonnegative longint }
    string6 = packed array [1..6] of char;
    string15 = packed array [1..15] of char;
    string60 = packed array [1..60] of char;
@@ -46,9 +46,9 @@
           addr,                { address with unknown size }
           b1,                { booleans }
           u4, u7, u8, u15, u16,        { unsigned integers }
-          ubig,                { oversize unsigned integer }
+          ubig,                { oversize unsigned longint }
           i8 ,i16,            { signed integers }
-          ibig,                { oversize signed integer }
+          ibig,                { oversize signed longint }
           ni7, ni8, ni16,        { signed integers less 0 }
           nu7, nu8, nu15, nu16,        { unsigned integers less 0 }
           f16,                { fixed point }

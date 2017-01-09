@@ -80,7 +80,7 @@ var i: byte;                    { for clearing optab }
 }
 procedure op(code: byte; name: string6; class: iopclass; 
         jcode: string15; 
-        count: integer;        { number of operands (-1 for variable)}
+        count: longint;        { number of operands (-1 for variable)}
         result, arg1, arg2, arg3, arg4, arg5: machinetype);
 begin
     with optab[code] do begin        { using indicated entry }

@@ -331,7 +331,7 @@ end {ifsubscripted};
     Arguments count from one.
 }
 function formalarg(proc: varnodep;        { which procedure }
-           argnum: integer)        { which arg }
+           argnum: longint)        { which arg }
            : varnodep;            { returned formal }
 var n: 0..maxarg;                { arg counter }
     q: varnodep;                { working formal }
@@ -403,7 +403,7 @@ end {isformal};
 }
 function recindexsearch(v: varnodep)        { varnode to try }
         : recindex;            { local record index }
-var i: integer;                    { for search }
+var i: longint;                    { for search }
 begin
     recindexsearch := 0;            { assume no find }
     with v^ do begin                { using given value }
@@ -512,7 +512,7 @@ begin
         recordname := '          ';
         minvalue := 0;            { range 0..32767 }
         maxvalue := targetintegermax;
-        scale := 0;                { integer }
+        scale := 0;                { longint }
         vrsource.linenumber := 0;        { no line number }
         vrsource.filenumber := 0;        { no file number }
         end;
@@ -533,11 +533,11 @@ begin
     Dummy icode expressions  -  used when a generator routine requires
     an icode expression.
 }
-                        { integer zero }
+                        { longint zero }
     newnode(zeroexpr,literop);            { liter 0 }
     with zeroexpr^ do begin            { using new node }
     disp := 0;                { value 0 }
-    mtype := u15;                { type unsigned integer }
+    mtype := u15;                { type unsigned longint }
     end;                    { with }
                         { boolean true }
     newnode(trueexpr,literop);            { liter true }

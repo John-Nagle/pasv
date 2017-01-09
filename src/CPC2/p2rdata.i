@@ -10,7 +10,7 @@ procedure WHATrdata; const WHAT = '@(#)p2rdata.i    2.2'; begin SINK := WHAT; en
 }
 function readdatfield(addr: bitaddress;        { address in bits }
          size: bitaddress)        { size in bits }
-         : integer;            { returned value }
+         : longint;            { returned value }
 {
     readdatbit  --  read indicated bit from file
 }
@@ -21,7 +21,7 @@ function readdatbit(bitadd: bitaddress)        { bit to read }
            : bit;            { returned bit }
 var b: 0..65535;                { 16-bit working value }
     i: 0..7;                    { for loop }
-    byteadd: integer;                { byte number in file }
+    byteadd: longint;                { byte number in file }
 begin {readdatbit}
     byteadd := bitadd div 8;            { compute byte wanted }
     if byteadd <> lastrdataaddr then begin    { if not same as last time }
@@ -155,7 +155,7 @@ var subtab: subconsttab;            { constant subscripts }
 }
 procedure rdataitem(v: varnodep;        { simple data item }
             addr: bitaddress);    { address of node }
-var i: integer;                    { working value }
+var i: longint;                    { working value }
 begin
     with v^ do begin                { using given node }
     genstring15('ASSIGN');            { ASSIGN of basic item }
@@ -169,7 +169,7 @@ begin
     genstring15('(true!)');            { definedness }
     genspace;
     case vardata.form of            { fan out on form }
-    numericdata: begin            { integer object }
+    numericdata: begin            { longint object }
         i := readdatfield(addr,vardata.size);    { get value of object }
         if vardata.minvalue < 0 then begin    { if signed field }
         if vardata.size <> 16 then    { if not 16 bits }

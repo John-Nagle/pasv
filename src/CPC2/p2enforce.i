@@ -124,7 +124,7 @@ end {checknotfrozen};
 procedure checkcompat(p: ptn;            { for messages }
               v1,v2: varnodep;        { nodes to check }
               strong: boolean);        { strong check desired }
-var errnum: integer;                { error code found }
+var errnum: longint;                { error code found }
 {
     inner check - recursive 
 }
@@ -247,7 +247,7 @@ end {validateblockname};
        3.  Exception:  For no-priority callee, above does not matter.
 }
 procedure prioritycheck(p: ptn;            { node for debug }
-            callpri: integer;    { priority of caller after lock}
+            callpri: longint;    { priority of caller after lock}
             callee: blocknodep);    { called node }
 var calleepri: priority;            { called priority }
 begin
