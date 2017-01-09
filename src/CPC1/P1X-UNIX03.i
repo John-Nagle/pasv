@@ -299,7 +299,8 @@ begin
 	    lastheader := lastfilenumber;	{ prevent duplicate header }
 	    end;
         write(outf,linenum:6,'.',' ':margin-1);	{ print line number }
-        for i := 1 to chcnt do write(outf,bline[i]);{ print text line }
+	    if chcnt > 0 then           { avoid for loop overflow on zero }
+            for i := 1 to chcnt do write(outf,bline[i]);{ print text line }
 	writeln(outf);				{ finish line }
 	end;
 end {writesourceline};

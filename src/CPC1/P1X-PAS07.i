@@ -92,7 +92,7 @@ procedure genflit( x: valu);
   var  scldval, pshift : longint;
 
 begin
-    formatflit( x, scldval, pshift );  { get a scaled longint}
+    formatflit( x, scldval, pshift );  { get a scaled integer}
     begin
       genbyte (pshift+128);	{offset scale factor by 128}
       gensignedword (scldval);
