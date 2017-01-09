@@ -4,6 +4,7 @@ procedure WHATroutine; const WHAT = '@(#)p2routine.i    2.5'; begin SINK := WHAT
 
     Code here is used both when processing calls to routines and
     when handing the beginnings and ends of the routines themselves.
+}
 {
     statement  --  Jcode generation for statements
 }
@@ -216,6 +217,7 @@ begin
                genstring15(' exit assertion'); end;
     end;
 end {gensubcode};
+(* ***TEMP TURNOFF***
 {
     genspecrequires  --  generate REQUIREs from specification declarations
 }
@@ -270,6 +272,7 @@ end {specscan};
 begin {genspecrequires}
     specscan(specs);                { process assertions }
 end {genspecrequires};
+***END TEMO TURNOFF *)
 {
     requireblkinit  --  require that specific block be initialized
                 Only monitors and modules are eligible.

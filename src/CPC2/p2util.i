@@ -553,6 +553,7 @@ procedure tick;
 begin
     clockserial := clockserial + 1;        { advance clock }
 end {clockserial};
+(* ***TEMP TURNOFF***
 {
     Driving routines  --  apply procedure param to all objects
                   of a given class
@@ -699,3 +700,4 @@ end {fdrive};
 begin {functinexprdrive}
     fdrive(expr);                { start recursion }
 end {functinexprdrive};
+****END TEMP TURNOFF*** *)

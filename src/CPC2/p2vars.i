@@ -49,10 +49,10 @@ var
 {
     Files read by second pass
 }
-  int: file of longint;        { file of intermediate code}
-  dat: file of longint;        { intermediate home for data and case tables}
-  vars: file of varitem;    { variable definitions }
-  src: file of sourceline;    { file of source lines}
+  int: file of byte;            { file of intermediate code}
+  dat: file of byte;            { intermediate home for data and case tables}
+  vars: file of varitem;        { variable definitions }
+  src: file of sourceline;      { file of source lines}
 {
     Files written by second pass
 }

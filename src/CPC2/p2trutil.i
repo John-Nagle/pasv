@@ -42,7 +42,7 @@ end {localvar};
     by calls to a routine.
 }
 function addref( referrer: blocknodep;        { routine doing reference }
-          object: varnodep;        { object referred to }
+          vobject: varnodep;        { object referred to }
           rkind: varrefkind;        { kind of reference }
           rformal: varnodep;        { relevant formal if varref }
           rmention: mentionkind)    { direct or indirect mention }
@@ -54,15 +54,15 @@ begin
     addref := false;                { initially, no change }
     case rkind of                 { set set/used flags for var }
     setref: begin                { object has been set }
-        object^.varset := true;        { so note }
-        assert(isbasevar(object));        { must be base }
+        vobject^.varset := true;        { so note }
+        assert(isbasevar(vobject));        { must be base }
         end;
-    useref: begin                { object has been used }
-        object^.varused := true;        { so note }
-        assert(isbasevar(object));        { must be base }
+    useref: begin                { vobject has been used }
+        vobject^.varused := true;        { so note }
+        assert(isbasevar(vobject));        { must be base }
         end;
-    varref: begin                { object passed as VAR }
-        assert(isbasevar(object));        { must be base }
+    varref: begin                { vobject passed as VAR }
+        assert(isbasevar(vobject));        { must be base }
         assert(isbasevar(rformal));        { must be base }
         end;
     initref: begin end;            { init applied to object }
@@ -70,12 +70,12 @@ begin
     end;
     r := referrer^.blrefs;            { prepare to search }
     if (rkind in [setref, useref]) and         { if set or use }
-    localvar(referrer, object) then begin    { and local to referrer }
+    localvar(referrer, vobject) then begin    { and local to referrer }
     end else begin                { if non-local or var or init }
         nofind := true;                { no find so far }
         while (r <> nil) and (nofind) do begin    { search for duplicate }
             with r^ do begin            { using this node }
-            if object = refvar then        { if correct variable }
+            if vobject = refvar then        { if correct variable }
             if refkind = rkind then    { and correct ref kind }
                 nofind := false;    { found }    
                         { if new direct mention }
@@ -91,7 +91,7 @@ begin
         addref := true;            { return change made }
             new(r);                { allocate a ref item }
             with r^ do begin            { using new ref item }
-            refvar := object;        { variable }
+            refvar := vobject;        { variable }
             refkind := rkind;        { set kind of ref }
             refformal := rformal;        { set formal if applicable }
         refmention := rmention;        { local or tran close ref }

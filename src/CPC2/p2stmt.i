@@ -212,7 +212,7 @@ end {opasert};
 {
     statement  --  statement operators dispatcher
 }
-procedure statement;                { forward referenced }
+procedure statement(p: ptn);                { forward referenced }
 begin
     if p <> nil then                { if not null statement }
     with p^ do begin                { using given node }

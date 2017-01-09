@@ -27,7 +27,8 @@ end {genchar};
 procedure genopen;
 begin
     gencnt := 0;                { zero char position }
-    rewrite(jcd,'p2jcode');            { ***TEMP*** }
+    assign(jcd,'p2jcode');
+    rewrite(jcd);               { ***TEMP*** }
 end {genopen};
 {
     genclose  --  close jcode file

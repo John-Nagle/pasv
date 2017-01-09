@@ -40,19 +40,15 @@ var
     getbyte  --  get an 8-bit byte from the icode file
 }
 function getbyte: byte;
-  begin 
-    getbyte:=int^; 
-    get(int) 
+begin
+    read(int,getbyte); 
 end{getbyte};
 {
     getword  --  read a 16-bit word from the intermediate file
 }
 function getword: longint;
-var temp: longint;
 begin
- temp:=int^*256; get(int);
- temp:=int^+temp; get(int);
- getword := temp
+   getword := longint(getbyte) * 256 + getbyte;
 end {getword};
  
 begin {buildtree}
@@ -121,7 +117,7 @@ repeat
       naddr.blockn := 0;            { block number irrelevant }
       needlookup := true;            { address lookup needed }
     end;
-      litdop : internalerror(9);        { floating point deimplemented};
+      litdop : internalerror(9);        { floating point deimplemented}
       rtempop,dtempop : begin addrn:=ord(getword);
         if coden=dtempop then argn:=2 end;
       fieldop:                    { bit field extract }

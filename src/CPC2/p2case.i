@@ -85,6 +85,7 @@ end {checkunique};            { end duplicate check }
 procedure gencase(px: ptn);        { entry node }
 var 
     ll: listitem;            { list control item }
+    i: longint;                     { for iteration }
 begin
     with px^ do begin            { using given node }
     if code <> entryop then verybadnode(px,402); { non entry in case }

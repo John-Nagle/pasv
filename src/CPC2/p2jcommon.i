@@ -16,6 +16,7 @@ procedure safeexpr(p: ptn);    forward;    { forward ref }
 
     <expression>    (<explanation>)
 }
+(* ***TEMP TURNOFF***
 procedure genrequire(locn: lineinfo;        { relevant line number }
              p: ptn;            { assertion to require }
              procedure explaingen);    { explaination generator }
@@ -35,6 +36,7 @@ begin
     genline;                { finish line }
     end;                    { With }
 end {genrequire};
+***END TEMP TURNOFF *)
 {
     genassertrequires  --  generate REQUIRE assertions for
                    SUMMARY, STATE, and ASSERT operators

@@ -328,7 +328,7 @@ end {safeactuals};
         but the types do not, it may be necessary to generate
         REQUIRE operators.  
 }
-procedure safeexpr;                { FORWARD resolution }
+procedure safeexpr(p: ptn);                { FORWARD resolution }
 var i: 1..maxarg;                { arg loop }
     j: 1..5;                    { position in optab args }
     sideeffectinthisexpr: boolean;        { side effect found }
@@ -412,7 +412,7 @@ end {safeexpr};
               Does not insure that expression itself has a
               defined value.
 }
-procedure safeselector;                { FORWARD resolution }
+procedure safeselector(p: ptn);                { FORWARD resolution }
 begin
     with p^ do begin                { using given node }
     if optab[code].opclass <> slcti then    { if not selector op }

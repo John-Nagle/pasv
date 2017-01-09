@@ -26,7 +26,8 @@ begin {readdatbit}
     byteadd := bitadd div 8;            { compute byte wanted }
     if byteadd <> lastrdataaddr then begin    { if not same as last time }
     if byteadd < lastrdataaddr then begin    { if less than last time }
-        reset(dat,'pasf-data');        { ***TEMP*** }
+        assign(dat,'pasf-data');
+        reset(dat);                     { ***TEMP*** }
         lastrdataaddr := -1;        { now at byte -1 }
         end;
     assert(byteadd >= lastrdataaddr);    { now read forward }

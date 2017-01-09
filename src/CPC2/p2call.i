@@ -1,4 +1,4 @@
-procedure WHATcall; const WHAT = '@(#)p2call.i    2.6'; begin SINK := WHAT; end;    { Version 2.6 of 1/31/86 
+procedure WHATcall; const WHAT = '@(#)p2call.i    2.6'; begin SINK := WHAT; end;    { Version 2.6 of 1/31/86 }
 {
     Procedure Call Processing   --  Improved 1982 model implementation
 
@@ -643,7 +643,7 @@ end {proccall};
 {
     functcall  --  generate jcode for function call
 }
-procedure functcall;                { function call node }
+procedure functcall(p: ptn);           { function call node }
 var callee: blocknodep;                { object being called }
 begin
     assert(p^.code = fcallop);            { must be fncall }

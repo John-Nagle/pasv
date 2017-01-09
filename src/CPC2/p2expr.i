@@ -37,7 +37,7 @@ end {genliteral};
 {
     genjexpr  --  generate jcode expression
 }
-procedure genjexpr;                { FORWARD resolution }
+procedure genjexpr(p: ptn);          { FORWARD resolution }
 var iclass: iopclass;                { icode op class }
     i: 0..maxarg;                { for arg loop }
 {
@@ -289,7 +289,9 @@ end {genmvinit};
 {
     genmexpr1  --  internal recursive generator
 }
-procedure genmexpr1;                { FORWARD resolution }
+procedure genmexpr1(p: ptn;             { node }
+            callerpred: precedence);    { precedence of caller }
+                                        { FORWARD resolution }
 var iclass: iopclass;                { icode op class }
     i: 0..maxarg;                { for arg loop }
 begin { genmexpr1 }
@@ -354,7 +356,7 @@ end {genmexpr1};
 
     Used to generate expressions in REQUIRE statement messages
 }
-procedure genmexpr;                { FORWARD resolution }
+procedure genmexpr(p: ptn);                { FORWARD resolution }
 begin {genmexpr}
     genmexpr1(p, functional);            { start generation }
 end {genmexpr};
