@@ -20,7 +20,7 @@ var
   linenr : pack5;
   chartab:chartabtype;
   bline :  array[1..mbuf] of char; {line buffer} { MUST BEGIN AT 0 W/NEW PAS05 }
-  ctimer,cdate: packed array[0..9] of char; { WAS alfa }
+  ctimer,cdate: string; { WAS alfa }
   
                                {option switches:}
                                {****************}
@@ -151,7 +151,8 @@ var
   sourceinfo,objinfo,buginfo : pack80;	{file names for pass2 & listing}
 {filelist : fparmlist; DEC-10 ONLY }  {holds list of files found by getdirectives}
 
-  timezero, elapsedtime: integer;	{measure compiler's execution time}
+  timezero: TDateTime;	{measure compiler's execution time}
+  elapsedtime: Int64; {in ms}
 {
 	Verifier-language variables
 }

@@ -11,7 +11,7 @@ procedure genintbyte(n: integer); begin putbyte(n,int); end;
 }
 begin {pass 1}
 
-  timezero := clock;	{ get cpu time for this compilation}
+  timezero := Now;	{ get cpu time for this compilation}
   nl := chr(10);	{line feed is newline character }
    if not verifier then begin			{ signon for compiler only }
     writeln(output, compilerversion); break(output);
@@ -32,11 +32,13 @@ begin {pass 1}
   vmode := codemode;			{ yes, in code mode }
   vmodes := vmodetab[codemode];		{ with code mode switch settings }
   if verifier then vinitialize;		{ initialize verifier part }
-  date(cdate); time(ctimer);
+  cdate := DateToStr(Date); ctimer := TimeToStr(Time);
   if option['T'] then  option['L'] := true;  {force consistency}
 
   if  option['L'] then
-    begin  page(lst); header  end;
+    begin  { page(lst); OBSOLETE - no line printer page eject any more }
+        header  
+   end;
   chcnt := 0; ch := ' ';
   numline :=0; level :=0; top := 0;
   inittables;
@@ -156,7 +158,7 @@ begin {pass 1}
     end;
 
   if not verifier then begin		{ message for compiler only }
-    elapsedtime := clock - timezero;
+    elapsedtime := Int64(TimeStampToMSecs(DateTimeToTimeStamp(Now)) - TimeStampToMSecs(DateTimeToTimeStamp(timezero)));
     writeln(output,'   Runtime: ',elapsedtime div 60000:3,':',
 	      (elapsedtime div 1000) mod 60:2,'.',
 	      elapsedtime mod 1000:3   );

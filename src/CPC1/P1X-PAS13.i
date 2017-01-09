@@ -516,7 +516,7 @@ case sym.sy of
 end {statement};
 
 
-procedure statelist ;
+procedure statelist(stopper: symbol);
 var
     scnt: compoundtally;	{ count of statements }
 begin {statelist}

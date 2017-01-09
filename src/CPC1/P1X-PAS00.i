@@ -29,6 +29,7 @@
 	in Palo Alto, California.
 }
 program firstpass(input,output);
+Uses sysutils;      { Free Pascal }
 
 
 				{constants}
