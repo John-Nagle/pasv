@@ -38,7 +38,7 @@ begin
     end;                    { end With }
 end {blkundef1};
 begin {blkundefined}
-    innerblkdrive(blk, blkundef1);            { scan inners }
+    innerblkdrive(blk, @blkundef1);            { scan inners }
 end {blkundefined};
 {
     paramdefined  --  assume value parameters are defined when callee
@@ -150,7 +150,7 @@ begin {headerpart}
     assert(lastblockp^.blvarnode <> nil);    { must have routine entry }
     warg := lastblockp^.blvarnode^.down;    { link to first arg }
     nonewyet := true;                { no new yet }
-    vardrive(listvar);                { get all vars in junit }
+    vardrive(@listvar);                { get all vars in junit }
     if not nonewyet then begin            { if any new variables }
         genchar(')');                { end arg list }
         genspace;                { before assertions }
@@ -233,11 +233,11 @@ begin
                         { if EXIT assertion }
     if disp in [entryexitsubcode, exitsubcode,initexitsubcode] then begin    
                         { generate EXIT assertion }
-        genrequire(p^.linen, p^.arg[1] , explaintrail);    
+        genrequire(p^.linen, p^.arg[1] , @explaintrail);    
     end else if disp = invariantsubcode then begin
         if relevancetest(p^.arg[1],blk,[setref]) then begin { if changes }
                         { generate assertion }
-            genrequire(p^.linen, p^.arg[1], explaintrail);    
+            genrequire(p^.linen, p^.arg[1], @explaintrail);    
         end else begin            { if not relevant }
         if comments then begin        { commentary }
             gencomment(p^.linen);    { begin comment }
@@ -294,10 +294,10 @@ begin {trailerpart}
     if blk^.blvarnode^.vardata.form = functiondata then begin { if fn }
     genreturndefined(blk);            { REQUIRE return defined }
     end;
-    seqdrive(blk^.blassertions,trailrequire);    { process specifications }
+    seqdrive(blk^.blassertions, @trailrequire);    { process specifications }
     if blk^.blvarnode^.vardata.form in [programdata, moduledata] then 
     if blk^.blhasbody then            { if module/prg has body }
-        innerblkdrive(blk,blkdefined);    { require inners def }
+        innerblkdrive(blk, @blkdefined);    { require inners def }
 end {trailerpart};
 {
     junit -- generate jcode for one routine

@@ -21,11 +21,11 @@ begin
         write(dbg,')');
         end;
         if mtype <> xxx then begin    { if result type meaningful }
-        write(dbg,' ',mtype:5);{ type of result }
+        ////write(dbg,' ',mtype:5);{ type of result }
         end else write(dbg,'      '); { align }
         if vtype <> nil then begin    { if variable entry present }
         write(dbg,' ',vtype^.vardata.itemname); { write name }
-        write(dbg,' ',vtype^.vardata.form);    { write kind }
+        ////write(dbg,' ',vtype^.vardata.form);    { write kind }
         end; 
         writeln(dbg);        { finish this item }
         for i := 1 to nrarg do    { for indicated number of args }

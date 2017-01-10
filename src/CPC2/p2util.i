@@ -553,7 +553,6 @@ procedure tick;
 begin
     clockserial := clockserial + 1;        { advance clock }
 end {clockserial};
-(* ***TEMP TURNOFF***
 {
     Driving routines  --  apply procedure param to all objects
                   of a given class
@@ -561,7 +560,7 @@ end {clockserial};
 {
     vardrive  --  apply to every variable
 }
-procedure vardrive(procedure eachvar(v: varnodep));    { called for each var }
+procedure vardrive(eachvar: pvarnodep);    { called for each var }
 procedure vardrive1(q: varnodep);            { node to descend from }
 begin
     with q^ do begin                    { using given node }
@@ -578,8 +577,8 @@ end {vardrive};
 {
     seqdrive  --  process all statements in "seq" list
 }
-procedure seqdrive(p: ptn;            { starting node }
-            procedure doseq(st: ptn));    { arg to pass }
+procedure seqdrive(p: ptn;              { starting node }
+            doseq: pptn);               { procedure arg }
 var i: 1..maxarg;                { working arg position }
     parg: ptn;                    { working arg }
 begin
@@ -600,9 +599,9 @@ end {seqdrive};
 {
     varinexprdrive  --  find all variables in expression
 }
-procedure varinexprdrive(expr: ptn;            { expression }
-             procedure dovar(v: varnodep));    { call on find }
-procedure vdrive(p: ptn);                { expression to scan }
+procedure varinexprdrive(expr: ptn;             { expression }
+             dovar: pvarnodep);                  { call on find }
+procedure vdrive(p: ptn);                      { expression to scan }
 var i: 1..maxarg;                { for loop }
 begin
     if p <> nil then with p^ do begin        { using given node }
@@ -622,8 +621,8 @@ end {varinexprdrive};
     This is meaningful only for monitors, modules, and main programs.
 }
 procedure innerblkdrive(blk: blocknodep;        { starting block }
-        procedure inner(b: blocknodep));    { use on inners }
-var b: blocknodep;                    { working block }
+        inner: pblocknodep);                    { use on inners }
+var b: blocknodep;                              { working block }
 begin
     assert(blk^.blvarnode^.vardata.form in         { must be static blk }
     [programdata, moduledata, monitordata]); 
@@ -656,7 +655,7 @@ end {innerblkdrive};
                  Used in invariant and call processing.
 }
 procedure blockcrossdrive(inner, outer: blocknodep;    { bounds of scan }
-              procedure docross(b: blocknodep)); { crossed blk }
+              docross: pblocknodep); { crossed blk }
 var b: blocknodep;                { working block }
 begin
     assert(inner <> nil);            { inner must be real }
@@ -673,7 +672,7 @@ end {blockcrossdrive};
 {
     blockdrive  --  do once for each block
 }
-procedure blockdrive(procedure d(b: blocknodep));    { do on each block }
+procedure blockdrive(d: pblocknodep);    { do on each block }
 var blk: blocknodep;                { working block }
 begin
     blk := blockhead;                { get first block }
@@ -686,7 +685,7 @@ end {blockdrive};
     functinexprdrive  --  find all functions in expression
 }
 procedure functinexprdrive(expr: ptn;            { expression }
-             procedure dovar(v: varnodep));    { call on find }
+             dovar: pvarnodep);    { call on find }
 procedure fdrive(p: ptn);                { expression to scan }
 var i: 1..maxarg;                { for loop }
 begin
@@ -700,4 +699,4 @@ end {fdrive};
 begin {functinexprdrive}
     fdrive(expr);                { start recursion }
 end {functinexprdrive};
-****END TEMP TURNOFF*** *)
+

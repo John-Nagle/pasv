@@ -1,9 +1,9 @@
 const
     filefilename = 'pasf-files';        { name of file of files }
     sourcefilename = 'pasf-source';        { name of source file }
-#include "P1X-VER00.h"
+{$I ../CPC1/P1X-VER00.h }
 type
-#include "P1X-VER01.h"
+{$I ../CPC1/P1X-VER01.h }
 {
     print routines for printing source files
 }
@@ -12,7 +12,7 @@ var
     lastsourceline: longint;            { last source line printed }
     src: file of sourceline;            { file of source statements }
 
-#include "source.h"
+{$I source.h}
 
 procedure WHATsource; const WHAT = '@(#)source.p    1.2'; begin writeln(WHAT); end;    { Version 1.2 of 11/24/81 }
 {
@@ -33,7 +33,8 @@ var fnames: text;                { file of file names }
     ch: char;                    { for copying }
 begin
     if n <> lastsourcefile then begin        { if new source file }
-        reset(fnames,filefilename);        { open file name file }
+        assign(fnames, filefilename);
+        reset(fnames);              { open file name file }
         for i := 1 to n-1 do readln(fnames);    { skip n-1 lines }
         while not (eoln(fnames) or eof(fnames)) do begin { for one line }
         read(fnames,ch);
@@ -48,7 +49,8 @@ end {printsourcefile};
 
     Standard Pascal Dumb Non-Random-Access Version
 }
-procedure printsourceline;
+procedure printsourceline(var f: text;		{ output file }
+			  n: integer);		{ desired line }
 var i,j: longint;
     srcbuf: sourceline;                { source line record }
 begin
@@ -57,7 +59,8 @@ begin
     end else if lastsourceline <> n then begin    { if new line }
                         { see if rewind requried }
     if (lastsourceline = 0) or (lastsourceline > n) then begin
-        reset(src,sourcefilename);        { rewind file }
+        assign(src, sourcefilename);
+        reset(src);                 { rewind file }
         lastsourceline := 0;        { now open at line 0 }
         end;
     while lastsourceline < n do begin    { read up to desired line }

@@ -37,7 +37,7 @@ begin
 end {genconjunct1};
 begin {genconjunction}
     terms := 0;                    { clear count of terms }
-    seqdrive(p,genconjunct1);            { generate for each elt }
+    seqdrive(p,@genconjunct1);            { generate for each elt }
     genstring15('(true!)');            { last conjunct }
     while terms > 0 do begin            { balance parantheses }
     genchar(')');
@@ -217,7 +217,6 @@ begin
                genstring15(' exit assertion'); end;
     end;
 end {gensubcode};
-(* ***TEMP TURNOFF***
 {
     genspecrequires  --  generate REQUIREs from specification declarations
 }
@@ -272,7 +271,6 @@ end {specscan};
 begin {genspecrequires}
     specscan(specs);                { process assertions }
 end {genspecrequires};
-***END TEMO TURNOFF *)
 {
     requireblkinit  --  require that specific block be initialized
                 Only monitors and modules are eligible.

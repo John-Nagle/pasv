@@ -1,5 +1,5 @@
 program sourcetest(output);
-#include "source.h"
+{$I source.h }
 begin
     initsourceprint;            { initialize }
     printsourceline(output,25);        { print line 25 }

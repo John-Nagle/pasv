@@ -127,7 +127,7 @@ end {markprocess};
 procedure sharedvarfind;
 begin
     if debugg then writeln(dbg,'Shared Data Summary');
-    blockdrive(markprocess);            { mark blocks with process }
-    blockdrive(checkprocessref);        { note shared variables }
+    blockdrive(@markprocess);            { mark blocks with process }
+    blockdrive(@checkprocessref);        { note shared variables }
     if debugg then writeln(dbg);
 end {sharedvarfind};

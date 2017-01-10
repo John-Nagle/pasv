@@ -48,7 +48,7 @@ begin
     being entered.
     }
     requireinit(p, callee);            { gen for dominator->callee }
-    genspecrequires(p,callee^.blassertions,[initentrysubcode],explaininitentry);
+    genspecrequires(p,callee^.blassertions,[initentrysubcode],@explaininitentry);
     {    END INPUT PROCESSING  --  BEGIN OUTPUT PROCESSING    }
     genstring15('NEW');                { begin NEW }
     genspace;

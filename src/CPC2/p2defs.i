@@ -121,18 +121,29 @@ sharedinfo = unknownshared..maxpin;        { sharing info }
 {
     Types for unique object generation
 }
-tempid = 0..maxtempid;                { uniqueness for TEMPnn temps }
-labelid = 0..maxlabelid;            { uniqueness for Jcode labels }
+tempid = 0..maxtempid;                  { uniqueness for TEMPnn temps }
+labelid = 0..maxlabelid;                { uniqueness for Jcode labels }
 timestamp = 0..maxtimestamp;            { uniqueness for time }
 {
     Pointers to nodes  -- forward referenced items
 }
-ptn = ^node;                { pointer to icode node }
+ptn = ^node;                    { pointer to icode node }
 varnodep = ^varnode;            { pointer to varnode }
 blocknodep = ^blocknode;        { pointer to blocknode }
 refnodep = ^refnode;            { pointer to refnode }
-callnodep = ^callnode;            { pointer to call node }
+callnodep = ^callnode;          { pointer to call node }
 argnodep = ^argnode;            { pointer to arg node }
+{
+    Procedure argument types for passing procedures to other procedures
+    
+    Required in Free Pascal.
+}
+pvarnodep = procedure(v: varnodep) is nested;         { procedure param }
+pptn = procedure(st: ptn) is nested;                  { procedure param }
+pblocknodep = procedure(b: blocknodep) is nested;     { procedure param }
+pnoargs = procedure is nested;                        { procedure param with no args }
+
+
 {
     varnode  --  variable tree node
 }

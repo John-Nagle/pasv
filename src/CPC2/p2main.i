@@ -9,9 +9,11 @@ procedure WHATmain; const WHAT = '@(#)p2main.i    2.4'; begin SINK := WHAT; end;
 }
 procedure initglobals;
 begin
-  rewrite(dbg,'p2-debug');        { ***TEMP*** }
-  reset(vars,'pasf-vars');        { ***TEMP*** }
-  debugg:=true;             { ***TEMP*** }
+  assign(dbg,'p2-debug');
+  rewrite(dbg);                     { ***TEMP*** }
+  assign(vars,'pasf-vars');
+  reset(vars);                      { ***TEMP*** }
+  debugg:=true;                     { ***TEMP*** }
   comments := true;            { generate comments }
   seriouserror := false;        { no serious errors yet }
   fatalerror := false;            { no fatal errors yet }
@@ -57,12 +59,13 @@ end {getbody};
 procedure startpass(passid: char);
 begin
     if debugg then begin            { if debugging }
-    page(dbg);                { new page in debug file }
-    writeln(dbg);
-    writeln(dbg,'Begin Pass 2',passid);
-    writeln(dbg);
+        writeln(dbg,'-----------------------------------------------------------------------------------');
+        writeln(dbg);
+        writeln(dbg,'Begin Pass 2',passid);
+        writeln(dbg);
     end;
-    reset(int,'pasf-icode');            { ***TEMP*** }    
+    assign(int,'pasf-icode');
+    reset(int);                 { ***TEMP*** }    
     resetscopes;                { reset scope decode info }
 end {startpass};
 {

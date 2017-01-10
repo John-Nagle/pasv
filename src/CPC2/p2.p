@@ -25,6 +25,7 @@
     Communications Corporation's Western Development Laboratories
     in Palo Alto, California.
 }
+{$MODESWITCH NESTEDPROCVARS}
 {$I p2consts.i}
 {$I p2iconst.h}
 {$I ../CPC1/P1X-VER00.h}

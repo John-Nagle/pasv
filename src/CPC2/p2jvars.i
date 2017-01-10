@@ -254,7 +254,7 @@ end {declarevar};
 }
 procedure declarefnsinspecs(blk: blocknodep);        { block to scan }
 begin
-    functinexprdrive(blk^.blassertions,declarevar);    { scan assertions }
+    functinexprdrive(blk^.blassertions,@declarevar);    { scan assertions }
 end {declarefnsinspecs};
 {
     genlocal  -- generate local variable declaration
@@ -271,7 +271,7 @@ end {genlocal};
 begin {genjvars}
     rectab.rntop := 0;                { clear number conversion tab }
     uniquer := 0;                { clear unique id generator }
-    vardrive(clearidunique);            { clear idunique field of all }
+    vardrive(@clearidunique);            { clear idunique field of all }
                         { 1. Referenced non-locals }
     r := blk^.blrefs;                { get head of reference list }
     while r <> nil do begin            { for all refs }
@@ -295,7 +295,7 @@ begin {genjvars}
     r := r^.refnext;            { on to next ref }
     end;
                         { 2. Locals }
-    vardrive(genlocal);                { generate locals }
+    vardrive(@genlocal);                { generate locals }
                         { 3b. Functions from own specs }
     declarefnsinspecs(blk);            { check own block }
 end {genjvars};

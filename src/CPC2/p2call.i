@@ -228,7 +228,7 @@ begin {inputgenrequries}
     callee := vtype^.blockdata;        { called block }
     { generate the entry requries, using entryexplaingen to gen msgs }
     genspecrequires(callnode, callee^.blassertions, 
-        [entrysubcode, entryexitsubcode], entryexplaingen);
+        [entrysubcode, entryexitsubcode], @entryexplaingen);
     end;                    { With }
 end {inputentrygen};
 {
@@ -277,7 +277,7 @@ begin { requireinvariants }
     assert(b <> nil);            { must find dominator }
     if b^.blvarnode^.vardata.form in [moduledata, monitordata] then
         genspecrequires(callnode, b^.blassertions,
-        [invariantsubcode],invarexplaingen);
+        [invariantsubcode],@invarexplaingen);
     b := b^.blouterblock;            { get next outer block }
     end;                    { end search for dominator }
 end {requireinvariants};

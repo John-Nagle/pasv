@@ -14,7 +14,7 @@ begin
     with p^ do begin                { for the given node }
     if depth > 0 then            { if depth info wanted }
         write(f,depth:1,dir,'   ');        { how we got here }
-        write(f,
+    write(f,
     ' ':vardata.itemdepth,' ':vardata.itemdepth,    { indentation }  
     vardata.itemdepth:2, ' ',vardata.itemname,
     ' {',
@@ -237,12 +237,12 @@ begin
       else write(f,v^.blockdata^.bldominator^.blvarnode^.vardata.itemname);
     end;
     writeln(f);
-end {dumpvarowner};
+end {dumpvarowner}; 
 begin {dumpvarownership}
     writeln(f,' ':8,'Variable       ':15,' ':4,'Block          ':15,
         ' ':4,'Master         ':15,'Dominator');
     writeln(f);
-    vardrive(dumpvarowner);
+    vardrive(@dumpvarowner);
     writeln(f);
 end {dumpvarownership};
 {

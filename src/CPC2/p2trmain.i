@@ -119,8 +119,8 @@ begin
     actualsetuse;                { mark VAR actuals as set/used }
     markallcalls;                { propagate set/used lists }
     findrecursion;                { detect recursion }
-    blockdrive(classifyroutine);        { classify routines by type }
-    blockdrive(propagateroutinekind);        { propagate routine class }
+    blockdrive(@classifyroutine);        { classify routines by type }
+    blockdrive(@propagateroutinekind);        { propagate routine class }
     sharedvarfind;                { find shared variables }   
     diagnoseunset;                { diagnose unset vars }
     if debugg then dumpall(dbg);        { debug print }

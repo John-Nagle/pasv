@@ -55,7 +55,7 @@ begin {waitrequire}
                         { if EXIT assertion }
     if disp = invariantsubcode then begin
         if relevancetest(p^.arg[1],blk,[setref]) then begin { if changes }
-        genrequire(wloc,p^.arg[1],explainwait);{ generate assertion }
+        genrequire(wloc,p^.arg[1],@explainwait);{ generate assertion }
         end else begin            { if not relevant }
         if comments then begin        { commentary }
             gencomment(p^.linen);    { begin comment }
@@ -69,10 +69,10 @@ begin {waitrequire}
     end;                    { With }
 end {waitrequire};
 begin {waitblock}
-    seqdrive(blk^.blassertions,waitrequire);    { process specifications }
+    seqdrive(blk^.blassertions,@waitrequire);    { process specifications }
     if blk^.blvarnode^.vardata.form in [programdata, moduledata] then 
     if blk^.blhasbody then            { if module/prg has body }
-        innerblkdrive(blk,blkdefined);    { require inners def }
+        innerblkdrive(blk,@blkdefined);    { require inners def }
 end {waitblock};
 {
     genwaitnew  --  generate NEW for WAIT
@@ -101,7 +101,7 @@ begin
 end {waitvars};
 begin
     nonewyet := true;                { no NEW yet }
-    vardrive(waitvars);                { check for relevant vars }
+    vardrive(@waitvars);                { check for relevant vars }
     if not nonewyet then begin            { if a NEW was generated }
     genchar(')');                { finish NEW list }
     genspace;                { prepare for conjunction }

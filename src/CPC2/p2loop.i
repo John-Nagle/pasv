@@ -229,7 +229,7 @@ begin { opfor }
     freeze(loopvar);                { freeze loop argument }
                             { do loop body }
     invariantfound := false;            { no invariant yet }
-    seqdrive(stmtarg, forbody);            { process loop body }
+    seqdrive(stmtarg, @forbody);            { process loop body }
     if not invariantfound then begin        { if no invariant found }
     usererrorstart(forline);        { start error message }
     write(output,'This FOR loop lacks a STATE statement.');
@@ -723,7 +723,7 @@ begin {oploop}
             if warg^.code = exitop then begin { if EXIT }
                 genloopexit(warg);    { handle EXIT }
             end else begin        { if not EXIT }
-                seqdrive(warg,genloopbody);{process statement sequence }
+                seqdrive(warg, @genloopbody);{process statement sequence }
                 end;            { end non EXIT }
             end;            { end non-null }
         end;                { for }

@@ -32,7 +32,7 @@ begin
 end {relevance1};
 begin {relevancetest}
     relevant := false;                { assume not relevant }
-    varinexprdrive(p,relevance1);        { examine all variables }
+    varinexprdrive(p, @relevance1);        { examine all variables }
     relevancetest := relevant;            { return result }
 end {relevancetest};
 {
@@ -53,7 +53,7 @@ begin
     end;
 end {addvarref1};
 begin {addvarrefs}
-    varinexprdrive(p,addvarref1);        { examine all variables }
+    varinexprdrive(p,@addvarref1);        { examine all variables }
 end {addvarrefs};
 {
     addinvarrel  --  add the variables for all relevant invariants to the
@@ -61,7 +61,6 @@ end {addvarrefs};
 }
 procedure addinvarrel(blk: blocknodep;        { block being processed }
               var added: boolean);    { true if added new item }
-var b: blocknodep;                { working block }
 {
     addinvar  --  add invariant to relevant invariants of routine, adding
               to input variable list if necessary.
@@ -114,14 +113,14 @@ begin
     if debugg then            { debug print }
     writeln(dbg,'    Invariants from block ',
     b^.blvarnode^.vardata.itemname);
-    seqdrive(b^.blassertions,tryinvar); { examine all invariants }
+    seqdrive(b^.blassertions,@tryinvar); { examine all invariants }
 end {invarcross};
 begin {addinvarrel}
     case blk^.blvarnode^.vardata.form of    { fan out on kind of block }
     proceduredata, functiondata: begin         { procedure or function }
     if debugg then
          writeln(dbg,'  For routine ',blk^.blvarnode^.vardata.itemname);
-    blockcrossdrive(blk,blk^.bldominator,invarcross); { handle crosses }
+    blockcrossdrive(blk,blk^.bldominator,@invarcross); { handle crosses }
     end;
     moduledata, monitordata: begin        { monitor or module }
     end;                    { end monitor/module }
