@@ -59,7 +59,9 @@ begin
         verybadnode(ap,403);    { case constant not literal }
         for i := 1 to casecount do     { scan list }
         if casecodes[i] = disp then begin { if duplicate case constants }
-        if caselines[i] <> linen then { print duplicated line }
+        if (caselines[i].filenumber <> linen.filenumber) or 
+           (caselines[i].linenumber <> linen.linenumber)       
+        then { print duplicated line }
             printsourceline(output,caselines[i]); { so note }
         usererrorstart(linen);     { note trouble }
         write(output, 'Case label ',disp:1,' appears twice.');
