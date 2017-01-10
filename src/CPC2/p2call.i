@@ -408,13 +408,14 @@ begin
     substackselect(sl, 1);            { generate lhs }
     clearallsubstitutes;            { clear subs }
     genspace;                    { end of lhs part }
+    tid := 0;                       { no find yet }
     for i := 1 to tinfo.tttop do begin        { find binding for formal }
-    with tinfo.tttab[i] do begin        { using this entry }
-        if tevarnode = formal then        { if find }
-        if tekind = outputformaltemp then begin { if output formal }
-        assert(tid = 0);        { must be only find }
-        tid := tenum;            { get temp number }
-        end;                { end output formal }
+        with tinfo.tttab[i] do begin        { using this entry }
+            if tevarnode = formal then        { if find }
+            if tekind = outputformaltemp then begin { if output formal }
+            assert(tid = 0);        { must be only find }
+            tid := tenum;            { get temp number }
+            end;                { end output formal }
         end;                { end With }
     end;                    { end search loop }
     assert(tid > 0);                { must have found } 

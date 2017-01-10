@@ -42,9 +42,9 @@ end {genclose};
 }
 procedure genabort;
 begin
-    genopen;                    { open and clear }
-    genclose;                    { close }
-    remove('p2jcode');                { delete the file }
+    genopen;                            { open and clear }
+    genclose;                           { close }
+    DeleteFile('p2jcode');              { delete the file }
 end {genabort};
 {
     gencontinuation  --  break for a new line permitted now 

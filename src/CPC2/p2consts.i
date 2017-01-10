@@ -11,6 +11,7 @@
 
 
 program passtwo(output);
+uses sysutils;                   { for Free Pascal }
 const 
 compilerversion = 'Pascal-F version  xxx  on  4/13/1981';  {last modified by NELSON E.    }
 {
