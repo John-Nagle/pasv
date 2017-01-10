@@ -54,7 +54,7 @@ var forvararg: ptn;                { FOR control variable arg }
     forinvariant  --  handle invariant of for loop
 }
 procedure forinvariant(pinvar: ptn);        { invariant expression }
-var i: 1..maxarg;                { arg position }
+var i: cardinal;                { arg position }
 begin
     genassertrequires(pinvar);            { require invariant expr }
     genstring15('HANG');            { HANG - break at invariant }
@@ -381,7 +381,7 @@ var statearg: ptn;                { STATE arg }
     statefound: boolean;            { true if STATE found }
     measuretid: tempid;                { id for MEASURE variable }
     flagtid: tempid;                { id for Jcode flag }
-    j: 1..maxarg;                { for loops }
+    j: cardinal;                { for loops }
     label0, label1, label2, label3: labelid;    { these numbers match Jcode doc}
     warg: ptn;                    { working arg }
 {
@@ -616,7 +616,7 @@ end {genloopbody};
               in loop 
 }
 procedure finishloop;
-var i: 0..maxarg;                { for loop }
+var i: cardinal;                { for loop }
     exitline: lineinfo;                { location of exit line }
 begin
     for i := 1 to exitlim do begin        { for all loop exits }

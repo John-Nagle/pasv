@@ -43,7 +43,7 @@ var casecodes: array [1..maxcases] of targetinteger; { case codes seen }
     casecount: 0..maxcases;        { number of cases }
     beforelabel: labelid;        { start of case label }
     afterlabel: labelid;        { end of case label }
-    i: 1..maxarg;            { for arg scan }
+    i: cardinal;            { for arg scan }
     caseexpr: ptn;            { expression in CASE statement }
     caseline: lineinfo;            { source line of CASE statement }
 {

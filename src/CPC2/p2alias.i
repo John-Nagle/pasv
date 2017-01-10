@@ -8,7 +8,7 @@ procedure WHATalias; const WHAT = '@(#)p2alias.i    2.1'; begin SINK := WHAT; en
 function identical(p1, p2: ptn)            { expressions to compare }
            : boolean;
 var nodiff: boolean;                { true if no differences }
-    i: 1..maxarg;                { for loop }
+    i: cardinal;                { for loop }
 begin
     identical := false;                { assume failure }
     with p1^ do begin                { using first node }
@@ -180,8 +180,8 @@ var r: refnodep;                { working ref node }
     expr1: ptn;                    { first VAR expression }
     base1: varnodep;                { base of arg }
     out1: boolean;                { true if arg is output }
-    i: 1..maxarg;                { for arg loop }
-    j: longint;                    { want 1..maxarg + 1 }
+    i: cardinal;                { for arg loop }
+    j: cardinal;                    { want 1..maxarg + 1 }
     outvar: array [1..maxarg] of boolean;    { true if output arg }
     formal: varnodep;                { for formal arg chaining }
 begin

@@ -579,7 +579,7 @@ end {vardrive};
 }
 procedure seqdrive(p: ptn;              { starting node }
             doseq: pptn);               { procedure arg }
-var i: 1..maxarg;                { working arg position }
+var i: cardinal;                { working arg position }
     parg: ptn;                    { working arg }
 begin
     if p <> nil then                { if work to do }
@@ -602,7 +602,7 @@ end {seqdrive};
 procedure varinexprdrive(expr: ptn;             { expression }
              dovar: pvarnodep);                  { call on find }
 procedure vdrive(p: ptn);                      { expression to scan }
-var i: 1..maxarg;                { for loop }
+var i: cardinal;                { for loop }
 begin
     if p <> nil then with p^ do begin        { using given node }
         if code in [varblop, dvadop, paramop] then begin{ if variable }
@@ -687,7 +687,7 @@ end {blockdrive};
 procedure functinexprdrive(expr: ptn;            { expression }
              dovar: pvarnodep);    { call on find }
 procedure fdrive(p: ptn);                { expression to scan }
-var i: 1..maxarg;                { for loop }
+var i: cardinal;                { for loop }
 begin
     if p <> nil then with p^ do begin        { using given node }
     if code = callop then             { if call }

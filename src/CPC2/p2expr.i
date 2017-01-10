@@ -260,7 +260,7 @@ end {genmselector};
     genmfunctioncall  --  generate function call in message
 }
 procedure genmfunctioncall(p: ptn);
-var i: 1..maxarg;                { for loop }
+var i: cardinal;                { for loop }
 begin
     with p^ do begin                { using given node }
     assert(code = fcallop);            { must be fcall }
@@ -293,7 +293,7 @@ procedure genmexpr1(p: ptn;             { node }
             callerpred: precedence);    { precedence of caller }
                                         { FORWARD resolution }
 var iclass: iopclass;                { icode op class }
-    i: 0..maxarg;                { for arg loop }
+    i: cardinal;                { for arg loop }
 begin { genmexpr1 }
     with p^ do begin                { using given node }
     if code = fcallop then begin        { if call }

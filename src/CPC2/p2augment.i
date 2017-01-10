@@ -317,14 +317,14 @@ end {selectors};
 }
 procedure augment1(p: ptn;            { starting node }
            need: machinetype);        { type needed by caller }
-var i: 1..maxarg;                { for loop }  
+var i: cardinal;                { for loop }  
     j: 1..5;                    { position in optab arg list }
 {
     augmentcall  --  handle calls to user-defined procedures
 }
 procedure augmentcall(p: ptn;            { starting node }
               need: machinetype);    { type needed by caller }
-var i: 1..maxarg;                { for loop }
+var i: cardinal;                 { for loop }
     q: varnodep;                { argument being considered }
     parg: ptn;                    { pointer to arg being worked }
 begin

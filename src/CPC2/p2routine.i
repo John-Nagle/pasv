@@ -187,7 +187,7 @@ end {saveglobals};
     bindoldargs  --  bind args for use as ".old" in exit condition
 }
 procedure bindoldargs(var tab: oldargtab);    { using given tab }
-var i: 1..oldargsmax;                { old arg counter }
+var i: cardinal;                { old arg counter }
 begin
     with tab do                 { use given tab }
     for i := 1 to oldargcount do begin        { for all old args }
@@ -252,7 +252,7 @@ end {genspecrequire};
                  assertions of requested subcodes
 }
 procedure specscan(p: ptn);            { node in assertions }
-var i: 0..maxarg;                { for arg loop }
+var i: cardinal;                { for arg loop }
 begin
     if p <> nil then begin            { if any expressions }
     with p^ do begin            { using given node }

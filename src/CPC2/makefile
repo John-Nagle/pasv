@@ -22,7 +22,7 @@ all:	pasver2
 install: pasver2
 	-rm -f $(DEST)/pasver2.old
 	-mv $(DEST)/pasver2 $(DEST)/pasver2.old
-	cp pasver2 $(DEST)
+	cp pasver2 $(DEST)/pasver2
 #
 P2SRC=p2consts.i p2iconst.h $(PASS1)/P1X-VER00.h $(PASS1)/P1X-VER01.h p2defs.i p2vars.i \
 	p2tables.i p2tprint.i p2errors.i p2util.i p2block.i p2varfile.i \

@@ -363,7 +363,7 @@ end {adddefineds};
 }
 procedure checkassertion(p: ptn;        { single assertion }
              subcode: longint);    { kind of vardecl }
-var i: 1..maxarg;                { for arg loop }
+var i: cardinal;                { for arg loop }
     base: varnodep;                { base variable of item }
 begin
     with p^ do begin                { using given node }
@@ -397,7 +397,7 @@ end {checkdepth};
     checkassertions  --  check assertions against in/out lists
 }
 procedure checkassertions(var p: ptn);        { starting node }
-var i: 1..maxarg;                { for arg loop }
+var i: cardinal;                { for arg loop }
 begin
     if p <> nil then with p^ do begin        { using given node }
     if code = seqop then begin        { if sequence }

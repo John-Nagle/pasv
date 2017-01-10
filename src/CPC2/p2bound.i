@@ -270,7 +270,7 @@ end {subscriptcheck};
     safeactuals  --  handle calls to user-defined functions
 }
 procedure safeactuals(p: ptn);            { call node }
-var i: 1..maxarg;                { for loop }
+var i: cardinal;                { for loop }
     q: varnodep;                { argument being considered }
     parg: ptn;                    { pointer to arg being worked }
 begin
@@ -329,7 +329,7 @@ end {safeactuals};
         REQUIRE operators.  
 }
 procedure safeexpr(p: ptn);                { FORWARD resolution }
-var i: 1..maxarg;                { arg loop }
+var i: cardinal;                { arg loop }
     j: 1..5;                    { position in optab args }
     sideeffectinthisexpr: boolean;        { side effect found }
 begin {safeexpr}
