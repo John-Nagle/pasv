@@ -25,34 +25,67 @@
 ;;; is x concatenated with the field name; thus (xnum x y) would update
 ;;; the num field of x to y. 
 
-(declare (macros t))
+;;;;(declare (macros t))
 
-(defun hunkshell macro (l) 
-       (progn (setq l (cdr l))
-              (cons 'progn 
-	            (cons ''compile
-                          (cons (define-alloc (car l) (length (cdr l)))
-                                (append (define-accesses (cdr l) 0)
-                                        (define-updates (cdr l) 0)))))))
+;;; OBSOLETE - will not work in Common LISP.  Macros syntax has changed.
+
+;;;(defun hunkshell macro (l) 
+;;;       (progn (setq l (cdr l))
+;;;              (cons 'progn 
+;;;	            (cons ''compile
+;;;                          (cons (define-alloc (car l) (length (cdr l)))
+;;;                                (append (define-accesses (cdr l) 0)
+;;;                                        (define-updates (cdr l) 0)))))))
 
 
-(defun define-alloc (name shelllen) 
-       (list 'defun (concat 'alloc- name) 'macro  '(app)
-             (list 'quote (list 'makhunk shelllen))))
+;;;(defun define-alloc (name shelllen) 
+;;;       (list 'defun (concat 'alloc- name) 'macro  '(app)
+;;;             (list 'quote (list 'makhunk shelllen))))
 
-(defun define-accesses (l n) 
-       (and l (cons (define-access (car l) n)
-                    (define-accesses (cdr l) (1+ n)))))
+;;;(defun define-accesses (l n) 
+;;;      (and l (cons (define-access (car l) n)
+;;;                    (define-accesses (cdr l) (1+ n)))))
 
-(defun define-updates (l n) 
-       (and l (cons (define-update (car l) n)
-                    (define-updates (cdr l) (1+ n)))))
+;;;(defun define-updates (l n) 
+;;;       (and l (cons (define-update (car l) n)
+;;;                    (define-updates (cdr l) (1+ n)))))
 
-(defun define-access (name num) 
-       (list 'defun  name 'macro '(app)
-             (list 'cons (list 'quote 'cxr) (list 'cons num '(cdr app)))))
+;;;(defun define-access (name num) 
+;;;       (list 'defun  name 'macro '(app)
+;;;             (list 'cons (list 'quote 'cxr) (list 'cons num '(cdr app)))))
 
-(defun define-update (name num) 
-       (list 'defun (concat 'x name) 'macro '(app)
-             (list 'list ''rplacx  num  '(cadr app) '(caddr app))))
+;;;(defun define-update (name num) 
+;;;      (list 'defun (concat 'x name) 'macro '(app)
+;;;            (list 'list ''rplacx  num  '(cadr app) '(caddr app))))
+                                        
+(defun concat (a b)                                 ; Obsolete LISP compatibility
+   (values (intern 
+       (string-upcase (concatenate 'string 
+            (symbol-name a) 
+           (symbol-name b))))))
+
+
+;   New Common LISP version, using structures instead of hunks.                                        
+(defmacro hunkshell (hunkname &rest fields)
+    (append 
+        (list 'progn
+            `(defstruct 
+                 (,hunkname (:conc-name nil) (:constructor ,(concat 'alloc- hunkname))) ; gen structs, allocator, and access fns
+                    ,@fields))
+        (define-updates hunkname fields))) ; gen update fns
+                 
+(defun define-updates (hunkname fields)
+    (map 'list #'(lambda (field) (define-update hunkname field)) fields))
+            
+;;;;(defun define-update (hunkname field)            ; gen one update function
+;;;;    `(defmacro ,(concat 'x field) (recvar newval) (quote (setf (,field recvar) newval))))
+                                        
+
+(defun define-update (hunkname field)            ; gen one update function
+    `(defun ,(concat 'x field) (recvar newval) 
+        (setf (,field recvar) newval)))
+        
+;;; We want the above to generate  (defmacro xwest (r v) `(setf (west ,r) ,v))
+;;; Above ought to be a macro, but right now it's a function. Works.
+
 
