@@ -49,9 +49,9 @@
 
 ;;;============================================================================
 
-(declare (load 'need.o) (load 'princ.o)
-	 (special *margin *left *right *leftotal *rightotal *space *marginerrors
-                  *top *bottom *pstack *sstackempty *end *arraysize))
+;;;(declare (load 'need.o) (load 'princ.o)
+	 (declarespecial *margin *left *right *leftotal *rightotal *space *marginerrors
+                  *top *bottom *pstack *sstackempty *end *arraysize)
 (needs-macros)
 
 (setq *margin 10 *left 1 *right 1 *leftotal 1 *rightotal 1 *top 1 *bottom 1)

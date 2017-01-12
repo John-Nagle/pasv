@@ -4,13 +4,13 @@
 ;;; simpdebug is a macro, that if redefined, will cause debug code
 ;;; to be included in the simplifier.
 
-(declare (load 'need.o) (load 'defmac.o) (macros t))
-(declare (special
+;;;;(declare (load 'need.o) (load 'defmac.o) (macros t))
+(declarespecial special
 	rareevents
-	errport))
+	errport)
 (needs-macros)
 
-(defsmac simpdebug (x) (comment "debug code is not present"))
+(defmacro simpdebug (x) (comment "debug code is not present"))
 ;
 ;	internalerror  --  called if an internal error is detected
 ;

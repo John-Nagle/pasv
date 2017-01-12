@@ -3,8 +3,8 @@
 ;;;============================================================================
 ;;;  mapping macros 
 
-(declare (macros t) (load 'need.o) (load 'defmac.o))
-(needs-macros)
+;;;(declare (macros t) (load 'need.o) (load 'defmac.o))
+;;;(needs-macros)
 
 ;;;
 ;;; (mapcone (foo x) l) expands into (mapc '(lambda(x) (foo x)) l)

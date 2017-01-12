@@ -2,7 +2,7 @@ program Jsort(input, p2jcode, p3jcode, output);
 (* This program reads a p2jcode, which is a list of J-units, and sorts
  * the units using their first records as keys.
  *)
-#include 'unixio.h'
+////{$I unixio.h}
 const
   StringPoolSize = 100000;
   MaxJunits = 1000;
@@ -48,7 +48,7 @@ SwapTemp: UnitDescriptor; (* Used to swap elements of A during sorting *)
 
 (* Variables used only by QuickSort, but not stacked in recursive calls *)
 LessTop, GreaterBot, MidVal: integer;
-#include 'jsort.h'
+${I jsort.h}
 
 procedure BuildA;
 (* This routine reads p2jcode and creates the array A as described above. *)

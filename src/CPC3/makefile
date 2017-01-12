@@ -3,6 +3,8 @@
 #	Makefile for pass 3 of verifier
 #
 #				Version 1.9 of 2/6/86
+#               Revised January 2017 for Free Pascal
+#
 #	Programs of pass 3 are
 #
 #	    pass3a -- the jsort program which sorts jcode
@@ -13,7 +15,8 @@ SOURCE = ..
 DEST=../bin
 PFLAGS = -I/usr/include/pascal -c -g -C
 CFLAGS = -I/usr/src/lib/libpc -c -g
-PASS3 = $(SOURCE)/cpc3/src
+PASS3 = $(SOURCE)/CPC3/src
+POPTIONS=-gl -Co -Cr
 #
 #	make			with no arguments makes pasver3c and pasver3a
 #	make install		makes and installs pasver3c and pasver3a
@@ -41,33 +44,14 @@ pasver3c: main.o unixio.o $(pofiles)
 
 source: $(sfiles)
 
-pasver3a: jsort.o
-	pc jsort.o
+pasver3a: jsort.p jsort.h
 	rm -f pasver3a
-	mv a.out pasver3a
+	fpc $(POPTIONS) jsort.p | tee errs
+	mv jsort pasver3a
 	chmod 555 pasver3a
 
-jsort.o:       jsort.p jsort.h
 unixio.o:      pascaliodefs.h
 $(pofiles):    global.h
 main.o:        global.h main.p;  $(PC) $(PFLAGS) -w main.p
 
-# SCCS dependencies
-global.h: $(PASS3)/s.global.h; get $(PASS3)/s.global.h
-charin.p: $(PASS3)/s.charin.p; get $(PASS3)/s.charin.p
-env.p: $(PASS3)/s.env.p; get $(PASS3)/s.env.p
-error.p: $(PASS3)/s.error.p; get $(PASS3)/s.error.p
-finish.p: $(PASS3)/s.finish.p; get $(PASS3)/s.finish.p
-init.p: $(PASS3)/s.init.p; get $(PASS3)/s.init.p
-main.p: $(PASS3)/s.main.p; get $(PASS3)/s.main.p
-output.p: $(PASS3)/s.output.p; get $(PASS3)/s.output.p
-parse.p: $(PASS3)/s.parse.p; get $(PASS3)/s.parse.p
-path.p: $(PASS3)/s.path.p; get $(PASS3)/s.path.p
-string.p: $(PASS3)/s.string.p; get $(PASS3)/s.string.p
-table.p: $(PASS3)/s.table.p; get $(PASS3)/s.table.p
-changed.p: $(PASS3)/s.changed.p; get $(PASS3)/s.changed.p
-unixio.c: $(PASS3)/s.unixio.c; get $(PASS3)/s.unixio.c
-jsort.p: $(PASS3)/s.jsort.p; get $(PASS3)/s.jsort.p
-jsort.h: $(PASS3)/s.jsort.h; get $(PASS3)/s.jsort.h
-pascaliodefs.h: $(PASS3)/s.pascaliodefs.h; get $(PASS3)/s.pascaliodefs.h
 

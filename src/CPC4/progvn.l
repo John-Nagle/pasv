@@ -1,4 +1,4 @@
-(declare (macros t))
+;;;(declare (macros t))
 
 (defun progvn macro (arg)
   ; progvn is a combination of prog and progn

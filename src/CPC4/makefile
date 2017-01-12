@@ -1,11 +1,11 @@
 #
 #	*************************************************
-#	*						*
-#	*	     The Pascal-F Verifier 		*
-#	*						*
-#	*	    Theorem Prover - Pass 4		*
-#	*						*
-#	*						*
+#	*						                        *
+#	*	     The Pascal-F Verifier 		            *
+#	*						                        *
+#	*	    Theorem Prover - Pass 4		            *
+#	*						                        *
+#	*						                        *
 #	*************************************************  }
 #
 #{
@@ -32,7 +32,7 @@
 #
 SOURCE = ..
 DEST=../bin
-PASS4 = $(SOURCE)/cpc4/src
+PASS4 = $(SOURCE)/CPC4/src
 LISPINCL=/usr/local/src/cmd/lisp/franz/h
 #
 #	make 			with no arguments makes pasver4
@@ -126,38 +126,4 @@ eform.o:     eform.l defmac.o hunkshell.o enode.o debug.o princ.o map.o need.o
 pipeopen.o:  pipeopen.c ccvms.sh
 	     sh ccvms.sh -c -I$(LISPINCL) pipeopen.c
 
-# SCCS dependencies
-defmac.l:    $(PASS4)/s.defmac.l; get $(PASS4)/s.defmac.l
-debug.l:     $(PASS4)/s.debug.l; get $(PASS4)/s.debug.l
-e.l:         $(PASS4)/s.e.l; get $(PASS4)/s.e.l
-enode.l:     $(PASS4)/s.enode.l; get $(PASS4)/s.enode.l
-eform.l:     $(PASS4)/s.eform.l; get $(PASS4)/s.eform.l
-hunkshell.l: $(PASS4)/s.hunkshell.l; get $(PASS4)/s.hunkshell.l
-map.l:       $(PASS4)/s.map.l; get $(PASS4)/s.map.l
-pform.l:     $(PASS4)/s.pform.l; get $(PASS4)/s.pform.l
-pp.l:        $(PASS4)/s.pp.l; get $(PASS4)/s.pp.l
-princ.l:     $(PASS4)/s.princ.l; get $(PASS4)/s.princ.l
-setup.l:     $(PASS4)/s.setup.l; get $(PASS4)/s.setup.l
-newsimp.l:    $(PASS4)/s.newsimp.l; get $(PASS4)/s.newsimp.l
-ruleprep.l:    $(PASS4)/s.ruleprep.l; get $(PASS4)/s.ruleprep.l
-z.l:         $(PASS4)/s.z.l; get $(PASS4)/s.z.l
-ze.l:        $(PASS4)/s.ze.l; get $(PASS4)/s.ze.l
-need.l:      $(PASS4)/s.need.l; get $(PASS4)/s.need.l
-main.l:      $(PASS4)/s.main.l; get $(PASS4)/s.main.l
-newsplit.l:  $(PASS4)/s.newsplit.l; get $(PASS4)/s.newsplit.l
-makemono.l:  $(PASS4)/s.makemono.l; get $(PASS4)/s.makemono.l
-match.l:     $(PASS4)/s.match.l; get $(PASS4)/s.match.l
-progvn.l:    $(PASS4)/s.progvn.l; get $(PASS4)/s.progvn.l
-timer.l:     $(PASS4)/s.timer.l; get $(PASS4)/s.timer.l
-normalize.l: $(PASS4)/s.normalize.l; get $(PASS4)/s.normalize.l
-builtin.l:    $(PASS4)/s.builtin.l; get $(PASS4)/s.builtin.l
-generic.l:    $(PASS4)/s.generic.l; get $(PASS4)/s.generic.l
-eventtran.l:    $(PASS4)/s.eventtran.l; get $(PASS4)/s.eventtran.l
-type.l:    $(PASS4)/s.type.l; get $(PASS4)/s.type.l
-typee.l:    $(PASS4)/s.typee.l; get $(PASS4)/s.typee.l
-pipeopen.c:  $(PASS4)/s.pipeopen.c; get $(PASS4)/s.pipeopen.c
-ccvms.sh:  $(PASS4)/s.ccvms.sh; get $(PASS4)/s.ccvms.sh
 
-traceaids.l:    $(PASS4)/s.traceaids.l; get $(PASS4)/s.traceaids.l
-tests.l:    $(PASS4)/s.tests.l; get $(PASS4)/s.tests.l
-fixes.l:    $(PASS4)/s.fixes.l; get $(PASS4)/s.fixes.l

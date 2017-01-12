@@ -43,7 +43,7 @@
 ;    (match E ('implies! X Y))          Succeeds if E is an implication; sets
 ; 					X and Y to its operands upon success. 
 
-(declare (macros t))
+;;;(declare (macros t))
 (defmacro match (expr pattern) 
   `(prog nil ,@(match1 pattern '"" expr '((return t)))))
 

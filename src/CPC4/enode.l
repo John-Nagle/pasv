@@ -2,10 +2,10 @@
 
 ;;; This file contains macros used to define and manipulate enodes
 
-(declare (macros t)
-	 (load 'need.o)
-	 (load 'defmac.o)
-	 (load 'hunkshell.o))
+;;;(declare (macros t)
+;;;	 (load 'need.o)
+;;;	 (load 'defmac.o)
+;;;	 (load 'hunkshell.o))
 
 (needs-macros)
 

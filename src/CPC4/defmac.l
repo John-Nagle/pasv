@@ -43,51 +43,63 @@
 ;;; always what you want, but you can do a (declare (macros t)) in the
 ;;; file somewhere if you want the macros defined at run-time, too.
 
-(declare (macros t)
-	)
-(defun defsmac macro (args)
-       (defsmac1 (cadr args) (caddr args) (cdddr args)))
+;;;;(declare (macros t)
+;;;;	)
+;;;;(defun defsmac macro (args)
+;;;;       (defsmac1 (cadr args) (caddr args) (cdddr args)))
   
-(defun defmac macro (args)
-       (defmac1 (cadr args) (caddr args) (cdddr args)))
+;;;;(defun defmac macro (args)
+;;;;       (defmac1 (cadr args) (caddr args) (cdddr args)))
 
-(defun defsmac1 (name formals body)
-       `(defun ,name macro (app) 
-                     ,(defsmac2 formals
-                                  (cond ((cdr body) (cons 'progn body)) 
-                                        (t (car body))))))
+;;;;(defun defsmac1 (name formals body)
+;;;;       `(defun ,name macro (app) 
+;;;;                     ,(defsmac2 formals
+;;;;                                  (cond ((cdr body) (cons 'progn body)) 
+;;;;                                        (t (car body))))))
 
-(defun defsmac2 (formals body)
-       `(sublis  ,(defsmac3 formals 1) (quote ,body)))
+;;;;(defun defsmac2 (formals body)
+;;;;       `(sublis  ,(defsmac3 formals 1) (quote ,body)))
 
-(defun defsmac3 (formals n)
-       (cond ((null formals) nil)
-             (`(cons (cons (quote ,(car formals)) (car ,(defsmac4 n)))
-                           ,(defsmac3 (cdr formals) (1+ n))))))
+;;;;(defun defsmac3 (formals n)
+;;;;       (cond ((null formals) nil)
+;;;;             (`(cons (cons (quote ,(car formals)) (car ,(defsmac4 n)))
+;;;;                           ,(defsmac3 (cdr formals) (1+ n))))))
 
-(defun defsmac4 (n) (cond ((= n 0) 'app) ((list 'cdr (defsmac4 (1- n))))))
+;;;;(defun defsmac4 (n) (cond ((= n 0) 'app) ((list 'cdr (defsmac4 (1- n))))))
 
-(defun defmac1 (name formals body)
-       `(defun ,name macro (app)
-                     (list 'do ,(defmac2 formals 1) nil (quote ,(defmac3 body)))))
+;;;;(defun defmac1 (name formals body)
+;;;;       `(defun ,name macro (app)
+;;;;                     (list 'do ,(defmac2 formals 1) nil (quote ,(defmac3 body)))))
 
-(defun defmac2 (formals n)
-       (cond ((null formals) nil)
-             (t `(cons (list (quote ,(car formals)) (car ,(defsmac4 n)))
-                             ,(defmac2 (cdr formals) (1+ n))))))
+;;;;(defun defmac2 (formals n)
+;;;;       (cond ((null formals) nil)
+;;;;             (t `(cons (list (quote ,(car formals)) (car ,(defsmac4 n)))
+;;;;                             ,(defmac2 (cdr formals) (1+ n))))))
 
-(defun defmac3 (body)
-       (cond ((null (cdr body)) (cons 'return body)) 
-             (t (cons (car body) (defmac3 (cdr body))))))
+;;;;(defun defmac3 (body)
+;;;;       (cond ((null (cdr body)) (cons 'return body)) 
+;;;;            (t (cons (car body) (defmac3 (cdr body))))))
+
+;;; Simplified versions for Common LISP
+;;;
+;;; These seem to be premature optimzation as macros.
+
+(defmacro defsmac (fname args &rest b)
+    `(defun ,fname ,args ,@b))           ; just make it an ordinary function
+    
+(defmacro defmac (fname args &rest b)
+    `(defun ,fname ,args ,@b))           ; just make it an ordinary function
 
 
-(defun defunobj macro (b)
+
+;;;;(defun defunobj macro (b)
   ; This macro works just like defun, except that both the value and the
   ; function-binding of the symbol being defined are set to the function
   ; being defined.  Therefore, after (defunobj f ...), (f ...) calls the
   ; defined function, whereas f evaluates to the function itself.
   ;
-  `(progn 'compile
-	  (defun ,@(cdr b))
-	  (declare (special ,(cadr b)))
-	  (setq ,(cadr b) (getd ',(cadr b)))))
+(defmacro defunobj (fname args &rest b)
+  `(progn 
+	  (defun ,fname ,args ,@b)
+	  (proclaim '(special ,fname)) ;;;; ***declare not allowed here
+	  (setq ,fname (function ,fname))))

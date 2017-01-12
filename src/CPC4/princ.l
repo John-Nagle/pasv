@@ -1,7 +1,7 @@
 "@(#)princ.l	2.1"
 
 
-(declare (macros t) (load 'need.o) (load 'defmac.o))
+;;;(declare (macros t) (load 'need.o) (load 'defmac.o))
 (needs-macros)
 
 ;;; (echoterpri) prints a (terpri) on any open file.

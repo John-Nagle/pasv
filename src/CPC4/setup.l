@@ -1,5 +1,5 @@
-"@(#)setup.l	2.15"
-"@(#)setup.l	2.1"
+;"@(#)setup.l	2.15"
+;"@(#)setup.l	2.1"
 
 ;;;
 ;;;  Load theorem prover
@@ -12,44 +12,49 @@
 ; functions are being loaded, they will call this function, which
 ; will load in all the macro files.
 
-(declare (special macros-loaded))
+;;;;(declare (special macros-loaded)) ;;; Not Common LISP
 (setq macros-loaded nil)
+;;;;
 
 (defun needs-macros () 
-  (and (not macros-loaded)
-       (setq macros-loaded t)
-       (mapc 'load '(defmac hunkshell debug enode map princ progvn match))))
+    (and (not macros-loaded)
+      (setq macros-loaded t)
+       (mapc 'load '(clispcompat.l defmac.l hunkshell.l debug.l enode.l map.l princ.l progvn.l match.l))))
+       
+(needs-macros)  ; bring in all needed macros
+      
 
 
 ; Clear the translink table so that franz-top-level will use
 ; the newly defined print
-(sstatus translink nil)
+;;;;(sstatus translink nil) ;;; Not Common LISP
 
 ; Control how deep rule instantiation will go
 (setq  eheightmax 1)			; only 1 rule deep
 (setq  pheightmax 4)
 
 ; load the theorem prover
-(load 'pp)
+(load "pp.l")
 (*ppinit 72)
-(load 'pform)
-(load 'z)
+(load "pform.l")
+(load "z.l")
 (initz)
-(load 'ze)
-(load 'e)
-(load 'eform)
-(load 'newsimp)
-(load 'main)
-(load 'newsplit)
-(load 'normalize)
-(load 'builtin)
-(load 'generic)
-(load 'timer)
-(load 'ruleprep)
-(load 'eventtran)
-(load 'type)
-(load 'typee)
-(load 'fixes.l)	;;; ***TEMP** these functions won't compile right on SUNs!
+
+(load "ze.l")
+(load "e.l")
+(load "eform.l")
+(load "newsimp.l")
+(load "main.l")
+(load "newsplit.l")
+(load "normalize.l")
+(load "builtin.l")
+(load "generic.l")
+(load "timer.l")
+(load "ruleprep.l")
+(load "eventtran.l")
+(load "type.l")
+(load "typee.l")
+(load "fixes.l")	;;; ***TEMP** these functions won't compile right on SUNs!
 (cfasl 'pipeopen.o '_Lpipeopen 'pipeopen '"function" '"")
 
 (setq quotednamelist nil)
