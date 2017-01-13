@@ -19,7 +19,7 @@
 (defun needs-macros () 
     (and (not macros-loaded)
       (setq macros-loaded t)
-       (mapc 'load '(clispcompat.l defmac.l hunkshell.l debug.l enode.l map.l princ.l progvn.l match.l))))
+       (mapc 'load '(clispcompat.lisp defmac.lisp hunkshell.lisp debug.lisp enode.lisp map.lisp princ.lisp progvn.lisp match.lisp))))
        
 (needs-macros)  ; bring in all needed macros
       
@@ -34,27 +34,27 @@
 (setq  pheightmax 4)
 
 ; load the theorem prover
-(load "pp.l")
+(load "pp.lisp")
 (*ppinit 72)
-(load "pform.l")
-(load "z.l")
+(load "pform.lisp")
+(load "z.lisp")
 (initz)
 
-(load "ze.l")
-(load "e.l")
-(load "eform.l")
-(load "newsimp.l")
-(load "main.l")
-(load "newsplit.l")
-(load "normalize.l")
-(load "builtin.l")
-(load "generic.l")
-(load "timer.l")
-(load "ruleprep.l")
-(load "eventtran.l")
-(load "type.l")
-(load "typee.l")
-(load "fixes.l")	;;; ***TEMP** these functions won't compile right on SUNs!
+(load "ze.lisp")
+(load "e.lisp")
+(load "eform.lisp")
+(load "newsimp.lisp")
+(load "main.lisp")
+(load "newsplit.llisp")
+(load "normalize.lisp")
+(load "builtin.lisp")
+(load "generic.lisp")
+(load "timer.lisp")
+(load "ruleprep.lisp")
+(load "eventtran.lisp")
+(load "type.lisp")
+(load "typee.lisp")
+(load "fixes.lisp")	;;; ***TEMP** these functions won't compile right on SUNs!
 (cfasl 'pipeopen.o '_Lpipeopen 'pipeopen '"function" '"")
 
 (setq quotednamelist nil)
