@@ -50,16 +50,16 @@
 ;;;============================================================================
 
 ;;;(declare (load 'need.o) (load 'princ.o)
-	 (declarespecial *margin *left *right *leftotal *rightotal *space *marginerrors
+(declarespecial *margin *left *right *leftotal *rightotal *space *marginerrors
                   *top *bottom *pstack *sstackempty *end *arraysize)
-(needs-macros)
+;;;(needs-macros)
 
 (setq *margin 10 *left 1 *right 1 *leftotal 1 *rightotal 1 *top 1 *bottom 1)
 (setq *pstack nil *sstackempty t *space *margin *end '(end) *marginerrors 0)
 
 (defun   *newline (k) (terpri) (*indent k))
 
-(defun   *indent (k) (do i 0 (1+ i) (= i k) (princ '" ")))
+(defun   *indent (k) (do ((i 0 (1+  i))) ((= i k)) (princ '" ")))
 
 (defun *pprint (x l)
   (cond ((atom x) 
@@ -70,7 +70,7 @@
 	 (setq *pstack (cond ((> l *space)
 			      (cons (- *space (cdr x)) *pstack))
 			     (t (cons -1 *pstack)))))
-	((eq x *end) (or *pstack (break popop)) (setq *pstack (cdr *pstack)))
+	((eq x *end) (or *pstack (break "Prettyprinter error: popop")) (setq *pstack (cdr *pstack)))
 	((eq (car x) nil)
 	 (cond ((> l *space)
 		(setq *space (- (car *pstack) (cadr x)))
@@ -83,17 +83,17 @@
 		(*newline (- *margin *space)))
 	       (t (*indent (caddr x))
 		  (setq *space (- *space (caddr x))))))
-	(t (break pprint)))
+	(t (break "Prettyprinter error: pprint")))
   t)
 
 (defun *push (x)
        (cond (*sstackempty (setq *sstackempty nil *top 1 *bottom 1))
              (t (setq *top (cond ((= *top *arraysize) 1) (t (1+ *top))))
-                (and (= *top *bottom) (break (stack overflow)))))
+                (and (= *top *bottom) (break "Prettyprinter error: stack overflow"))))
        (store (*sstack *top) x))
 
 (defun *pop()
-       (prog2 (and *sstackempty (break *pop))
+       (prog2 (and *sstackempty (break "Prettyprinter error: *pop"))
               (*sstack *top)
               (cond ((= *top *bottom) (setq *sstackempty t *top 1 *bottom 1))
                     (t (setq *top (cond ((= *top 1) *arraysize) (t (1- *top))))))))
@@ -108,14 +108,14 @@
        
 (defun *advanceright ()
        (setq *right (cond ((= *right *arraysize) 1) (t (1+ *right))))
-       (and (= *left *right) (break (stream overflow))))
+       (and (= *left *right) (break "Prettyprinter error: stream overflow")))
 ;;;============================================================================
 (defun *ppinit (k)
        (setq *margin k)
        (setq *arraysize (* 5 *margin))
-       (array *sstack fixnum (1+ *arraysize))
-       (array *size fixnum (1+ *arraysize))
-       (array *stream t (1+ *arraysize))
+       (oldstylearray *sstack 'fixnum (1+ *arraysize)) ; CL
+       (oldstylearray *size 'fixnum (1+ *arraysize)) ; CL
+       (oldstylearray *stream t (1+ *arraysize)) ; CL
        (setq *sstackempty t)
        (setq *leftotal 1 *rightotal 1 *bottom 1 *top 1 *left 1 *right 1)
        (setq *space *margin *pstack nil *marginerrors 0))
@@ -174,7 +174,7 @@
                     ((eq (car x) 'begin))
                     ((eq x *end))
                     (t (setq *leftotal (+ (caddr x) *leftotal))))
-              (and (> *leftotal *rightotal) (break advanceleft))
+              (and (> *leftotal *rightotal) (break "Prettyprinter error: advanceleft"))
               (cond ((= *left *right))
                     (t (setq *left (cond ((= *left *arraysize) 1) (t (1+ *left))))
                        (*advanceleft (*stream *left) (*size *left)))))))
@@ -200,6 +200,7 @@
               (*advanceleft (*stream *left) (*size *left))
               (or (= *left *right) (*checkstream)))))
 
+;;; Prettyprinter state dump for debug
 (defun *ppp()
        (princ-terpri '"left     right   bottom  top     stack?  space   leftot  rightot")
        (princ-tab *left)
@@ -212,7 +213,7 @@
        (princ-terpri *rightotal)
        (terpri)
        (princ-terpri '" stream  size    stack")
-       (do i 1 (1+ i) (= i (1+ *arraysize))
+       (do ((i 1 (1+ i))) ( (= i (1+ *arraysize)))
            (princ-tab i) (princ-tab (*stream i)) (princ-tab (*size i))
            (princ-terpri (*sstack i)))
        (terpri)
