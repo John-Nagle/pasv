@@ -62,7 +62,7 @@
    (values (intern 
        (string-upcase (concatenate 'string 
             (symbol-name a) 
-           (symbol-name b))))))
+            (symbol-name b))))))
 
 
 ;   New Common LISP version, using structures instead of hunks.                                        
@@ -70,7 +70,7 @@
     (append 
         (list 'progn
             `(defstruct 
-                 (,hunkname (:conc-name nil) (:constructor ,(concat 'alloc- hunkname))) ; gen structs, allocator, and access fns
+                (,hunkname (:conc-name nil) (:constructor ,(concat 'alloc- hunkname))) ; gen structs, allocator, and access fns
                     ,@fields))
         (define-updates hunkname fields))) ; gen update fns
                  
