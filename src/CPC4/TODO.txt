@@ -1,0 +1,40 @@
+TODO for CPC4, 2017.
+
+Conversion to Common LISP.
+
+1. Fix "defunobj" in "defmac.l" to make function special. [DONE]
+2. Fix def of "defmax" and "defsmac" for CL. [DONE]
+3. Fix (defmac isenode (x) (and (hunkp x) (= (hunksize x) 18))) in enode.l to test for structure by type.
+4. Fix (defun isznode (x) (and (hunkp x) (= (hunksize x) 8))) in z.l
+5. Fix "progvn" in progvn.l
+6. Fix "do" in "pp.l". May need to fix other "do" clauses. [partially DONE]
+7. Fix (comment) in z.l   [DONE]
+8. Avoid redefine of GCD in z.l by renaming. [DONE]
+9. Deal with fexpr. [DONE]
+10. Fix use of predefined name 'assert' in newsimp.l [DONE]
+11. Deal with "defprop" in newsimp.l    [DONE]
+12. Deal with "	(do j startarg (add1 j) (> j last)" in main.l
+13. Deal with "" problem in simp-assign in newsplit.l [DONE]
+14. Deal with "do" problem in smerge in newsplit.l
+15. Clash with predefined TIMES in builtin.l [DONE]
+16. Trouble at INITGENERIC in generic.l
+17. "putprop" in ruleprep.l [DONE]
+18. "explodec" in eventtran.l
+19. "cfasl" in setup.l obsolete
+20. (sstatus translink on) does what?
+21. Figuire out how to make CL arrays behave like old-style arrays. [DONE]
+22. Figure out problem with "match" macro instances not compiling. [DONE]
+23. Deal with old-style variable number of args "defun foo nargs..."    [DONE]
+24. Fix "concat" to allow concatenation with empty string, to fix "match".  [DONE]
+
+
+NOTES
+
+Replace:
+(defmac isenode (x) (and (hunkp x) (= (hunksize x) 18))) 
+(defun isznode (x) (and (hunkp x) (= (hunksize x) 8))) 
+with:
+(defun isenode (x) (equal (type-of x) 'enode))
+(defun isznode (x) (equal (type-of x) 'node))
+
+
