@@ -154,7 +154,7 @@
 	
 	; Scan the list beginning with x and make all the roots point
 	; at y.  Set l to the last element scanned.
-	(do j x (slink j) (null j)
+	(do (j x (slink j)) (null j)
 	    (xsroot j y)
 	    (setq l j))
 	
@@ -183,7 +183,7 @@
   ; new instruction represented by each.
   
   ; Step j through every splitelt, looking for roots
-  (do j used-head (savail j) (null j)
+  (do (j used-head (savail j)) (null j)
       (and (eq j (sroot j))
 	   (prog (and-list v v-count)
 		 (setq v-count 0)
@@ -192,7 +192,7 @@
 		 ; Step k through every element of the equivalence class
 		 ; If k is a variable, print it out.  If k is a formula,
 		 ; add it onto and-list as a conjunct.
-		 (do k j (slink k) (null k)
+		 (do (k j (slink k)) (null k)
 		     (setq v (sval k))
 		     (cond ((atom v)
 			    (setq v-count (1+ v-count))

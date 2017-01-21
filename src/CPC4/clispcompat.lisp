@@ -61,7 +61,6 @@
 (defun putprop (symb newval indicator)
       (setf (get  symb indicator) newval))
 
-
 ;;;
 ;;; defsmac/defmac -- see defmac.lisp for original MacLISP code and comments.
 ;;;
@@ -78,10 +77,19 @@
          (list '(lambda ,params ,expr) ,@params)))
          
 ;;;
-;;; concat - concatenate two symbols
+;;; concat -- concatenate two symbols
 ;;;
 (defun concat (a b)                                 ; MacLISP compatibility
    (values (intern 
        (string-upcase (concatenate 'string 
             (string a) 
             (string b))))))
+            
+;;;
+;;; explodec -- symbol name to list of chars
+;;;
+;;; ***CHECK THIS*** for MacLisp compatiblity.
+;;;
+(defun explodec (s)
+      (map 'list #'(lambda (c) c) (string s)))
+      

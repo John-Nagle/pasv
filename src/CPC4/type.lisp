@@ -1,7 +1,7 @@
 ;
 ;	Type machinery		Version 1.8 of 12/13/82
 ;
-(declare (special
+(declarespecial
 	getftype
 	begin-decl
 	end-decl
@@ -9,7 +9,7 @@
 	errport
 	recname
 	seriouserrors
-	))
+	)
 ;
 ;	getdtype  --  get D-type of object
 ;

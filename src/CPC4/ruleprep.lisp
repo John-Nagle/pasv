@@ -7,7 +7,7 @@
 ;
 ;					Version 1.45 of 2/5/86
 ;
-(declare (special
+(declarespecial
 	accumpat
 	eligibles
 	errport
@@ -24,7 +24,7 @@
 	varsneeded
 	wantdummies
 	vc-record
-	))
+	)
 ;
 ;
 ;	mapsublist  --  apply function to all contained

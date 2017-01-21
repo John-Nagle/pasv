@@ -4,7 +4,7 @@
 ;					Version 1.40 of 2/3/86
 ;					John Nagle
 ;
-(declare (special
+(declarespecial
 		voidtype			; the void type constant
 		booleantype			; boolean type constant
 		integertype			; integer type constant
@@ -14,9 +14,9 @@
 		truenode			; true enode
 		falsenode			; false enode
 		rootnode			; for signaltypechange
-		))
-(declare
-  (load 'need.o) (load 'defmac.o) (load 'hunkshell.o) (load 'enode.o))
+		)
+;;;(declare
+;;;  (load 'need.o) (load 'defmac.o) (load 'hunkshell.o) (load 'enode.o))
 ;
 ;	atomdatatype  --  data type of atom
 ;

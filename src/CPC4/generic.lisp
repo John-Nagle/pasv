@@ -99,7 +99,7 @@
 ;
 ;	initialization
 ;
-(defun initgeneric null
+(defun initgeneric ()
   (makedemon '(alltrue! n) dalltruedef '(n))
   (makedemon '(alltrue! (selectr! a i)) dalltrueselect '(a i))
   (makedemon '(alltrue! (selecta! a i)) dalltrueselect '(a i))

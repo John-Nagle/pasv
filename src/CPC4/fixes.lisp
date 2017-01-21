@@ -10,13 +10,13 @@
 ;	compiled on a SUN, although on a VAX they work compiled.
 ;	They work fine in interpreted mode.
 ;
-(declare (load 'need.o)
-	 (load 'defmac.o)
-	 (load 'hunkshell.o)
-	 (load 'enode.o)
-	 (load 'debug.o))
+;;;;(declare (load 'need.o)
+;;;	 (load 'defmac.o)
+;;;	 (load 'hunkshell.o)
+;;;	 (load 'enode.o)
+;;;	 (load 'debug.o))
 
-(needs-macros)
+;;;(needs-macros)
 
 (hunkshell node num den up left row col prehistory pushcount)
 

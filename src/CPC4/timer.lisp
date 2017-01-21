@@ -1,14 +1,14 @@
-(declare
-  (load 'need.o) (load 'princ.o) (load 'map.o))
+;;;(declare
+;;;  (load 'need.o) (load 'princ.o) (load 'map.o))
   
-(needs-macros)
+;;;(needs-macros)
 
-(declare (special time-list ; a list of functions being charged
+(declarespecial time-list ; a list of functions being charged
 		  time-stack; a list of function names that is used to 
 			    ; keep track of who should currently be charged
 		  time-last ; when the function currently being charged,
 			    ; which is (car time-stack) began being charged.
-         ))
+         )
 
 ; This module is used to figure out where lisp programs are spending
 ; their time by using the Lister trace package.  The following calls

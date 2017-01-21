@@ -5,7 +5,7 @@
 ;	Files of Boyer-Moore events are read and translated into
 ;	simplifier rules.
 ;
-(declare (special
+(declarespecial
 	xlateerror
 	nametail1
 	nametail2
@@ -17,7 +17,7 @@
 	integertype
 	booleantype
 	errport
-	))
+	)
 ;
 ;	Table of Boyer-Moore symbol translations
 ;
@@ -176,7 +176,7 @@
 ;	Events are processed by a handler for the appropriate type of event.
 ;	At present, only PROVE.LEMMA events are considered.
 ;
-(declare (special event inport))		; global
+(declarespecial event inport)			; global
 (defun readevents (inport)			; read all events
     (prog (event)
 	(nextevent)				; process chain 

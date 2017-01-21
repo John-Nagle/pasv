@@ -55,7 +55,7 @@
 (load "type.lisp")
 (load "typee.lisp")
 (load "fixes.lisp")	;;; ***TEMP** these functions won't compile right on SUNs!
-(cfasl 'pipeopen.o '_Lpipeopen 'pipeopen '"function" '"")
+;;;;(cfasl 'pipeopen.o '_Lpipeopen 'pipeopen '"function" '"")
 
 (setq quotednamelist nil)
 (setq constantnames '(nil true false omega))
@@ -68,4 +68,4 @@
 (simpinit)
 (setq prinlevel nil)		;; no summarizing - will break VCG if set
 (setq prinlength nil)
-(sstatus translink on)
+;;;(sstatus translink on) ; ***NOT SURE ABOUT THIS***

@@ -330,12 +330,12 @@
              (return f))) 
 
 
-  (defun defineboolean nil 
-    ; This defines the boolan connectives that are known to the simplifier.
+  (defun defineboolean () 
+    ; This defines the boolean connectives that are known to the simplifier.
     ; Each connective is defined by calling definebool1; a nil argument
     ; means "none".
   
-    (mapc '(lambda (x) (definebool1 (car x) (cadr x)))
+    (mapc #'(lambda (x) (definebool1 (car x) (cadr x)))
   
     ;   name used in           name used within
     ;  input language          the simplifier
