@@ -46,6 +46,21 @@
 ;;;
 (defun multiply (x y) (* x y))
 ;;;
+;;; difference  -- n-ary subtraction
+;;;
+(defmacro difference (&rest args) `(- ,@args))
+;;;
+;;; quotient -- division
+;;;
+;;; NOTE - in Common LISP, this can produce a rational number.
+;;; Unclear if that's OK. May need to trap that for debug.
+;;;
+(defun quotient (a b) (/ a b))
+;;;
+;;; lessp -- numeric comparison
+;;;
+(defun lessp (a b) (< a b))
+;;;
 ;;; ncons -- equivalent to (cons arg nil)
 ;;;
 (defun ncons (x) (cons x nil))
@@ -102,4 +117,10 @@
       (let ((allsyms nil))
             (do-symbols (x *PACKAGE*) (setq allsyms (cons x allsyms)))
             allsyms))
+            
+;;;
+;;; memq -- search list, return tail on find. Test with "eq"
+;;;
+(defun memq (key lst )
+      (member key lst :test #'eq))
       

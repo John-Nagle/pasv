@@ -23,7 +23,8 @@
 
 (defun getenode (l) (cadr l))
 
-(defun isznode (x) (and (hunkp x) (= (hunksize x) 8))) 
+;;;;(defun isznode (x) (and (hunkp x) (= (hunksize x) 8))) 
+(defun isznode (x) (equal (type-of x) 'node))
 
 (defsmac ownerz* (p) (num p)) 
 

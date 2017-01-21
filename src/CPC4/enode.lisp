@@ -74,7 +74,8 @@
 (defsmac findzterm (node)
          (and (zfield (eroot node)) (zterm (eroot node)))) 
 
-(defmac isenode (x) (and (hunkp x) (= (hunksize x) 18))) 
+;;;;(defmac isenode (x) (and (hunkp x) (= (hunksize x) 18))) 
+(defun isenode (x) (equal (type-of x) 'enode))
 
 ;;;============================================================================
 ;;; mapeqclass is used to cycle through an equivalence class and
