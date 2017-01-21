@@ -7,7 +7,7 @@
 ;;;	 (load 'defmac.o)
 ;;;	 (load 'hunkshell.o))
 
-(needs-macros)
+;;; (needs-macros)
 
 ;;; An enode is a node in a graph that represents an equivalence
 ;;; class of forms.  Enodes are the fundamental data structure

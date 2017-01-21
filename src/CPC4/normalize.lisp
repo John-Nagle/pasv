@@ -1,13 +1,13 @@
 
-(declare
-  (load 'need)
-  (load 'defmac)
-  (load 'progvn)
-  (load 'match))
+;;;(declare
+;;;  (load 'need)
+;;;  (load 'defmac)
+;;;  (load 'progvn)
+;;;  (load 'match))
 
-(needs-macros)
+;;;(needs-macros)
 
-(declare (special 
+(declarespecial 
 	  predicatenames
 	  boolsymeq
 	  boolsymimplies
@@ -15,7 +15,7 @@
 	  boolsymnoteq
 	  boolsymor
 	  boolsymand
-	  ))
+	  )
 
 ;
 ;	Normalization preprocessing

@@ -1,14 +1,14 @@
 
 "@(#)ze.l	2.9"
 
-(declare (load 'need.o)
-	 (load 'defmac.o)
-	 (load 'enode.o)
-	 (load 'debug.o)
-	 (load 'map.o)
-	 (load 'princ.o))
+;;;(declare (load 'need.o)
+;;;	 (load 'defmac.o)
+;;;	 (load 'enode.o)
+;;;	 (load 'debug.o)
+;;;	 (load 'map.o)
+;;;	 (load 'princ.o))
 
-(declare (special
+(declarespecial
 	  enumlist
 	  falsenode
 	  truenode
@@ -33,9 +33,9 @@
 	  zsymminus
 	  zsymmult
 	  zsymplus
-	  zterms))
+	  zterms)
 
-(needs-macros)
+;;;(needs-macros)
 
 (defun normalizelt (l) (normalize (list zsymgt (caddr l) (cadr l))))
 
@@ -84,7 +84,7 @@
 	(or (setq znode (tellz l node)) (return t))
 	(or (eq node (getenode znode)) (zmerge node (getenode znode)))))
 
-(declare (special singlevar)) ; used to communicate between issingleterm and
+(declarespecial singlevar) ; used to communicate between issingleterm and
 		              ; issingleterm1
 
 (defun issingleterm (node l)
@@ -351,7 +351,7 @@
 ;;;============================================================================
 ;;; initialization
 
-(defun definearithmetic fexpr (l) (setq zsymbols l))
+(defun definearithmetic (l) (setq zsymbols l))
 
 (defun zeinit ()
        (prog (l)

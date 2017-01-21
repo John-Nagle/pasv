@@ -13,11 +13,11 @@
 ;
 ;						Version 1.24 of 2/6/83
 ;
-(declare
-  (load 'need.o) (load 'defmac.o) (load 'hunkshell.o) (load 'enode.o))
+;;;(declare
+;;;  (load 'need.o) (load 'defmac.o) (load 'hunkshell.o) (load 'enode.o))
 
-(needs-macros)
-(declare (special 
+;;;(needs-macros)
+(declarespecial 
 	daddn
 	darraycompactstore
 	darraypdef
@@ -47,7 +47,7 @@
 	booleantype
 	arraytype
 	universaltype
-	))
+	)
 ;
 ;	numberptype  --  true if variable is subrange from 0 to N
 ;
@@ -287,10 +287,10 @@
 	(setq hi2 (cdr b2))		; get high bound 2
 	(cond ((not (and lo1 lo2 hi1 hi2)) (return nil))) ; fail if any nil
 	;	Calculate bounds of result
-	(return (cons (min (times lo1 lo2) (times hi1 hi2)
-			   (times lo1 hi2) (times hi1 lo2))
-		      (max (times lo1 lo2) (times hi1 hi2)
-			   (times lo1 hi2) (times hi1 lo2))))
+	(return (cons (min (multiply lo1 lo2) (multiply hi1 hi2)
+			   (multiply lo1 hi2) (multiply hi1 lo2))
+		      (max (multiply lo1 lo2) (multiply hi1 hi2)
+			   (multiply lo1 hi2) (multiply hi1 lo2))))
 	))
 ;
 ;	Division and remainder by constants

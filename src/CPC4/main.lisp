@@ -1,11 +1,11 @@
 "@(#)main.l	2.23"
 
-(declare (load 'defmac.o)
-         (load 'map.o))
-(needs-macros)
+;;;(declare (load 'defmac.o)
+;;;         (load 'map.o))
+;;;(needs-macros)
 
-(declare
-  (special vc-record ; if vc-record is set to a port, unsimplifed
+(declarespecial 
+	vc-record ; if vc-record is set to a port, unsimplifed
 		     ; vcs are pretty-printed to that port.  If the
 		     ; variable is nil, no vcs are printed.
 
@@ -22,7 +22,7 @@
            ruletally ; rule usage counting
            outport   ; used by dumpruletally
 	   seriouserrors ; count of major errors (not failed VCs)
-		     ))
+		     )
 
 ;
 ;	File names built into simplifier
@@ -91,7 +91,7 @@
    (cond ((portp vc-record) (print-line)))	; separator
 
    ; the read-eval-print loop
-   (do nil (nil)
+   (do (nil) (nil) ; CL
        (setq form (read from-vcg))
        (or form (return))
        (print (eval form) to-vcg)
@@ -110,7 +110,7 @@
 	   (exit 1)))		; fails
    (exit 0)))
      
-(declare (special prove-count leaf-count))
+(declarespecial prove-count leaf-count)
 (setq prove-count 0)		; initialize VC count
 (setq shortprint t)		; normally just print failed VCs.
 (setq dotiming nil)		; timings initially off
@@ -201,7 +201,7 @@
 
   (pipeopen desc mode))
 
-(declare (special startarg))
+(declarespecial startarg)
 
 (defun lconc (tc l)
   ; This function is supposed to be in Franz Lisp as of Sept 81, but does not
@@ -249,7 +249,7 @@
 	(setq last (sub1 (argv -1)))
 	(setq arglist (ncons nil))
 	
-	(do j startarg (add1 j) (> j last)
+	(do (j startarg (add1 j)) ((> j last))
 	    (setq onelist (explodec (argv j)))
 	    (cond ((eq '|-| (car onelist))
 		   (lconc arglist (cdr onelist)))))
@@ -276,7 +276,7 @@
 	(setq last (sub1 (argv -1)))
 	(setq arglist (ncons nil))
 	
-	(do j startarg (add1 j) (> j last)
+	(do (j startarg (add1 j))  ((> j last))
 	    (setq onearg (argv j))
 	    (cond ((eq '|-| (getchar onearg 1)))
 		   (t (tconc arglist onearg))))

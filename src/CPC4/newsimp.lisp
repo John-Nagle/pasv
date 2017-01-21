@@ -1,16 +1,16 @@
 
-(declare
-  (load 'need.o)
-  (load 'defmac.o)
-  (load 'enode.o)
-  (load 'princ.o)
-  (load 'map.o)
-  (load 'match.o)
-  (load 'progvn.o))
+;;;(declare
+;;;  (load 'need.o)
+;;;  (load 'defmac.o)
+;;;  (load 'enode.o)
+;;;  (load 'princ.o)
+;;;  (load 'map.o)
+;;;  (load 'match.o)
+;;;  (load 'progvn.o))
 
-(needs-macros)
+;;;(needs-macros)
 
-(declare (special 
+(declarespecial 
 	  boolsymand
           truesample falsesample simpflag propagateflag
           truenode falsenode trueprop falseprop historyprop simpprop
@@ -45,7 +45,7 @@
 	  zsymge
 	  zsymgt
 	  zsymle
-	  zsymlt))
+	  zsymlt)
 
 (defsmac mapeqclass
          (f r l)
@@ -183,7 +183,7 @@
              (t (mapcar 'sampleprint (esuccessors node)))))
 
 (defun simpassert (f)
-       (cond (simpflag (assert f))
+       (cond (simpflag (vassert f))
              (t (assertprop f))))
 
 (defun simpdeny (f)
@@ -251,7 +251,7 @@
 ;               case-splitting is needed, a formula will
 ;               onto propagations.  
 
-(defun assert (f) 
+(defun vassert  (f) 
        ((lambda (propagations)
                 (catch (setq f (enode f)) false)
                 (cond ((eq propagations 'false) nil)

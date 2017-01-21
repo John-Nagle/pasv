@@ -1,16 +1,16 @@
 "@(#)z.l	2.4"
 
-(declare (load 'need.o)
-	 (load 'defmac.o)
-	 (load 'hunkshell.o)
-	 (load 'enode.o)
-	 (load 'debug.o)
-	 (load 'princ.o)
+;;;declare (load 'need.o)
+;;;	 (load 'defmac.o)
+;;;	 (load 'hunkshell.o)
+;;;	 (load 'enode.o)
+;;;	 (load 'debug.o)
+;;;	 (load 'princ.o)
 
-	 (special maxrowz* lastrowz* savepivotz* drowz* historyz* onecolz*
+	 (declarespecial maxrowz* lastrowz* savepivotz* drowz* historyz* onecolz*
 		  maxcolz* zonenode zeronode dcolz* didpivotz* lastcolz*
-		  availz* floorz* zmarkz*))
-(needs-macros)
+		  availz* floorz* zmarkz*)
+;;;(needs-macros)
 
 ;;; The maclisp compiler used the following declaration, which is not
 ;;; used in Franz lisp.
@@ -120,11 +120,11 @@
 
 ;;;============================================================================
 
-(defun gcd (m n) (gcd1 (abs m) (abs n)))
+(defun vgcd (m n) (gcd1 (abs m) (abs n)))
 
 (defun gcd1 (m n)
        (cond ((zerop n) m)
-             (t (gcd n (mod m n)))))
+             (t (vgcd n (mod m n)))))
       
 (defun subsumedz* nil 
        (prog (piv) 
@@ -196,14 +196,14 @@
              (do ((l term (cdr l)) (n1))
                  ((null l))
                  (or (eq (cadar l) zonenode)
-                     (progn (setq totalnum (add (times totalnum (cdaar l))
-                                               (times totalden (caaar l))))
-                            (setq totalden (times totalden (cdaar l)))
-                            (setq n1 (gcd totalnum totalden))
+                     (progn (setq totalnum (add (multiply totalnum (cdaar l))
+                                               (multiply totalden (caaar l))))
+                            (setq totalden (multiply totalden (cdaar l)))
+                            (setq n1 (vgcd totalnum totalden))
                             (setq totalnum (quotient totalnum n1))
                             (setq totalden (quotient totalden n1))))
                  (ar2z* (caaar l) (cdaar l) (cadar l)))
-             (comment in case the uses rats were not cannonical:)
+             (comment in case the uses rats were not cannonical)
              (cond ((lessp totalden 0) (setq totalden (difference totalden)))
                    (t (setq totalnum (difference totalnum))))
              (ar2z* totalnum totalden zeronode)
@@ -292,12 +292,12 @@
                  ((= (row p) 0))
                  (setq q (left (baserowz* (row p))))
                  (or (= (col q) onecolz*) (progn (setq champ p) (return nil)))
-                 (setq n1 (times (den p) (num q)))
-                 (setq n2 (times (num p) (den q)))
-                 (cond ((lessp (abs (times n1 champscoreden))
-			       (abs (times n2 champscorenum)))
+                 (setq n1 (multiply (den p) (num q)))
+                 (setq n2 (multiply (num p) (den q)))
+                 (cond ((lessp (abs (multiply n1 champscoreden))
+			       (abs (multiply n2 champscorenum)))
                         (setq champ p)
-                        (setq n3 (gcd n1 n2))
+                        (setq n3 (vgcd n1 n2))
                         (setq champscorenum (quotient n1 n3))
                         (setq champscoreden (quotient n2 n3)))))
              (pivotz* champ)
@@ -323,16 +323,16 @@
                               (setq challengerden 1))
                              (t (setq challengernum (num (left (baserowz* (row p)))))
                                 (setq challengerden (den (left (baserowz* (row p)))))))
-                       (and (greaterp (times challengernum 
+                       (and (greaterp (multiply challengernum 
 					     (den p)
 					     champscoreden)
-                               (times challengerden (num p) champscorenum))
+                               (multiply challengerden (num p) champscorenum))
                             (prog (temp) 
-                                  (setq champscorenum (times challengernum
+                                  (setq champscorenum (multiply challengernum
 							     (den p)))
-                                  (setq champscoreden (times challengerden
+                                  (setq champscoreden (multiply challengerden
 							     (num p)))
-                                  (setq temp (gcd champscorenum champscoreden))
+                                  (setq temp (vgcd champscorenum champscoreden))
                                   (setq champscorenum (quotient champscorenum
 								temp))
                                   (setq champscoreden (quotient champscoreden
@@ -379,8 +379,8 @@
              (setq n1 (num p))
              (setq n2 (den p))
              (setq p (left (baserowz* i)))
-             (return (difference (times n1 (den p) (num savepivotz*) (den piv)) 
-                                 (times n2 (num p) (den savepivotz*) (num piv))))))
+             (return (difference (multiply n1 (den p) (num savepivotz*) (den piv)) 
+                                 (multiply n2 (num p) (den savepivotz*) (num piv))))))
 
 ;;;============================================================================
 (setq zmarkz* (ncons nil)) 
@@ -403,16 +403,16 @@
            (setq p2 (rightz* (col p1) p2))
            (cond ((= (col (left p2)) (col p1))
                   (setq q (left p2))
-                  (xnum q (add (times (num q) coefden (den p1))
-			       (times (den q) coefnum (num p1))))
-                  (xden q (times (den q) coefden (den p1)))
+                  (xnum q (add (multiply (num q) coefden (den p1))
+			       (multiply (den q) coefnum (num p1))))
+                  (xden q (multiply (den q) coefden (den p1)))
                   (fix0z* q)
                   (and (zerop (num q))
                        (progn (delfromcolz* q (col p1))
                               (makeavailz* q)
                               (xleft p2 (left q)))))
-                 (t (setq q (nodez* (times (num p1) coefnum)
-                                    (times (den p1) coefden)
+                 (t (setq q (nodez* (multiply (num p1) coefnum)
+                                    (multiply (den p1) coefden)
                                     nil
                                     (left p2)
                                     (row p2)
@@ -429,9 +429,9 @@
              (setq q (downz* (row x) y))
              (and (= (col (left p)) (col y))
                   (progn (setq r (left p))
-                         (xnum r (add (times (num r) coefden)
-				      (times (den r) coefnum)))
-                         (xden r (times (den r) coefden))
+                         (xnum r (add (multiply (num r) coefden)
+				      (multiply (den r) coefnum)))
+                         (xden r (multiply (den r) coefden))
                          (fix0z* r)
                          (or (zerop (num r)) (return nil))
                          (makeavailz* (up q))
@@ -478,7 +478,7 @@
 
 (defun fix0z* (p) 
        (prog (n) 
-             (setq n (gcd (num p) (den p)))
+             (setq n (vgcd (num p) (den p)))
              (xnum p (quotient (num p) n))
              (xden p (quotient (den p) n)))) 
 
@@ -503,8 +503,8 @@
              (setq j (col p0))
              (and (= j 0) (return nil))
              (store (ptrz* j) (basecolz* j))
-             (xnum p0 (times alphanum (num p0)))
-             (xden p0 (times alphaden (den p0)))
+             (xnum p0 (multiply alphanum (num p0)))
+             (xden p0 (multiply alphaden (den p0)))
              (fix0z* p0))) 
 
 (defsmac s5z* ()
@@ -523,9 +523,9 @@
                      (store (ptrz* j) x)))) 
 
 (defsmac s7z* ()
-         (xnum p1 (difference (times (num p1) (den q0) (den p0))
-			      (times (den p1) (num q0) (num p0))))
-         (xden p1 (times (den p1) (den q0) (den p0)))
+         (xnum p1 (difference (multiply (num p1) (den q0) (den p0))
+			      (multiply (den p1) (num q0) (num p0))))
+         (xden p1 (multiply (den p1) (den q0) (den p0)))
          (fix0z* p1)) 
 
 (comment the last test in s7 is made in the cond in s8) 
@@ -565,8 +565,8 @@
                                 (and (= j 0)
                                      (progn (xnum q0
 						  (difference
-						   (times alphanum (num q0))))
-                                            (xden q0 (times alphaden (den q0)))
+						   (multiply alphanum (num q0))))
+                                            (xden q0 (multiply alphaden (den q0)))
                                             (fix0z* q0)
                                             (return nil)))
                                 (or (= j j0) (progn (s5z*) (s6z*) (s7z*) (s8z*))))))))) 
@@ -698,9 +698,9 @@
 (defun makeavailz* (n) (xden n availz*) (setq availz* n)) 
 
 (defun initz nil 
-       (array baserowz* t 310) 
-       (array basecolz* t 310) 
-       (array ptrz* t 310) 
+       (oldstylearray baserowz* t 310) 
+       (oldstylearray basecolz* t 310) 
+       (oldstylearray ptrz* t 310) 
        (setq availz* nil)
        (setq lastrowz* 0)
        (setq lastcolz* 1)

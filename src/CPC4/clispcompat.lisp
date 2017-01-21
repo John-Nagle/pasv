@@ -52,47 +52,36 @@
 ;;;
 ;;; defprop -- add to property list
 ;;;
-(defmacro defprop (symbol newval indicator)
-   `(setf (get ',symbol ',indicator) ',newval))
-
-    
+(defmacro defprop (symb newval indicator)
+   `(setf (get ',symb ',indicator) ',newval))
+ 
 ;;;
-;;; defsmac1 - Common LISP version based on Franz Lisp version in defmac.
+;;; putprop - add to property list, evaluting params
 ;;;
-;;; ***NOT CORRECT***
-;;; ***CDR of APP probably off by one due to CL/Franz macro arg differences***
-;;;
-(eval-when (:compile-toplevel :load-toplevel :execute)  ; because this macro evaluates functions
+(defun putprop (symb newval indicator)
+      (setf (get  symb indicator) newval))
 
-    (defmacro defsmacbad (&body args)
-       `(defsmac1 ',(car args) ',(cadr args) ',(cddr args))) ;;; ***args references seem to be correct
-
-    (defun defsmac1 (name formals body)
-           `(defmacro ,name (&body app) 
-                         ,(defsmac2 formals
-                                      (cond ((cdr body) (cons 'progn body)) 
-                                            (t (car body))))))
-
-    (defun defsmac2 (formals body)
-           `(sublis  ,(defsmac3 formals 1) (quote ,body)))
-
-    (defun defsmac3 (formals n)
-           (cond ((null formals) nil)
-                 (`(cons (cons (quote ,(car formals)) (car ,(defsmac4 n)))
-                               ,(defsmac3 (cdr formals) (1+ n))))))
-
-    (defun defsmac4 (n) (cond ((= n 0) 'app) ((list 'cdr (defsmac4 (1- n)))))) ;;; ***'app needs first elt of list removed***
-)
 
 ;;;
-;;; New approach from HN. doesn't work if expr has more than one element.
+;;; defsmac/defmac -- see defmac.lisp for original MacLISP code and comments.
 ;;;
+;;; New approach from "pdw" on Hacker News.
 ;;; Tested OK on "princ-terpri".  Accepts multiple params to 'expr'
+;;;
 (defmacro defsmac (name params &rest expr)
       `(defmacro ,name ,params
          `,(cons 'progn (sublis (mapcar 'cons ',params (list ,@params))  ', expr))))
     
-;;; ***NEEDS WORK - untested*** Only used at one place at "z.lisp"
+;;; ***NEEDS WORK - untested*** Only used at one place at "z.lisp".
 (defmacro defmac (name params expr)
       `(defmacro ,name ,params
          (list '(lambda ,params ,expr) ,@params)))
+         
+;;;
+;;; concat - concatenate two symbols
+;;;
+(defun concat (a b)                                 ; MacLISP compatibility
+   (values (intern 
+       (string-upcase (concatenate 'string 
+            (string a) 
+            (string b))))))

@@ -3,14 +3,13 @@
 ;
 ;					Version 1.2 of 12/17/82
 
-(declare
-  (load 'need.o) (load 'defmac.o) (load 'hunkshell.o) (load 'enode.o)
-  (load 'debug.o) (load 'princ.o) (load 'map.o))
+;;;(declare
+;;;  (load 'need.o) (load 'defmac.o) (load 'hunkshell.o) (load 'enode.o)
+;;;  (load 'debug.o) (load 'princ.o) (load 'map.o))
   
-(needs-macros)
+;;; (needs-macros)
 
-(declare
-  (special
+(declarespecial
    eformlist
    enodelist
    falsenode
@@ -25,7 +24,7 @@
    zgenode
    zgtnode
    zmultnode
-   ))
+   )
 ;;;============================================================================
 ;;; eform
 

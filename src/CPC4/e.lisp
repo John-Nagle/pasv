@@ -1,13 +1,12 @@
 "@(#)e.l	2.41"
 
-(declare
-  (load 'need.o) (load 'defmac.o) (load 'hunkshell.o) (load 'enode.o)
-  (load 'debug.o) (load 'princ.o) (load 'map.o))
+;;;(declare
+;;;  (load 'need.o) (load 'defmac.o) (load 'hunkshell.o) (load 'enode.o)
+;;; (load 'debug.o) (load 'princ.o) (load 'map.o))
   
 (needs-macros)
 
-(declare
-  (special
+(declarespecial
    boolsymeq
    contextstack
    demonavailist
@@ -57,7 +56,7 @@
    zgtnode
    zmultnode
    zsymge
-   zunsplice))
+   zunsplice)
 ;
 ;	enode  --  returns the enode representing f, where f is either
 ;	an S-expression or an enode.

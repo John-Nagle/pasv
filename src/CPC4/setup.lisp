@@ -17,12 +17,12 @@
 ;;;;
 
 (defun needs-macros () 
-    (and (not macros-loaded)
-      (setq macros-loaded t)
-       (mapc 'load '(clispcompat.lisp defmac.lisp hunkshell.lisp debug.lisp enode.lisp map.lisp princ.lisp progvn.lisp match.lisp))))
-       
+	(and (not macros-loaded)
+	  (setq macros-loaded t)
+	   (mapc 'load '(clispcompat.lisp defmac.lisp hunkshell.lisp debug.lisp enode.lisp map.lisp princ.lisp progvn.lisp match.lisp))))
+	   
 (needs-macros)  ; bring in all needed macros
-      
+	  
 
 
 ; Clear the translink table so that franz-top-level will use
@@ -45,7 +45,7 @@
 (load "eform.lisp")
 (load "newsimp.lisp")
 (load "main.lisp")
-(load "newsplit.llisp")
+(load "newsplit.lisp")
 (load "normalize.lisp")
 (load "builtin.lisp")
 (load "generic.lisp")
@@ -60,9 +60,9 @@
 (setq quotednamelist nil)
 (setq constantnames '(nil true false omega))
 (setq functionnames '(addi! subi! muli! divi! modi! storea! selecta! storer!
-		      selectr!))
+			  selectr!))
 (setq predicatenames '(lei! gei! lti! gti!))
-(definearithmetic addi! subi! muli! gei! gti! lei! lti!)
+(definearithmetic '(addi! subi! muli! gei! gti! lei! lti!))
 (defineboolean)
 (definejsyntax)
 (simpinit)

@@ -84,11 +84,11 @@
 ;;;
 ;;; These seem to be premature optimzation as macros.
 
-(defmacro defsmac (fname args &rest b)
-    `(defun ,fname ,args ,@b))           ; just make it an ordinary function
+;;;(defmacro defsmac (fname args &rest b)
+;;;    `(defun ,fname ,args ,@b))           ; just make it an ordinary function
     
-(defmacro defmac (fname args &rest b)
-    `(defun ,fname ,args ,@b))           ; just make it an ordinary function
+;;;defmacro defmac (fname args &rest b)
+;;;  `(defun ,fname ,args ,@b))           ; just make it an ordinary function
 
 
 

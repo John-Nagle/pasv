@@ -19,10 +19,10 @@
 ; begin with a paren.  A series of new instructions are sent; the end of
 ; the expressions is signalled by a line containing a slash.
 
-(declare (load 'need.o) (load 'hunkshell.o) (load 'match.o))
-(needs-macros)
+;;;(declare (load 'need.o) (load 'hunkshell.o) (load 'match.o))
+;;;(needs-macros)
 
-(declare (special newvars to-vcg))
+(declarespecial newvars to-vcg)
 
 (defun newsplit (newvars form)
   ; New spliting works as follows.  First an equivlence relation is set up
@@ -49,7 +49,7 @@
 	((eq (car f) 'and!) (mapc 'and-split (cdr f)))
 	(t (splitscan f))))
 
-(declare (special scanroot))
+(declarespecial scanroot)
 
 (defun splitscan (x)
   ; create an element for the formula x, find all the varaibles in x,
@@ -99,9 +99,9 @@
 ; allocated, it is never returned.  All the used and unused
 ; splitelts are kept on lists linked through the savail field.
 
-(declare (special unused-head ; A list of unused splitelts
+(declarespecial unused-head ; A list of unused splitelts
 		  used-head   ; A list of used splitelts
-		  ))
+		  )
 
 (setq unused-head nil)
 (setq used-head nil)

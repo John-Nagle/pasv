@@ -2,9 +2,7 @@
 
 ;;; A quick and dirty unparser for verifier formulas.
 
-(declare (load 'need.o)
-         (load 'defmac.o)
-	 (load 'map.o))
+;;;;(declare (load 'need.o) (load 'defmac.o) (load 'map.o)) ; CL
 
 (needs-macros)
 
@@ -50,24 +48,23 @@
                 (*ppstring '|)| 1)
                 (*ppend))))
 
-(declare (special poport))
+(declarespecial poport)
 		  
-(defun pform nargs
+(defun pform (f &optional port)
   ; (pform f [port]) pretty-prints f, writing the output on port,
   ; if given, otherwise on the standard output port.
-  (or (memq nargs '(1 2)) (break '|pform arg count|))
   
   ; The purpose of the lambda is to temporarily bind poport to the
   ; port passed as an argument.  The pp routines send their output
   ; to poport.
   ((lambda (poport)
 	   (*ppbegin 0)
-	   (ppform (arg 1) 0)
+	   (ppform f 0)
 	   (*ppend)
 	   (*ppeof))
 
-   (cond ((eq nargs 2) (arg 2))
-	 (t poport))))
+   (cond (port port) 		; if port given, use it
+	         (t poport))))	; otherwise use default
 
 
 (defun ppform (x p)

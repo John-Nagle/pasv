@@ -62,4 +62,4 @@
 
 (defun match2 (prefix expr)
   (cond ((equal prefix '"") expr)
-	(t (list (concat 'c prefix 'r) expr))))
+	(t (list (concat 'c (concat prefix 'r)) expr))))

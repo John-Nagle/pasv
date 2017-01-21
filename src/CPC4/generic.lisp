@@ -3,9 +3,9 @@
 ;
 ;	Generic functions are functions whose semantics are type-dependent.
 ;
-(declare
-  (load 'need.o) (load 'defmac.o) (load 'hunkshell.o) (load 'enode.o))
-(declare (special
+;;;(declare
+;;;  (load 'need.o) (load 'defmac.o) (load 'hunkshell.o) (load 'enode.o))
+(declarespecial
 	dalltruedef
 	boolsymand
 	boolsymeq
@@ -14,7 +14,7 @@
 	boolsymor
 	booleantype
 	universaltype
-	))
+	)
 ;
 ;	dalltruedef  --  demon for alltrue
 ;

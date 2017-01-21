@@ -58,13 +58,6 @@
 ;;;      (list 'defun (concat 'x name) 'macro '(app)
 ;;;            (list 'list ''rplacx  num  '(cadr app) '(caddr app))))
                                         
-(defun concat (a b)                                 ; Obsolete LISP compatibility
-   (values (intern 
-       (string-upcase (concatenate 'string 
-            (symbol-name a) 
-            (symbol-name b))))))
-
-
 ;   New Common LISP version, using structures instead of hunks.                                        
 (defmacro hunkshell (hunkname &rest fields)
     (append 
