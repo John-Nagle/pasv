@@ -38,7 +38,11 @@
 
 (defmacro store (arrayref newval) 
     `(setf  (aref ,(car arrayref) ,(cadr arrayref)) ,newval))
-    
+
+;;;
+;;; add1  -- add 1 to number
+;;;
+(defun add1 (n) (+ 1 n))
 ;;;
 ;;; multiply -- product of two numbers
 ;;;
@@ -75,6 +79,13 @@
 ;;;
 (defun putprop (symb newval indicator)
       (setf (get  symb indicator) newval))
+;;;
+;;; append1  
+;;;
+;;; "This is equivalent to (append 'l_arg1 (list 'g_arg2)" - Franz LISP manual
+;;;
+(defun append1 (arg1 arg2)
+      (append arg1 (list arg2)))
 
 ;;;
 ;;; defsmac/defmac -- see defmac.lisp for original MacLISP code and comments.
@@ -101,12 +112,14 @@
             (string b))))))
             
 ;;;
-;;; explodec -- symbol name to list of chars
+;;; explode, explodec -- symbol name to list of chars
 ;;;
 ;;; ***CHECK THIS*** for MacLisp compatiblity.
 ;;;
 (defun explodec (s)
-      (map 'list #'(lambda (c) c) (string s)))
+      (map 'list #'(lambda (c) c) (princ-to-string s)))
+(defun explode (s)
+      (map 'list #'(lambda (c) c) (prin1-to-string s)))
       
 ;;;
 ;;; oblist -- return a list of all objects in the current package.
@@ -123,4 +136,32 @@
 ;;;
 (defun memq (key lst )
       (member key lst :test #'eq))
+;;;
+;;; patom -- print without quotes
+;;;
+;;; ***TEMP*** may need special char removal
+;;;
+(defun patom (item &optional (port nil))
+      (princ item port))  
+
+;;;
+;;; flatc -- the number of characters required to print g_form using patom
+;;;
+(defun flatc (s) :
+      (length (princ-to-string s)))
+
+;;;
+;;; implode -- per Barry Margolin post in 1987.
+;;;
+(defun implode (charlist)
+  (intern (map 'string #'character charlist)))
+  
+;;;
+;;;     ptime - CPU time used
+;;;
+;;;     Returns (cpu time, GC time).
+;;;     Currently GC time is zero.
+;;;
+(defun ptime ()
+      (list (get-internal-real-time) 0))
       

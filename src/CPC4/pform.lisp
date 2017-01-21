@@ -50,7 +50,7 @@
 
 (declarespecial poport)
 		  
-(defun pform (f &optional port)
+(defun pform (f &optional (port nil))
   ; (pform f [port]) pretty-prints f, writing the output on port,
   ; if given, otherwise on the standard output port.
   
