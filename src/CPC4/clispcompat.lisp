@@ -93,3 +93,13 @@
 (defun explodec (s)
       (map 'list #'(lambda (c) c) (string s)))
       
+;;;
+;;; oblist -- return a list of all objects in the current package.
+;;;
+;;; This is used only to clean up properties on symbols.
+;;;
+(defun oblist ()
+      (let ((allsyms nil))
+            (do-symbols (x *PACKAGE*) (setq allsyms (cons x allsyms)))
+            allsyms))
+      
