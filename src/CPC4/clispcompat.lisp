@@ -130,6 +130,20 @@
       (map 'list #'(lambda (c) c) (prin1-to-string s)))
       
 ;;;
+;;; implode -- per Barry Margolin post in 1987.
+;;;
+(defun implode (charlist)
+  (intern (map 'string #'character charlist)))
+  
+;;;
+;;; eqstring -- convert both args to string and compare
+;;;
+;;; In Franz LISP, chars are atoms, and the code sometimes
+;;; compares char constants to atoms.  CL doesn't work that way.
+;;;
+(defun eqstring (s1 s2) (equal (string s1) (string s2)))
+      
+;;;
 ;;; oblist -- return a list of all objects in the current package.
 ;;;
 ;;; This is used only to clean up properties on symbols.
@@ -158,11 +172,7 @@
 (defun flatc (s) :
       (length (princ-to-string s)))
 
-;;;
-;;; implode -- per Barry Margolin post in 1987.
-;;;
-(defun implode (charlist)
-  (intern (map 'string #'character charlist)))
+
   
 ;;;
 ;;;     ptime - CPU time used

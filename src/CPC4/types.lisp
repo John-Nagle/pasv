@@ -16,11 +16,11 @@
 ;	
 (defun getdtype (var-type)
 	(cond	((atom var-type) (break "INTERNAL ERROR - bad type decl"))
-		((eq (car var-type) 'array)	; if array
+		((eqstring (car var-type) 'array)	; if array
 		    (list (car var-type)	; array
 			(cadr var-type) 	; subscript type
 			(getdtype (caddr var-type)))) ; data type
-		((eq (car var-type) 'record)	; if record
+		((eqstring (car var-type) 'record)	; if record
 		    (append
 		      (list (car var-type)	; 'record
 			  (cadr var-type))	; type name
@@ -49,18 +49,18 @@
 	(cond ((atom varname) (return nil)))	; does not apply to atom
 	(setq xname (car varname))		; get fn atom or var atom
 	(cond ((not (atom xname)) (return nil))); not atom, inapplicable
-	(setq xletters (nreverse (explode xname))); get letters of name
-	(cond ((eq (car xletters) '!) (return nil)) ; built in fn
+	(setq xletters (reverse (explode xname))); get letters of name
+	(cond ((eqstring (car xletters) '!) (return nil)) ; built in fn
 	      ((null (cdr varname))		; if variable, not fn call
 		; Simple variable case.
 		; Name NEW count must not be 00 - indicates no NEW in VCG
-		(and (eq (car xletters)  '|0|)
-		     (eq (cadr xletters) '|0|)
+		(and (eqstring (car xletters)  '|0|)
+		     (eqstring (cadr xletters) '|0|)
 		     (break "-- INTERNAL ERROR in prover - name ends in 00"))
 		;	Look up undecorated part of decorated name
 		(setq vdflag (caddr xletters))	; v or d
 						; basename
-		(setq plainname (implode (nreverse (cdddr xletters))))
+		(setq plainname (implode (reverse (cdddr xletters))))
 		)
 	       (t 
 		;	Function case
@@ -68,8 +68,8 @@
 		(setq plainname xname)		; fn names are undecorated
 		))
 	(setq xtype (get plainname		; now get the type
-	    (cond ((eq vdflag 'v) 'vtype)	; if v, get value type
-		  ((eq vdflag 'd) 'dtype)	; if d, get def type
+	    (cond ((eqstring vdflag 'v) 'vtype)	; if v, get value type
+		  ((eqstring vdflag 'd) 'dtype)	; if d, get def type
 		  (t nil))))			; otherwise fails
 	(and (null xtype) 
 	    (break

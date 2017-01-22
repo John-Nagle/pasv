@@ -51,19 +51,19 @@
 	(cond ((atom varname) (return nil)))	; does not apply to atom
 	(setq xname (car varname))		; get fn atom or var atom
 	(cond ((not (atom xname)) (return nil))); not atom, inapplicable
-	(setq xletters (nreverse (explode xname))); get letters of name
-	(cond ((eq (car xletters) '!) (return nil)) ; built in fn
+	(setq xletters (reverse (explode xname))); get letters of name
+	(cond ((eqstring (car xletters) '!) (return nil)) ; built in fn
 	      ((null (cdr varname))		; if variable, not fn call
 		; Simple variable case.
 		; Name NEW count must not be 00 - indicates no NEW in VCG
-		(and (eq (car xletters)  '|0|)
-		     (eq (cadr xletters) '|0|)
+		(and (eqstring (car xletters)  '|0|)
+		     (eqstring (cadr xletters) '|0|)
 		     (internalerror (concat (implode (explode varname)) 
 				" ends in 00")))
 		;	Look up undecorated part of decorated name
 		(setq vdflag (caddr xletters))	; v or d
 						; basename
-		(setq plainname (implode (nreverse (cdddr xletters))))
+		(setq plainname (implode (reverse (cdddr xletters))))
 		)
 	       (t 
 		;	Function case
@@ -71,8 +71,8 @@
 		(setq plainname xname)		; fn names are undecorated
 		))
 	(setq xtype (get plainname		; now get the type
-	    (cond ((eq vdflag 'v) 'vtype)	; if v, get value type
-		  ((eq vdflag 'd) 'dtype)	; if d, get def type
+	    (cond ((eqstring vdflag 'v) 'vtype)	; if v, get value type
+		  ((eqstring vdflag 'd) 'dtype)	; if d, get def type
 		  (t nil))))			; otherwise fails
 	(and (null xtype) 
 	    (internalerror (concat "Undeclared variable: " 
