@@ -28,6 +28,8 @@ Conversion to Common LISP.
 24. Fix "concat" to allow concatenation with empty string, to fix "match".  [DONE]
 25. Fix compatibility string functions to get case and escapes identical to Franz LISP. [DONE]
 26. Fix "throw" and "catch", which work differently in CL.
+27. "(newenode)" returns a form which causes a stack overflow.
+28. "mapeqclass" is defined in two files.
 
 
 NOTES

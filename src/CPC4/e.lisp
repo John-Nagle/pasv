@@ -450,7 +450,7 @@
 	; their eqclass fields.  Make one big loop out of two little loops,
 	; as shown below:
 	;
-        ;       ******************************************
+	;       ******************************************
 	;       *        ************************        *
 	;       *        V                      *        V
 	;  +--> [] --->  [] --+            ---> [] --->  [] --+
@@ -460,7 +460,7 @@
 	;  +-- ... <--- [] <--+       	   +-- ... <--- [] <--+
 	;
 	; (The arrows built from asterisks represent the links that are
-        ;  changed to build the big loop.)
+	;  changed to build the big loop.)
 	;
 	(setq start1 (eqclass root1))
 	(setq start2 (eqclass root2))
@@ -1009,7 +1009,7 @@ a            (and (eq l eavailist) (return t))
 ; Pushcontext takes a single argument, which is either an atom or a
 ; dotted pair consisting of a function name and an arbitrary data field.
 ; The argument is pushed onto contextstack.
-; 
+;
 ; Popcontext takes a single argument, which must be an atom.  It pops
 ; elements off the stack until it reaches an element equal to its
 ; argument.  For each non-atomic element it pops, it applies the function
