@@ -3,6 +3,14 @@
 ;;;
 ;;; John Nagle  January, 2017
 ;;;
+;;; Global variables
+;;;
+(defvar errport *error-output*)         ; error messages to stderr
+(defvar poport *standard-output*)   ; other output to stdout
+;;;
+;;;
+;;; Functions and macros
+;;;
 ;;;
 ;;; comment - does nothing
 ;;;
