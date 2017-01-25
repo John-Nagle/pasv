@@ -17,14 +17,33 @@
 ;;;      (fixnum lastrowz* lastcolz* maxrowz* maxcolz* drowz* dcolz* onecolz*)
 ;;;      (fixnum (crossingparamz* notype notype))
 
+;   Define structure of a znode.
 (hunkshell node num den up left row col prehistory pushcount)
 
-(defun getznode (l) (caddr l))
+;;; ***WRONG*** this is not correct in CL. 
+;;; MacLISP and Franz LISP allowed accessing hunks with car/cdr/cxr.
+;;; Which field is which seems to be different in MacLISP and Franz LISP.
+;;; This seems to be code intended to work on either a list or a hunk.
+;;; But which field is "caddr l"?
+;;; 
+(defun getznode (l) (caddr l)) ; Access to field 3 of hunk?. Not allowed in CL
 
-(defun getenode (l) (cadr l))
+;;;;(defun getenode (l) (cadr l)) ; Original version. Access to field 2 (?) of hunk. Not allowed in CL
+;;;;(defun getenode (l) (den l)) ;;; CL version ***TEMP*** very unsure about this
+;;; Attempt to replicate MacLISP semantics
+;;; Code applies this to znodes.
+;;;;(defun getenode (l)
+;;;;       (cond    ((isznode l) (up l))        ; if znode, get second field? third field? Huh?
+;;;;                    ((t (cadr l)))))                 ; otherwise, original cadr
+;   Debug version - unclear if this will work.
+(defun getenode (l)
+       (let ((en (cond ((isznode l) (num l))    ; if znode, use num (not sure about this)
+                            ((t (cadr l))))))                 ; if list, use cadr
+                     (unless (isenode en) (internalerror "getenode - non-enode returned")) ; must return an enode
+                     en))
 
 ;;;;(defun isznode (x) (and (hunkp x) (= (hunksize x) 8))) 
-(defun isznode (x) (equal (type-of x) 'node))
+(defun isznode (x) (equal (type-of x) 'node))   ; CL
 
 (defsmac ownerz* (p) (num p)) 
 

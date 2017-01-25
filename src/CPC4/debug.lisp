@@ -10,7 +10,8 @@
 	errport)
 (needs-macros)
 
-(defmacro simpdebug (x) (comment "debug code is not present"))
+;;;;(defmacro simpdebug (x) (comment "debug code is not present"))
+(defmacro simpdebug (x) `,x) ; debug on
 ;
 ;	internalerror  --  called if an internal error is detected
 ;

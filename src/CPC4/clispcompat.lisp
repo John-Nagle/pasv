@@ -7,6 +7,8 @@
 ;;;
 (defvar errport *error-output*)         ; error messages to stderr
 (defvar poport *standard-output*)   ; other output to stdout
+(setq *print-circle* t)                     ; program has circular refs; don't hang in printing 
+(setq *print-level* 4)                      ; limit depth of recursive printing to avoid vast output
 ;;;
 ;;;
 ;;; Functions and macros
@@ -52,11 +54,15 @@
 ;;;
 (defun add1 (n) (+ 1 n))
 ;;;
-;;; multiply -- product of two numbers
+;;; add -- sum of two numbers
+;;;
+(defun add (x y) (+ x y))
+;;;
+;;; multiply -- product of N numbers
 ;;;
 ;;; Was "times" in Franz LISP, but that has a different meaning in CL.
 ;;;
-(defun multiply (x y) (* x y))
+(defmacro multiply (&rest args) `(* ,@args))
 ;;;
 ;;; difference  -- n-ary subtraction
 ;;;
@@ -72,6 +78,18 @@
 ;;; lessp -- numeric comparison
 ;;;
 (defun lessp (a b) (< a b))
+;;;
+;;; greaterp -- numeric comparison
+;;;
+(defun greaterp (a b) (> a b))
+;;;
+;;; onep  -- true if equal to 1
+;;;
+(defun onep (x) (and (numberp x) (equal x 1)))
+;;;
+;;; assq -- like assoc, but test is "eq".
+;;;
+(defun assq (item alist) (assoc item alist :test #'eq))
 ;;;
 ;;; ncons -- equivalent to (cons arg nil)
 ;;;

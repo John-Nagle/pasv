@@ -34,11 +34,76 @@ Conversion to Common LISP.
 
 NOTES
 
-Replace:
-(defmac isenode (x) (and (hunkp x) (= (hunksize x) 18))) 
-(defun isznode (x) (and (hunkp x) (= (hunksize x) 8))) 
-with:
-(defun isenode (x) (equal (type-of x) 'enode))
-(defun isznode (x) (equal (type-of x) 'node))
+Stack overflow bug.
+
+Stack overflow was in the debug print function for printing the
+result of trying to take "car" of a structure. 
+
+Failing at  (EQ (GETENODE ZNODE) NODE) in ze.lisp line 85.
+GETENODE does not expect a ZNODE; it wants a cons cell.
+This is in "interntimes" in ze.lisp.
+"interntimes" is called with an argument "node", and it's
+a valid enode. Generally, the code uses "node" when talking
+about an enode, and "znode" when talking about a znode.
+Enodes are for general terms; znodes are for numerics.
+
+ZNODE comes from (tellz l node). Tellz, in z.lisp, has lots of debugging
+machinery.  Turning it on in debug.lisp on produces output, giving the node number.
+
+In "interntimes", we have
+
+    (or (setq znode (tellz l node)) (return t))
+    (or (eq node (getenode znode)) (zmerge node (getenode znode)))))
+
+So whatever comes out of (tellz l node) needs to be acceptable
+to (getenode znode). It's not. "tellz" is returning a pure znode,
+and (getenode znode) wants a cons cell.
+
+Tellz is working on enode 28 and returns a pure znode.
+
+Tellz takes the path that leads to lines 83-85 and to
+
+(return (baserowz* i)) with i=1. "baserowz*" is an array,
+and element 1 is a pure znode, not a cons cell.
+
+  i=1
+  lastrowz*=2
+  
+  Then off into eqrowz, fails, and we go round the DO loop again.
+  
+  i=0, last time case
+  and I typed ":n" and the trace ran away and ended at the
+  same bad "car" point.
+  
+  Control was headed for returning the value (baserowz* drowz*)
+  where drowz* is 2. That's an array access returning a pure
+  znode.
+  
+  So the problem is that "baserowz*" contains pure znodes,
+  while "interntimes" is using "getenode", which wants a cons cell.
+  
+  So how did this ever work, or what did I break?
+  
+  Looking at other code that accesses "baserowz*", such as
+  "exchangeownerz" in z.l, the code clearly assumes
+  that "baserowz" is an array of znodes.
+  
+  Found it in the Franz LISP manual:
+  
+"Although hunks are not list cells, you can still access the
+first two hunk elements with cdr and car and you can access any hunk 
+element with cxr+."
+
+Somewhat kludgy fix in place. Assumes the node field wanted is "den" if item is a node. This may be wrong.
+
+ --
+ 
+ Code assumes that hunks can have property lists. CL doesn't allow this for structs. So "get" fails 
+ in (ENODEATOM) in e.lisp.  But does the code really put 'enode properties on enodes, or is it
+ simply calling "get" on enodes, expecting that to fail? Must check all sets of 'enode property.
+ If none set on enode structs, the test in ENODEATOM can be fixed.
+
+
+
 
 

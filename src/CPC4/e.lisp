@@ -74,23 +74,24 @@
 ;	the type information is reprocessed.  See instantiate2.
 ;
 (defun enode (f) (cond ((numberp f)          (enodenumber f))
-                       ((atom f)             (enodeatom f))
-                       ((isenode f)          f)
+                       ((isenode f)          f)	; test for enode before atom, because structs in CL are atoms
+					   ((atom f)             (enodeatom f))                       
                        ((eq (car f) 'typed!) (typedenode f))
 		       (t                    (enodenonatomic f t nil))))
 
 ;;; (enodeatom 'f) returns the enode representing f, where f is an atom.
 ;;; If an atom is represented by an enode, that enode is stored under the
 ;;; 'enode indicator of the property list of the represented atom.
+;;;	***TROUBLE*** fails when f is an enode struct***
 
 (defun enodeatom (f) 
        (cond ((get f 'enode))
              (t (prog (node) 
-                      (setq node (newenode))
-                      (putprop f node 'enode)
-                      (xesuccessors node f)
-		      (setdatatype node (atomdatatype f)) ; set atom type
-                      (return node)))))
+				(setq node (newenode))
+				(putprop f node 'enode)
+				(xesuccessors node f)
+				(setdatatype node (atomdatatype f)) ; set atom type
+				(return node)))))
              
 (defunobj poppredecessors (pair) 
   ; This function is called as the node creation performed in enodenonatomic 
