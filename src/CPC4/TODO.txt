@@ -31,7 +31,10 @@ Conversion to Common LISP.
 27. "(newenode)" returns a form which causes a stack overflow.[DONE]
 28. "mapeqclass" is defined in two files.
 29. Figure out what value "false" is supposed to have. - change throw tag name [DONE]
-30. Make "concat" n-ary.
+30. Make "concat" n-ary. [DONE]
+31. Find why rules are not firing.
+32. Convert all trace functions in traceaids.
+
 
 
 NOTES

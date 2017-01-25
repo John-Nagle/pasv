@@ -95,13 +95,20 @@
 	(patom " ")
 	nil)
 ;
+;	Trace aids. These are implementation-specific to GNU Common LISP.
+;
+;	Trace is not standardized in Common LISP.
+;
+;
 ;	dumpapplyrule  --  dump bindings
 ;
 (defun dumpapplyrule nil
 	(patom "applyrule: ") 
-	(patom (arg 3))
+	;;;(patom (arg 3))
+	(patom (nth 2 EXT:*TRACE-ARGS*)) ; CL
 	(terpri)
-	(dumpbinds (arg 2))
+	;;;(dumpbinds (arg 2))
+	(dumpbinds (nth 1 EXT:*TRACE-ARGS*)); CL
 	(terpri)
 	)
 ;
@@ -109,40 +116,49 @@
 ;
 (defun dumpfiredemon nil
     (patom "Firing ")
-    (patom (arg 1))
+    ;;;(patom (arg 1))
+	(patom (nth 0 EXT:*TRACE-ARGS*)) ; CL
     (terpri))
+	
 (defun dumppfire nil
     (patom "Pfire: ")
     (terpri)
     (patom "    Function: ");
-    (patom (arg 1))
+    ;(patom (arg 1))
+	(patom (nth 0 EXT:*TRACE-ARGS*)) ; CL
     (terpri)
     (patom "    Node: ")
-    (patom (dumpenodeexpr (arg 2)))
+    ;;;(patom (dumpenodeexpr (arg 2)))
+	(patom (dumpenodeexpr (nth 1 EXT:*TRACE-ARGS*))) ; CL
     (terpri)
     (patom "    Bindings: ")
     (terpri)
-    (dumpbinds (arg 3))
+    ;;;(dumpbinds (arg 3))
+	(dumpbinds (nth 2 EXT:*TRACE-ARGS*)) ; CL
     (terpri))
 ;
 ;	dumppropagate
 ;
 (defun dumppropagate nil
     (patom "Propagate: ")
-    (dumpelist (arg 1))
+    ;;;(dumpelist (arg 1))
+	(dumpelist (nth 0 EXT:*TRACE-ARGS*)) ; CL
     (terpri))
 ;
 ;	dumpemerge
 ;
 (defun dumpemerge nil
     (patom "emerge: ")
-    (cond ((eq (eroot (arg 1)) (eroot (arg 2))) (patom " (ALREADY EQUAL)")))
+    ;;;(cond ((eq (eroot (arg 1)) (eroot (arg 2))) (patom " (ALREADY EQUAL)")))
+	(cond ((eq (eroot (nth 0 EXT:*TRACE-ARGS*)) (eroot (nth 1 EXT:*TRACE-ARGS*))) (patom " (ALREADY EQUAL)")))
     (terpri)
     (patom "    ")
-    (patom (dumpenodeexpr (arg 1)))
+    ;;;;(patom (dumpenodeexpr (arg 1)))
+	(patom (dumpenodeexpr (nth 0 EXT:*TRACE-ARGS*))) ; CL
     (terpri)
     (patom "    ")
-    (patom (dumpenodeexpr (arg 2)))
+    ;;;;(patom (dumpenodeexpr (arg 2)))
+	(patom (dumpenodeexpr (nth 1 EXT:*TRACE-ARGS*))) ; CL
     (terpri)
     nil
 	)
@@ -156,12 +172,16 @@
 ;
 (defun dumpchangedatatype nil
  	(patom "changedatatype: ")
-	(patom (dumpenodeexpr (arg 1)))
+	;;;(patom (dumpenodeexpr (arg 1)))
+	(patom (dumpenodeexpr (nth 0 EXT:*TRACE-ARGS*))) ; CL
 	(patom " <== ")
-	(patom (arg 3))
+	;;;(patom (arg 3))
+	(patom (nth 2 EXT:*TRACE-ARGS*))
 	(terpri)
-	(and (edatatype (eroot (arg 1))) (not (equal (arg 3)
-			 (commontype (edatatype (eroot (arg 1))) (arg 3))))
+	;;;;(and (edatatype (eroot (arg 1))) (not (equal (arg 3)
+	;;;;		 (commontype (edatatype (eroot (arg 1))) (arg 3))))
+	(and (edatatype (eroot (nth 0 EXT:*TRACE-ARGS*))) (not (equal (nth 2 EXT:*TRACE-ARGS*)
+			 (commontype (edatatype (eroot (nth 0 EXT:*TRACE-ARGS*))) (nth 2 EXT:*TRACE-ARGS*))))
 	     (break "Less-restrictive changedatatype"))
 	nil
 	)
@@ -170,13 +190,17 @@
 ;
 (defun dumpemerget nil
     (prog nil
-	(and (equal (arg 2) (arg 3)) (return))
+	;;;;(and (equal (arg 2) (arg 3)) (return))
+	(and (equal (nth 1 EXT:*TRACE-ARGS*) (nth 2 EXT:*TRACE-ARGS*)) (return)) ; CL
 	(patom "emerget: ")
-	(patom (dumpenodeexpr (arg 1)))
+	;;; (patom (dumpenodeexpr (arg 1)))
+	(patom (dumpenodeexpr (nth 0 EXT:*TRACE-ARGS*))) ; CL
 	(patom " <== ")
-	(patom (arg 2))
+	;;;(patom (arg 2))
+	(patom (nth 1 EXT:*TRACE-ARGS*)) ; CL
 	(patom "    ")
-	(patom (arg 3))
+	;;; (patom (arg 3))
+	(patom (nth 2 EXT:*TRACE-ARGS*)) ; CL
 	(terpri)
 	))
 ;
@@ -184,31 +208,39 @@
 ;
 (defun dumppropagaterule nil
     (patom "propagaterule: ")
-    (patom (arg 1))
+    ;;;;(patom (arg 1))
+	(patom (nth 0 EXT:*TRACE-ARGS*)) ; CL
     (terpri))
 ;
 ;	dumpseteheight
 ;
 (defun dumpseteheight nil
   (prog nil
-    (and (equal (eheight (arg 1)) (arg 2)) (return nil)) ; no dump if no change
-    (patom "seteheight: ")
-    (patom (dumpenodeexpr (arg 1)))
+    ;;; (and (equal (eheight (arg 1)) (arg 2)) (return nil)) ; no dump if no change
+    (and (equal (eheight (nth 0 EXT:*TRACE-ARGS*)) (nth 1 EXT:*TRACE-ARGS*)) (return nil)) ; no dump if no change
+	(patom "seteheight: ")
+    ;;; (patom (dumpenodeexpr (arg 1)))
+    (patom (dumpenodeexpr (nth 1 EXT:*TRACE-ARGS*))) ; CL
     (patom "     ")
-    (patom (arg 2))
-    (patom "  (was ")
-    (patom (eheight (arg 1)))
+    ;;; (patom (arg 2))
+    (patom (nth 1 EXT:*TRACE-ARGS*)) ; CL
+	(patom "  (was ")
+    ;;; (patom (eheight (arg 1)))
+    (patom (eheight (nth 0 EXT:*TRACE-ARGS*))) ; CL
     (patom ")") (terpri)))
 ;
 ;	dumpqueuetypewait
 ;
 (defun dumpqueuetypewait nil
 	(patom "queuetypewait: ")
-	(patom (dumpenodeexpr (arg 1)))
+	;;; (patom (dumpenodeexpr (arg 1)))
+	(patom (dumpenodeexpr (nth 0 EXT:*TRACE-ARGS*))) ; CL
 	(patom " ")
-	(patom (arg 2))
+	;;; (patom (arg 2))
+	(patom (nth 1 EXT:*TRACE-ARGS*)) ; CL
 	(patom " ")
-	(patom (arg 3))
+	;;; (patom (arg 3))
+	(patom (nth 2 EXT:*TRACE-ARGS*)) ; CL
 	(terpri)
 	)
 ;
@@ -236,13 +268,17 @@
 ;
 (defun dumpsubprovercall nil
    (patom "subprovercall: ")
-   (patom (arg 2))
+   ;;; (patom (arg 2))
+   (patom (nth 1 EXT:*TRACE-ARGS*))
    (patom "  ")
-   (patom (arg 3))
+   ;;; (patom (arg 3))
+   (patom (nth 2 EXT:*TRACE-ARGS*))
    (patom "  #")
-   (patom (enumber (arg 1)))
+   ;;; (patom (enumber (arg 1)))
+   (patom (enumber (nth 0 EXT:*TRACE-ARGS*)))
    (patom ": ")
-   (patom (dumpenodeexpr (arg 1)))
+   ;;; (patom (dumpenodeexpr (arg 1)))
+   (patom (dumpenodeexpr (nth 0 EXT:*TRACE-ARGS*)))
    (terpri))
 ;
 ;	dumpnew-eassertz
@@ -250,13 +286,17 @@
 ;	Shows all terms going into Z box
 ;
 (defun dumpnew-iassertz nil
-       (patom "new-iassertz: ")
-       (mapcar 'dumpzterm (arg 1))
-       (terpri))
+	(patom "new-iassertz: ")
+	;;; (mapcar 'dumpzterm (arg 1))
+	(mapcar 'dumpzterm (nth 0 EXT:*TRACE-ARGS*))
+	(terpri))
+	
 (defun dumpnew-eassertz nil
-       (patom "new-eassertz: ")
-       (mapcar 'dumpzterm (arg 1))
-       (terpri))
+	(patom "new-eassertz: ")
+	;;; (mapcar 'dumpzterm (arg 1))
+	(mapcar 'dumpzterm (nth 0 EXT:*TRACE-ARGS*))
+	(terpri))
+	
 (defun dumpzterm (x)
        (patom (caar x))		; constant multiplier
        (patom " * ")		; indicate multiplication
@@ -269,9 +309,11 @@
 ;	
 (defun dumppropeq nil
 	(patom "propeq: ")
-	(patom (dumpenodeexpr (arg 1)))
+	;;; (patom (dumpenodeexpr (arg 1)))
+	(patom (dumpenodeexpr (nth 0 EXT:*TRACE-ARGS*)))
 	(patom "   ")
-	(patom (dumpenodeexpr (arg 2)))
+	;;; (patom (dumpenodeexpr (arg 2)))
+	(patom (dumpenodeexpr (nth 1 EXT:*TRACE-ARGS*)))
 	(terpri))
 ;
 ;	dumpenodeexpr  --  dump enode expression without looking
@@ -290,52 +332,59 @@
 ;
 (defun dumptellz nil
     (patom "tellz: ")
-    (patom (dumpenodeexpr (arg 2)))
+    ;;; (patom (dumpenodeexpr (arg 2)))
+	(patom (dumpenodeexpr (nth 1 EXT:*TRACE-ARGS*))); CL
+
     (terpri))
 ;
 ;	traceprepattern  --  dump pattern before and after processing
 ;
-(defun dumpprepattern (fname fargs)
+;
+(defun dumpprepattern nil
     (setq prepatterndepth (+ 1 prepatterndepth))
     (cond ((equal prepatterndepth 1)
     	(patom "prepattern: ")
-    	(patom (dumpenodeexpr (car fargs)))
+    	;;; (patom (dumpenodeexpr (car fargs)))
+    	(patom (dumpenodeexpr (nth 0 EXT:*TRACE-ARGS*)))
     	(terpri))
 	(t nil)))
-(defun dumpexitprepattern (fname fresult)
+	
+(defun dumpexitprepattern nil
     (setq prepatterndepth (- prepatterndepth 1))
     (cond ((equal prepatterndepth 0)
     	(patom "Exiting prepattern: ")
-    	(patom (dumpenodeexpr fresult))
-    	(terpri))
+    	;;; (patom (dumpenodeexpr fresult))
+    	(patom (dumpenodeexpr EXT:*TRACE-VALUES*))
+     	(terpri))
 	(t nil)))
 ;
 ;	These turn on tracing of the indicated function
 ;
-(defun tracefiredemon nil (trace (firedemon if (dumpfiredemon))))
-(defun tracepfire nil (trace (pfire if (dumppfire))))
-(defun traceapplyrule nil (trace (applyrule if (dumpapplyrule))))
-(defun tracecontext nil (trace (pushcontext if (dumppushcontext)))
-			(trace (popcontext if (dumppopcontext))))
-(defun tracepropagate nil (trace (propagate if (dumppropagate))))
-(defun traceemerge nil (trace (emerge if (dumpemerge))))
-(defun tracechangedatatype nil (trace (changedatatype if (dumpchangedatatype))))
-(defun traceemerget nil (trace (emerget if (dumpemerget))))
-(defun tracepropagaterule nil (trace (propagaterule if (dumppropagaterule))))
-(defun traceseteheight nil (trace (seteheight if (dumpseteheight))))
-(defun tracequeuetypewait nil (trace (queuetypewait if (dumpqueuetypewait))))
-(defun tracesubprovercall nil (trace (subprovercall if (dumpsubprovercall))))
-(defun tracenew-iassertz nil (trace (new-iassertz if (dumpnew-iassertz))))
-(defun tracenew-eassertz nil (trace (new-eassertz if (dumpnew-eassertz))))
-(defun tracepropeq nil (trace (propeq if (dumppropeq))))
-(defun tracetellz nil (trace (tellz if (dumptellz))))
+(defun tracefiredemon nil (trace (firedemon :pre (dumpfiredemon))))
+(defun tracepfire nil (trace (pfire :pre (dumppfire))))
+(defun traceapplyrule nil (trace (applyrule :pre (dumpapplyrule))))
+(defun tracecontext nil (trace (pushcontext :pre (dumppushcontext)))
+			(trace (popcontext :post (dumppopcontext))))
+(defun tracepropagate nil (trace (propagate :pre (dumppropagate))))
+(defun traceemerge nil (trace (emerge :pre (dumpemerge))))
+(defun tracechangedatatype nil (trace (changedatatype :pre (dumpchangedatatype))))
+(defun traceemerget nil (trace (emerget :pre (dumpemerget))))
+(defun tracepropagaterule nil (trace (propagaterule :pre (dumppropagaterule))))
+(defun traceseteheight nil (trace (seteheight :pre (dumpseteheight))))
+(defun tracequeuetypewait nil (trace (queuetypewait :pre (dumpqueuetypewait))))
+(defun tracesubprovercall nil (trace (subprovercall :pre (dumpsubprovercall))))
+(defun tracenew-iassertz nil (trace (new-iassertz :pre (dumpnew-iassertz))))
+(defun tracenew-eassertz nil (trace (new-eassertz :pre (dumpnew-eassertz))))
+(defun tracepropeq nil (trace (propeq :pre (dumppropeq))))
+(defun tracetellz nil (trace (tellz :pre (dumptellz))))
 (defun traceze nil (tracenew-iassertz) (tracenew-eassertz) 
 			(tracetellz) (tracepropeq))
 (defun traceprepattern nil (setq prepatterndepth 0)
-			   (trace (prepattern traceenter dumpprepattern
-			                      traceexit dumpexitprepattern)))
+			(trace (prepattern 
+			:pre (dumpprepattern)
+			:post (dumpexitprepattern))))
 (defun tracecasing nil 
-	(trace (simpsave if (dumpsimpsave)))
-	(trace (simprestore if (dumpsimprestore)))
-	(trace (simpinit if (dumpsimpinit))))
+	(trace (simpsave :pre (dumpsimpsave)))
+	(trace (simprestore :pre (dumpsimprestore)))
+	(trace (simpinit :pre (dumpsimpinit))))
 (setq prinlevel 5 prinlength 5)		; avoid runaway printing
