@@ -136,11 +136,15 @@
 ;;;
 ;;; concat -- concatenate two symbols
 ;;;
-(defun concat (a b)                                 ; MacLISP compatibility
-   (values (intern 
-       (string-upcase (concatenate 'string 
-            (string a) 
-            (string b))))))
+;;;;(defun concat (a b)                                 ; MacLISP compatibility
+;;;;   (values (intern 
+;;;;       (string-upcase (concatenate 'string 
+;;;;            (string a) 
+;;;;            (string b))))))
+            
+            
+(defun concat (&rest objects)
+      (intern (apply #'concatenate 'string (mapcar #'princ-to-string objects))))
             
 ;;;
 ;;; explode, explodec -- symbol name to list of chars
@@ -195,7 +199,11 @@
 (defun flatc (s) :
       (length (princ-to-string s)))
 
-
+;;;
+;;; caddddr, cdddddr  -- CL doesn't go this deep but MacLISP did.
+;;;
+(defun caddddr (p) (car (cddddr p)))
+(defun cdddddr (p) (cdr (cddddr p)))
   
 ;;;
 ;;;     ptime - CPU time used

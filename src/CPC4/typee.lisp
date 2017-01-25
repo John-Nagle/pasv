@@ -327,8 +327,8 @@
 (defun getfnatom (fn)
     (cond
 	((null fn) nil)				; if null, not fn
+	((isenode fn) (getfnatom (esuccessors fn))) ; if enode, 1st successor (CL: check for enode before atom)
 	((atom fn) fn)				; if atom, this is it
-	((isenode fn) (getfnatom (esuccessors fn))) ; if enode, 1st successor
 	(t (getfnatom (car fn)))))		; if list, 1st elt.
 ;
 ;	Bounds routines
