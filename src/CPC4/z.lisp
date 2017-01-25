@@ -163,7 +163,7 @@
            (setq l (cons (ownerz* (basecolz* i)) l)))) 
 
 (defsmac zc2z* ()
-         (catch (do ((i lastrowz* (1- i)) (piv) (q))
+         (catch 'zcatchtag (do ((i lastrowz* (1- i)) (piv) (q)) ; CL - must name throw/catch
                     ((not (> i drowz*)))
                     (setq q (baserowz* i))
                     (and (ownerz* q)
@@ -174,7 +174,7 @@
                          (prog nil 
                           l3   (setq piv (findpivotz* i))
                                (or piv
-                                   (progn (setq p (anypivotz* i)) (pivotz* p) (throw t)))
+                                   (progn (setq p (anypivotz* i)) (pivotz* p) (throw 'zcatchtag t))) ; CL - must name throw/catch
                                (and (onesigniszeroz* (row piv))
                                     (not (= (row piv) i))
                                     (progn (setq didpivotz* t) (pivotz* piv) (go l3)))

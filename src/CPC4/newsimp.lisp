@@ -253,9 +253,9 @@
 
 (defun vassert  (f) 
        ((lambda (propagations)
-                (catch (setq f (enode f)) false)
+                (catch 'falsetag (setq f (enode f))) ; reverse params for CL
                 (cond ((eq propagations 'false) nil)
-                      (t (catch (emerge truenode f) false)
+                      (t (catch 'falsetag (emerge truenode f)) ; reverse params for CL
                          (cond ((eq propagations 'false) nil)
                                (propagations)
                                (t)))))
@@ -263,20 +263,20 @@
 
 (defun deny (f) 
        ((lambda (propagations)
-                (catch (setq f (enode f)) false)
+                (catch 'falsetag (setq f (enode f))) ; reverse params for CL
                 (cond ((eq propagations 'false) nil)
-                      (t (catch (emerge falsenode f) false)
+                      (t (catch 'falsetag (emerge falsenode f)) ; reverse params for CL
                          (cond ((eq propagations 'false) nil)
                                (propagations)
                                (t)))))
         nil))
 
 (defun propagate (f) 
-       (cond ((eq f 'false) (setq propagations 'false) (throw 'false false))
+       (cond ((eq f 'false) (setq propagations 'false) (throw 'falsetag 'false)) ; CL must name throw target
              (t (setq propagations (cons f propagations))
 		(rareevent "Queued propagation"))))
 
-(defun propagatefalse nil (setq propagations 'false) (throw 'false false)) 
+(defun propagatefalse nil (setq propagations 'false) (throw 'falsetag 'false)) ; CL must name throw target
 
 (defun epushenv nil (pushz)) 
 
