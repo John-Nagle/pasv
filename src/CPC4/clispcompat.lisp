@@ -48,6 +48,11 @@
 
 (defmacro store (arrayref newval) 
     `(setf  (aref ,(car arrayref) ,(cadr arrayref)) ,newval))
+    
+;;;
+;;; portp -- is object a port?
+;;;
+(defun portp (p) (streamp p))   ; ports are streams in CL
 
 ;;;
 ;;; add1  -- add 1 to number
