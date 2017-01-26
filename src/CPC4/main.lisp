@@ -28,7 +28,7 @@
 ;	File names built into simplifier
 ;
 (setq rulefilename 'ruledatabase)		; the rule file
-(setq vc-record nil)				; no default logging port
+(setq vc-record nil)				; no default logging port 
 
 (defun main nil
   ; This function is the interface between the vcg and the simplifier.
@@ -144,7 +144,7 @@
 	       (patom "." errport)
 	       (terpr errport)
 	       (print-result result elapsed)
-	       (force-gc) ; we should get back lots of space now.
+	       ;;;;(force-gc) ; we should get back lots of space now.
 	       (cond (dotiming (time-print vc-record)))
 	       (print-line)))
 	
@@ -318,7 +318,7 @@
 (defun debugon nil
 	(cond ((null vc-record) (setq vc-record poport)))
 	(setq shortprint nil)		; force long VC listing
-	(setq dotiming t)		; timings on 
-	(setq $gcprint t)		; garbage collector messages on
-	(time-divide '(normalize simp pform))
+	;;;;(setq dotiming t)		; timings on  ***TEMP TURNOFF*** CL problem
+	;;;;(setq $gcprint t)		; garbage collector messages on
+	;;;;(time-divide '(normalize simp pform)) ; ***TEMP TURNOFF CL problem
 	)

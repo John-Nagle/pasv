@@ -211,7 +211,7 @@
 ;	ones beginning with non-builtin functions.
 ;
 (defun heuristicvalue (x)
-	(plus (cond ((builtinp (car x)) 0) (t 100)) (length (freevars x))))
+	(+ (cond ((builtinp (car x)) 0) (t 100)) (length (freevars x))))
 ;
 ;	patternorder  --  order possible patterns by value
 ;

@@ -142,8 +142,9 @@
 ;
 (defun translaterule1 (s)		; inner translate
     (prog (xl op)
-	(cond ((atom s)			; if atom, translate var name
-	    (return (cond ((get s 'translatevarname)) (t s)))))
+	(cond 	((symbolp s)			; if symbol, translate var name
+					(return (cond ((get s 'translatevarname)) (t s))))
+				((atom s) (return s)))			; non-symbol atom, no translation
 	(setq op (car s))		; function name (operator)
 					; translate function name
 	(cond ((setq xl (get op 'translatefnname))
@@ -329,7 +330,7 @@
 ;
 (defun goodrulename1 (name)
     (prog (nametail)				; tail part of name
-	(setq nametail (member '\- name))	; get part after dot
+	(setq nametail (member #\- name))	; get part after dot
 	(cond ((null nametail) (return nil))	; failure - end of string
 	      ((equal nametail nametail1) (return t)) ; success
 	      ((equal nametail nametail2) (return t)) ; success
@@ -338,4 +339,4 @@
 (defun goodrulename (n) (goodrulename1 (explodec n))) ; start recursion
 						; canned name tails
 (setq nametail1 (explodec '\-RULE))		; name tail 1
-(setq nametail2 (explodec '\-rule))		; name tail 2
+(setq nametail2 (explodec '|-rule|))		; name tail 2

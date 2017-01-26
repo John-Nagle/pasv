@@ -5,8 +5,8 @@
 ;;;
 ;;; Global variables
 ;;;
-(defvar errport *error-output*)         ; error messages to stderr
-(defvar poport *standard-output*)   ; other output to stdout
+(defvar errport *error-output*)             ; error messages to stderr
+(defvar poport *standard-output*)       ; other output to stdout
 (setq *print-circle* t)                     ; program has circular refs; don't hang in printing 
 (setq *print-level* 4)                      ; limit depth of recursive printing to avoid vast output
 ;;;
@@ -91,6 +91,10 @@
 ;;; onep  -- true if equal to 1
 ;;;
 (defun onep (x) (and (numberp x) (equal x 1)))
+;;;
+;;; alphalessp -- string comparison
+;;;
+(defun alphalessp (a b) (not (not (string< a b))))  ; t or nil, always
 ;;;
 ;;; assq -- like assoc, but test is "eq".
 ;;;
@@ -198,6 +202,11 @@
 ;;;
 (defun flatc (s) :
       (length (princ-to-string s)))
+      
+;;;
+;;; terpr -- equivalent to terpri
+;;;
+(defun terpr (&optional port) (terpri port))
 
 ;;;
 ;;; caddddr, cdddddr  -- CL doesn't go this deep but MacLISP did.
