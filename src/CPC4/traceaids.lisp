@@ -34,6 +34,22 @@
     (mapcar 'runtest testlist) 		; try all tests
     (terpri)
     (end-decl) t)			; done
+	
+;
+;	runonetest  --  run one test case, with full reinitialization
+;
+(defun runonetest (testid)
+	(setq testcase (find-if (lambda (x) (eq (car x) testid)) testlist))
+	(cond ((null testcase) (break "Test ID not in test list.")))
+    (simpinit)				; reinitialize
+    (begin-decl)			; begin junit
+    (mapcar 'decl testdecls)		; do all declarations
+    (terpri)
+    (mapcar 'dolemma testrules)		; do all rules
+    (terpri)
+    (runtest testcase)
+    (terpri)
+    (end-decl) t)			; done
 ;
 ;	runtest  --  run a test case
 ;

@@ -137,6 +137,9 @@ implies
   ALLZERO(B,I,J)
   
   It's being tried, twice, as (tracepfire) shows. 
+  
+  After fixing enode printing, found that the rule is matching properly
+  with correct bindings, but the proof still fails.
 
 
 
