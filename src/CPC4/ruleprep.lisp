@@ -31,7 +31,7 @@
 ;			sublists in arg
 (defun mapsublist1 (x)				; internal fn for recursion
 	(cond	((null x) nil)			; no action for nil
-		((atom x) nil)			; no action for atom
+		((atomp x) nil)			; no action for atom
 		(t (funcall mapfunct x)		; apply fn to list
 		   (mapc 'mapsublist1 (cdr x))))); map for list
 (defun mapsublist (mapfunct x) (mapsublist1 x) nil)	; outer fn for binding fn
@@ -92,7 +92,7 @@
 ;	builtinp  --  true if built-in prover name
 ;
 (defun builtinp (a)
-    (cond	((not (atom a)) nil)		; must be atom
+    (cond	((not (atomp a)) nil)		; must be atom
 		((member a specialbuiltins) nil); not builtin if special
 		((equal '! (car (last (explode a)))) t) ; ends in !
 		((eq a 'true) t)		; not true constant
@@ -106,7 +106,7 @@
 ;	A list of free variables is constructed.
 ;
 (defun freevar (a)
-    (cond	((not (atom a)) nil)		; only atoms are free
+    (cond	((not (atomp a)) nil)		; only atoms are free
 		((null a) nil)			; nil is not a free var
 		((numberp a) nil)		; numbers are not free
 		((builtinp a) nil)		; builtins are not free
@@ -119,7 +119,7 @@
 ;	An atom is a variable, and a list is a function call.
 ;
 (defun findfree (e)
-	(cond	((atom e) (freevar e))		; handle atomic case
+	(cond	((atomp e) (freevar e))		; handle atomic case
 		((null (cdr e)))		; quit if no args
 		((mapc 'findfree (cdr e))))	; apply findfree to args
 	)
@@ -151,7 +151,7 @@
 ;	Ineligible functions (and!, gti!, etc. are so tagged).
 ;
 (defun eligiblefn (fn)				; function to test
-	(cond	((not (atom fn)) nil)		; must be atom
+	(cond	((not (atomp fn)) nil)		; must be atom
 		((get fn 'nopattern) nil) 	; ineligible built in
 		(t t)))
 ;
@@ -165,7 +165,7 @@
 		(return newsym)))		; return dummy
 
 (defun insertdummies (exp)
-	(cond	((atom exp) exp)		; atom returns self
+	(cond	((atomp exp) exp)		; atom returns self
 		((null (car exp)) exp)		; null returns self
 		((eligiblefn (car exp))		; if eligible, recurse
 			(cons (car exp) (mapcar 'insertdummies (cdr exp))))
@@ -183,7 +183,7 @@
 	(cond	((member exp pats) nil)		; avoid duplicate
 		(t (setq pats (append1 pats exp)))))	; add to list
 (defun eligibleexpr (f)				; check for eligibility
-	(cond 	((atom f) nil)			; must be list
+	(cond 	((atomp f) nil)			; must be list
 		((null (car f)) nil)		; must have head
 		((not (eligiblefn (car f))) nil); must be eligible
 		(t (addeligible (insertdummies f))))) ; add to list
@@ -299,7 +299,7 @@
 	))
 (defun printnamelist (lst)			; print nice list
     (cond ((null lst) nil)			; if null, exit
-	  ((atom lst) (patom lst errport))	; atom prints as self
+	  ((atomp lst) (patom lst errport))	; atom prints as self
 	  ((null (cdr lst)) (patom (car lst) errport))
 	  ((null (cddr lst)) (patom (car lst) errport) 
 			(patom " and " errport)
@@ -365,10 +365,10 @@
 ;
 (defun fnsinpat (f)
 	(cond ((null f) 0)			; null has value 0
-	      ((atom f) 0)			; atom has value 0
+	      ((atomp f) 0)			; atom has value 0
 	      ((null (cdr f)) 0)		; no args, value 0
 	      (t (+ 1 (fnsinpat1 (cdr f))))))	; args, 1 + value of args
 (defun fnsinpat1 (f)
 	(cond ((null f) 0)			; null has value 0
-	      ((atom f) 0)			; atom has value 0
+	      ((atomp f) 0)			; atom has value 0
 	      (t (+ (fnsinpat1 (cdr f)) (fnsinpat (car f)))))) ; recurse

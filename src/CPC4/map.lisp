@@ -13,7 +13,7 @@
 (defsmac mapcone (f l) (mapc (function (lambda (x) f)) l)) 
 
 ;;; (mapone (foo x) l) expands into (map '(lambda(x) (foo x)) l)
-(defsmac mapone (f l) (map (function (lambda (x) f)) l)) 
+(defsmac mapone (f l) (map 'list (function (lambda (x) f)) l)) ; ***NOT SURE ABOUT THIS***
 
 ;;; (mapctwo (foo x1 x2) l1 l2) calls (foo x1 x2) on every pair of elements
 ;;; x1 from l1, and x2 from l2.   i.e. it does an n-squared mapc.

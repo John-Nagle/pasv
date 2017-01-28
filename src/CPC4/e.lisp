@@ -75,7 +75,7 @@
 ;
 (defun enode (f) (cond ((numberp f)          (enodenumber f))
                        ((isenode f)          f)	; test for enode before atom, because structs in CL are atoms
-					   ((atom f)             (enodeatom f))                       
+					   ((atomp f)             (enodeatom f))                       
                        ((eq (car f) 'typed!) (typedenode f))
 		       (t                    (enodenonatomic f t nil))))
 
@@ -197,11 +197,14 @@
 	; to the newly created node.
 
 	(and fun
-	     (and (setq funatom (cond ((atom (car f)) (car f))
+		(and 
+			(setq funatom 
+				(cond 
+					((atomp (car f)) (car f))
 			     	((not (isenode (car f))) 
-				  (internalerror "enodenon"))
-			     	((atom (esuccessors (car f))) 
-				  (esuccessors (car f)))
+						(internalerror "enodenon"))
+			     	((atomp (esuccessors (car f))) 
+						(esuccessors (car f)))
 			     	((internalerror "enodenode1"))))
 		    (cond ((setq fun (get funatom 'intern))	; get subprover
 			   (subprovercall node fun funatom)))   ; use subprover
@@ -292,7 +295,7 @@
   ; newenode takes a node off eavailist, it does not initialize the node.
   
   (cond ((numberp (esuccessors node)))
-	((atom (esuccessors node)) (remprop (esuccessors node) 'enode))
+	((atomp (esuccessors node)) (remprop (esuccessors node) 'enode))
 	(t (xeslength node nil)))
   (xesuccessors node nil)
   
@@ -420,8 +423,8 @@
   ; where x and y are each either atoms or enodes.
 
   ; First, translate atoms to enode, if necessary.
-  (and (atom node1) (setq node1 (enode node1)))
-  (and (atom node2) (setq node2 (enode node2)))
+  (and (atomp node1) (setq node1 (enode node1)))
+  (and (atomp node2) (setq node2 (enode node2)))
   
   (setq emergenumber (1+ emergenumber))
 
@@ -565,7 +568,7 @@
 	     (and (nilinpattern pattern) (return nil)) ; check for dead pattern
              (setq f (car pattern))
              (cond ((isenode f) (return (pfire (cadr pattern) f matchlist)))
-                   ((and (atom f) (not (numberp f)))
+                   ((and (atomp f) (not (numberp f)))
                     ((lambda (pmatchlist) (setq f (instantiate f))) matchlist)
                     (return (pfire (cadr pattern) f matchlist)))
                    ((not (isenode (cadr pattern))) (internalerror "ifexists1"))
@@ -616,13 +619,13 @@
 	((numberp f) (list (enode f)))
 	((null f) (list (enode f)))
 	((memq f freevariables) (list f))
-	((atom f) (list (enode f)))
+	((atomp f) (list (enode f)))
 	((memq (car f) freevariables) 
 	 (internalerror "Function symbol cannot be a free variable"))
 
 	; I believe patterns with singleton lists will bomb the prover
 	((= (length f) 1) (internalerror "singleton list in pattern"))
-	((atom (car f))
+	((atomp (car f))
 	 (cons (length f) (cons (enode (car f)) 
 				(mapcan 'prepattern (cdr f)))))
 	(t (cons (length f) (mapcan 'prepattern f)))))
@@ -640,7 +643,7 @@
   ; false, omega, predicates, and functions) are replaced by enodes.  Match
   ; variables are replaced by the matching enodes, and other atoms are replaced
   ; by enodes that represent those atoms.
-       (cond ((atom f)
+       (cond ((atomp f)
               (cond ((cdr (assq f pmatchlist)))
 	            ((memq f '(true false omega)) f)
 	            (t (setq f (enode f))
@@ -664,7 +667,7 @@
 		(cond ((eq (eroot start) (eroot (cdr q)))
 		       (advance0 (cddr pcdr) matchlist thread))
 		      (t nil)))
-	       (t (mapclass (cond ((atom (esuccessors x)))
+	       (t (mapclass (cond ((atomp (esuccessors x)))
 				  ((econgruent x))
 				  ((not (eq (eroot (car pcdr))
 					    (eroot (car (esuccessors x))))))
@@ -676,7 +679,7 @@
 			    start
 			    finish))))
 	((numberp pcar)
-	 (mapclass (cond ((atom (esuccessors x)))
+	 (mapclass (cond ((atomp (esuccessors x)))
 			 ((econgruent x))
 			 ((not (= (eslength x) pcar)))
 			 ((not (eq (eroot (car pcdr))
@@ -693,7 +696,7 @@
 		   nil
 		   start
 		   finish))
-	((atom pcar)
+	((atomp pcar)
 	 (setq q (assq pcar matchlist))
 	 (cond ((null q) (advance0 pcdr 
 				   (cons (cons pcar finish) matchlist)
@@ -877,7 +880,7 @@
 	     (and (nilinpattern pattern) (return nil)) ; check for dead pattern
              (setq f (car pattern))
              (cond ((isenode f) (return (pfire (cadr pattern) f matchlist)))
-                   ((and (atom f) (not (numberp f)))
+                   ((and (atomp f) (not (numberp f)))
                     ((lambda (pmatchlist) (setq f (instantiate f))) matchlist)
                     (return (pfire (cadr pattern) f matchlist)))
                    ((not (isenode (cadr pattern))) (internalerror "ifexists1"))
@@ -948,7 +951,7 @@ a            (and (eq l eavailist) (return t))
        (princ '|econgruent :|) (princ (econgruent node))
        (princ-tab '| |) (princ '|height :|) (princ-tab (eheight node))
        (princ '|esuccess:|)
-       (princ-terpri (cond ((atom (esuccessors node)) (esuccessors node))
+       (princ-terpri (cond ((atomp (esuccessors node)) (esuccessors node))
                            (t (mapcar 'nodenumber (esuccessors node)))))
        (princ '|eroot :|) (princ-tab (enumber (eroot node)))
        (princ '|eqclass :|)
@@ -973,7 +976,7 @@ a            (and (eq l eavailist) (return t))
 (defun emergeprint (x) 
        (princ '|emergedemon :|)
        (princ-tab (cond ((car x) (enumber (car x))) (t nil)))
-       (princ-terpri (cond ((atom (cdr x)) (cdr x)) (t '*)))) 
+       (princ-terpri (cond ((atomp (cdr x)) (cdr x)) (t '*)))) 
 
 (defun demonprint (demon) 
        (cond ((demonfather demon)
@@ -1020,14 +1023,14 @@ a            (and (eq l eavailist) (return t))
 
 (defun pushcontext (mark) 
        (setq contextstack (cons mark contextstack))
-       (and (not (atom mark)) (null (car mark)) (internalerror "pushcontext"))
-       (cond ((atom mark) (epushenv)))) 
+       (and (not (atomp mark)) (null (car mark)) (internalerror "pushcontext"))
+       (cond ((atomp mark) (epushenv)))) 
 
 (defun popcontext (mark) 
        (prog (x) 
         a    (setq x (car contextstack))
              (setq contextstack (cdr contextstack))
-             (cond ((atom x) (epopenv)) (t (funcall (car x) (cdr x))))
+             (cond ((atomp x) (epopenv)) (t (funcall (car x) (cdr x))))
              (cond ((eq x mark) (return nil)))
              (go a))) 
 

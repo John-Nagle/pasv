@@ -61,7 +61,7 @@
 ;
 (defun dumpanything (xx)
     (cond	((isenode xx) (patom (dumpenodeexpr xx)))
-		((atom xx) (patom xx))
+		((atomp xx) (patom xx))
 		(t (patom "(")
 		   (mapcar 'dumpanything xx)
 		   (patom ")")))
@@ -87,7 +87,7 @@
 ;	dumpelist  --  dump mixed list of enodes and atoms
 ;
 (defun dumpelist (elist)
-	(cond ((atom elist) (patom elist))
+	(cond ((atomp elist) (patom elist))
 	      ((isenode elist) (patom (dumpenodeexpr elist)))
 	      (t	(patom "(")
 			(mapc 'dumpelist elist)
@@ -320,9 +320,10 @@
 ;			   at root information.
 ;
 (defun dumpenodeexpr (node)
-     (cond ((atom node) node)
-	   ((isenode node) (dumpenodeexpr (esuccessors node)))
-	   (t (concat "(" (concatlist (mapcar 'dumpenodeexpr node)) ")"))))
+	(cond
+		((isenode node) (dumpenodeexpr (esuccessors node)))
+		((atomp node) node)
+		(t (concat "(" (concatlist (mapcar 'dumpenodeexpr node)) ")"))))
 (defun concatlist (lst)
      (cond ((null lst) nil)
 	   ((null (cdr lst)) (car lst))

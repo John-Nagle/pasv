@@ -46,12 +46,12 @@
   (prog (fun) 
 	(return (cond
 		 ; atoms and enodes normalize to themselves
-		 ((atom f) f)
+		 ((atomp f) f)
 
 		 ; if f is of the form (g ...), check if a normalizing
 		 ; function has been provided for g.  If so, use it.
 
-		 ((and (atom (car f))
+		 ((and (atomp (car f))
 		       (not (numberp (car f)))
 		       (setq fun (get (car f) 'normalize)))
 		  (funcall fun f))
@@ -84,7 +84,7 @@
 (defun normalize2 (f) 
   ; This function inputs a list of unnormalized forms, and outputs a normalized
   ; list.
-       (cond ((atom f) f) 
+       (cond ((atomp f) f) 
 	     (t (cons (normalize1 (car f)) (normalize2 (cdr f))))))
 
 ; these normalizing functions have been added to convert
@@ -197,7 +197,7 @@
   ; assumptions: f is normalized; all conditionals are booleans.
   ; For variables and fields, we look at the type information.
   (prog (type tag)
-	(return (cond ((atom f) (memq f '(true false))) ; if true or false, OK
+	(return (cond ((atomp f) (memq f '(true false))) ; if true or false, OK
 		      ((memq (car f) predicatenames) t) ; if predicate, OK
 		      ((match f ('typed! (type . *) . *)) ; if typed and bool
 		       (eq type 'boolean))	; if typed, check
@@ -228,7 +228,7 @@
 ;	Used only by isboolean
 ;
 (defun selectortype (f)
-	(cond ((atom f) (internalerror "Null selector expression"))
+	(cond ((atomp f) (internalerror "Null selector expression"))
 	      ((eq (car f) 'typed!) (cadr f))		; if typed, return
 	      ((eq (car f) 'storer!) (selectortype (cadr f)))
 	      ((eq (car f) 'storea!) (selectortype (cadr f)))

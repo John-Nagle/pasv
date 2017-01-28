@@ -45,7 +45,7 @@
 (defun and-split (f)
   ; Traverse the formula f, locating all the conjuncts;
   ; call call splitscan on each.
-  (cond ((atom f) (splitscan f))
+  (cond ((atomp f) (splitscan f))
 	((eq (car f) 'and!) (mapc 'and-split (cdr f)))
 	(t (splitscan f))))
 
@@ -60,8 +60,8 @@
 
 (defun findvars (x)
   ; Find all the variables in x and merge them into scanroot
-  (cond ((atom x))
-	((atom (car x))
+  (cond ((atomp x))
+	((atomp (car x))
 	 (and (memq (car x) newvars) (smerge (atom-class (car x)) scanroot))
 	 (mapc 'findvars (cdr x)))
 	(t (mapc 'findvars x))))
@@ -73,9 +73,9 @@
   ; causes it to count as a live variable and drag in more assertions. 
 
   (prog (A E)
-	(return (cond ((atom x) x)
+	(return (cond ((atomp x) x)
 		      ((and (match x ('assign! (A) E))
-			    (atom A))
+			    (atomp A))
 		       (simp-assign E))
 		      (t (simp-assign-list x))))))
 
@@ -171,7 +171,7 @@
   ; Along the way, remove these elements from any property list they are on.
 
   (do ((s)) ((null used-head))
-      (and (atom (sval used-head)) (remprop (sval used-head) 'splitelt))
+      (and (atomp (sval used-head)) (remprop (sval used-head) 'splitelt))
       (xsval used-head nil) ; give the value back to the garbage collector
       (setq s used-head)
       (setq used-head (savail used-head))
@@ -194,7 +194,7 @@
 		 ; add it onto and-list as a conjunct.
 		 (do (k j (slink k)) (null k)
 		     (setq v (sval k))
-		     (cond ((atom v)
+		     (cond ((atomp v)
 			    (setq v-count (1+ v-count))
 			    (patom v to-vcg) (terpr to-vcg))
 			   (t (setq and-list

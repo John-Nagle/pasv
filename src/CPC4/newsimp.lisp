@@ -94,7 +94,7 @@
        (cond (ff 
               (setq a (car ff))
               (setq ff (cdr ff))
-              (cond ((atom a)
+              (cond ((atomp a)
                      (setq a (simpdeny a))
                      (cond ((null a) nil)
                            ((eq a t) (ss ff tt fff ttt ppp nil))
@@ -116,7 +116,7 @@
 	     (tt
               (setq a (car tt))
               (setq tt (cdr tt))
-              (cond ((atom a)
+              (cond ((atomp a)
                      (setq a (simpassert a))
                      (cond ((null a) nil)
                            ((eq a t) (ss ff tt fff ttt ppp nil))
@@ -179,7 +179,7 @@
                 (setq falsesample falseprop))))
 
 (defun sampleprint (node)
-       (cond ((atom (esuccessors node)) (esuccessors node))
+       (cond ((atomp (esuccessors node)) (esuccessors node))
              (t (mapcar 'sampleprint (esuccessors node)))))
 
 (defun simpassert (f)
@@ -220,7 +220,7 @@
 ; itself is entered, but they will be applied at the leaves of the proof tree.
 
 (defun startrule (f)
-       (cond ((atom f))
+       (cond ((atomp f))
              ((eq (car f) boolsymnot) (startrule (cadr f)))
              ((memq (car f) (list boolsymand boolsymor boolsymimplies))
               (startrule (cadr f))

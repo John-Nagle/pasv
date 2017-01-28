@@ -17,7 +17,7 @@
 ;	This is a structure with booleans in place of all the variable parts.
 ;	
 (defun getdtype (var-type)
-	(cond	((atom var-type) (internalerror "Bad type declaration"))
+	(cond	((atomp var-type) (internalerror "Bad type declaration"))
 		((eq (car var-type) 'array)	; if array
 		    (list (car var-type)	; array
 			(cadr var-type) 	; subscript type
@@ -48,9 +48,9 @@
 ;
 (defun vartype (varname)
      (prog (xname xletters xtype plainname vdflag)
-	(cond ((atom varname) (return nil)))	; does not apply to atom
+	(cond ((atomp varname) (return nil)))	; does not apply to atom
 	(setq xname (car varname))		; get fn atom or var atom
-	(cond ((not (atom xname)) (return nil))); not atom, inapplicable
+	(cond ((not (atomp xname)) (return nil))); not atom, inapplicable
 	(setq xletters (reverse (explode xname))); get letters of name
 	(cond ((eqstring (car xletters) '!) (return nil)) ; built in fn
 	      ((null (cdr varname))		; if variable, not fn call

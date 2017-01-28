@@ -163,7 +163,7 @@
              ((new-eassertz (append (car z1) (znegate (car z2)))))))
 
 (defun iszpredicate (node)
-       (and (not (atom (esuccessors node)))
+       (and (not (atomp (esuccessors node)))
             (eq zgenode (car (esuccessors node)))))
 
 (defun remnumnode (node) 
@@ -333,7 +333,7 @@
 
 (defun zetypechk (node)
   (cond ((null (esuccessors node)) nil) ; if no args, no problem
-	((atom (esuccessors node)) (internalerror "Atom in successor list"))
+	((atomp (esuccessors node)) (internalerror "Atom in successor list"))
 	((null (cdr (esuccessors node))) ; 1 arg case, must be variable
 	 (zetypechk1 (esuccessors node))) ; check first arg
 	(t (zetypechk1 (cdr (esuccessors node)))))); check all args to fn

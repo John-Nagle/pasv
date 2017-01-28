@@ -51,12 +51,12 @@
   (cond ((null pat)
 	 (cons `(or (null ,(match2 prefix expr)) (return nil)) code))
 	((eq pat '*) code)
-	((atom pat) (cons `(setq ,pat ,(match2 prefix expr)) code))
+	((atomp pat) (cons `(setq ,pat ,(match2 prefix expr)) code))
 	((eq (car pat) 'quote)
 	 (cons `(or (equal (quote ,(cadr pat)) ,(match2 prefix expr))
 		    (return nil))
 	       code))
-	(t (cons `(and (atom ,(match2 prefix expr)) (return nil))
+	(t (cons `(and (atomp ,(match2 prefix expr)) (return nil))
 		 (match1 (car pat) (concat 'a prefix) expr
 			 (match1 (cdr pat) (concat 'd prefix) expr code))))))
 

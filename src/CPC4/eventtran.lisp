@@ -130,7 +130,7 @@
 ;
 (defun diagnosesymbol (s)
     (setq xlateerror t)		; note failure
-    (cond ((atom s) (ruleerror (concat "Illegal " s " in rule.")))
+    (cond ((atomp s) (ruleerror (concat "Illegal " s " in rule.")))
 	  (t (diagnosesymbol (car s)))))
 ;
 ;	translaterule  --  translate a rule into standard form
@@ -144,7 +144,7 @@
     (prog (xl op)
 	(cond 	((symbolp s)			; if symbol, translate var name
 					(return (cond ((get s 'translatevarname)) (t s))))
-				((atom s) (return s)))			; non-symbol atom, no translation
+				((atomp s) (return s)))			; non-symbol atom, no translation
 	(setq op (car s))		; function name (operator)
 					; translate function name
 	(cond ((setq xl (get op 'translatefnname))
@@ -186,7 +186,7 @@
     (prog nil
     	(setq event (read inport))		; read an event
     	(cond ((null event) (return nil)))
-	(cond ((atom event) nil)		; event dispatcher
+	(cond ((atomp event) nil)		; event dispatcher
 	      ((eq (car event) 'prove-lemma) (dolemma event)) ; lemma
 	      ((eq (car event) 'defn) (dodefn event)) ; definition
 	      ((eq (car event) 'add-axiom) (doaxiom event)) ; axiom
@@ -237,7 +237,7 @@
 (defun infertype (defnname expr)
     (prog (op t1 t2)
 	(cond ((null expr)	(return nil)))	; if null, fails
-	(cond ((atom expr)			; if atom
+	(cond ((atomp expr)			; if atom
 		(cond ((numberp expr) (return integertype))	; number
 		      ((equal expr 't) (return booleantype))	; True
 		      ((equal expr 'f) (return booleantype)) 	; False
@@ -255,10 +255,10 @@
 		; use type on other branch.  Valid because recursion must
 		; terminate by the Boyer-Moore definitional principle.
 		; There is no mutual recursion in Boyer-Moore, of course.
-		(and (not (atom (caddr expr)))	; if call
+		(and (not (atomp (caddr expr)))	; if call
 		     (equal (caaddr expr) defnname) ; and recursive call
 		     (return t2))		; use other type
-		(and (not (atom (cadddr expr))) ; if call
+		(and (not (atomp (cadddr expr))) ; if call
 		     (equal (caadddr expr) defnname) ; and recursive call
 		     (return t1))		; use other type
 		(return nil))			; fails if nil
@@ -294,7 +294,7 @@
 	(setq ekinds (caddr event))		; (REWRITE, etc.)
 	(setq eexpr (cadddr event))		; the lemma
 	(setq dtype
-	  (cond ((atom (cadr eexpr)) nil); not predicate of call
+	  (cond ((atomp (cadr eexpr)) nil); not predicate of call
 	      ((not (allatomic (cadr eexpr))) nil) ; non-builtin
 	      ((equal (car eexpr) 'booleanp!) booleantype)
 	      ((equal (car eexpr) 'integerp!) integertype)
@@ -307,7 +307,7 @@
 ;
 (defun allatomic (lst)
     (cond ((null lst) t)			; if empty, done
-	  ((not (atom (car lst))) nil)		; if not atom, fail
+	  ((not (atomp (car lst))) nil)		; if not atom, fail
 	  ((member (car lst) '(T F)) nil)	; if constant, fail
 	  ((numberp (car lst)) nil)		; if constant, fail
 	  (t (allatomic (cdr lst)))))		; otherwise recurse

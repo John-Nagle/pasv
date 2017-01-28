@@ -62,7 +62,7 @@
 (defun   *indent (k) (do ((i 0 (1+  i))) ((= i k)) (princ '" ")))
 
 (defun *pprint (x l)
-  (cond ((atom x) 
+  (cond ((atomp x) 
 	 (and (> l *space) (setq *marginerrors (1+ *marginerrors)))
 	 (princ x) 
 	 (setq *space (- *space l)))
@@ -170,7 +170,7 @@
 (defun *advanceleft (x l)
        (cond ((> l -1)
               (*pprint x l)
-              (cond ((atom x) (setq *leftotal (+ *leftotal l)))
+              (cond ((atomp x) (setq *leftotal (+ *leftotal l)))
                     ((eq (car x) 'begin))
                     ((eq x *end))
                     (t (setq *leftotal (+ (caddr x) *leftotal))))

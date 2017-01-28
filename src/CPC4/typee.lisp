@@ -33,8 +33,8 @@
 	(cond	((equal t1 t2) t1)		; if same, return type
 		((null t1) (internalerror "null type t1 in commontype"))
 		((null t2) (internalerror "null type t2 in commontype"))
-		((atom t1) (internalerror "atom type t1 in commontype"))
-		((atom t2) (internalerror "atom type t2 in commontype"))
+		((atomp t1) (internalerror "atom type t1 in commontype"))
+		((atomp t2) (internalerror "atom type t2 in commontype"))
 		((eq (car t1) (car voidtype)) voidtype)	; void matches nothing
 		((eq (car t2) (car voidtype)) voidtype)	; void matches nothing
 		((eq (car t1) 'universal) t2)	; universal matches anything
@@ -313,7 +313,7 @@
 	(and (null fn) (return))		; if null, return
 	(setq fntyper (get fn 'optyper))	; get typing routine
 	(and (null fntyper) (return))		; if null, return
-	(and (atom (esuccessors node)) (return)); if successors are not list
+	(and (atomp (esuccessors node)) (return)); if successors are not list
 	(setq newtype (funcall fntyper (esuccessors node))); derive new type
 	;	Merge new derived type if required
 	(cond ((not (equal newtype 		; if type changed
@@ -328,7 +328,7 @@
     (cond
 	((null fn) nil)				; if null, not fn
 	((isenode fn) (getfnatom (esuccessors fn))) ; if enode, 1st successor (CL: check for enode before atom)
-	((atom fn) fn)				; if atom, this is it
+	((atomp fn) fn)				; if atom, this is it
 	(t (getfnatom (car fn)))))		; if list, 1st elt.
 ;
 ;	Bounds routines

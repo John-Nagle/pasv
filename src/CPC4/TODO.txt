@@ -32,8 +32,10 @@ Conversion to Common LISP.
 28. "mapeqclass" is defined in two files.
 29. Figure out what value "false" is supposed to have. - change throw tag name [DONE]
 30. Make "concat" n-ary. [DONE]
-31. Find why rules are not firing.
-32. Convert all trace functions in traceaids.
+31. Find why rules are not firing. [DONE]
+32. Convert all trace functions in traceaids. [DONE]
+33. Fix "mapcone", which calls "map" with too few parameters. [DONE]
+34. Find out why rule didn't get applied in case U01.
 
 
 
@@ -107,6 +109,35 @@ Somewhat kludgy fix in place. Assumes the node field wanted is "den" if item is 
  in (ENODEATOM) in e.lisp.  But does the code really put 'enode properties on enodes, or is it
  simply calling "get" on enodes, expecting that to fail? Must check all sets of 'enode property.
  If none set on enode structs, the test in ENODEATOM can be fixed.
+ 
+ 
+--
+
+For test U01:
+
+(testcase 'u01 t '(implies! (allzero (a~5v01) (consti! 1) (consti! 50))
+	             (allzero (storea! (a~5v01) (consti! 51) (consti! 10))
+			      (consti! 1) (consti! 50))))
+
+This rule is not being applied:
+
+unchanged-allzero-rule --  Usable on conclusions only, free variables 
+(A B I J V X) 
+Trigger pattern sequence: 
+((ALLZERO B I J) (ALLZERO A I J) (STOREA! A X V) (NUMBERP! I) (ARRAYP! A)) 
+
+NUMBERP!(I)
+and NUMBERP!(J)
+and NUMBERP!(X)
+and ARRAYP!(A)
+and ALLZERO(A,I,J)
+and (B = <A,X,V>)
+and (GTN!(I,X) or GTN!(X,J))
+implies
+  ALLZERO(B,I,J)
+  
+  It's being tried, twice, as (tracepfire) shows. 
+
 
 
 

@@ -276,7 +276,7 @@
 
 (defun kc2z* (x) 
        (prog (var) 
-             (or (atom (ownerz* x)) (isenode (ownerz* x)) (return nil))
+             (or (atomp (ownerz* x)) (isenode (ownerz* x)) (return nil))
              (setq var (rowisjustvarz* (row x)))
              (cond ((and (isenode var) (= (col (left (left x))) dcolz*))
                     (propeq var (ownerz* x))))

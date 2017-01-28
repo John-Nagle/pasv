@@ -72,7 +72,7 @@
   (cond ((numberp x) 
 	 ((lambda (s)(*ppstring (implode s) (length s))) (explodec x)))
 	
-	((atom x) (*ppstring x (flatc x)))
+	((atomp x) (*ppstring x (flatc x)))
 	
 	((eq (car x) 'consti!)
 	 ((lambda (s)(*ppstring (implode s) (length s)))
@@ -196,7 +196,7 @@
 ;;; print a list of the form   + xxx + xxx + xxx + xxx + .....
 (defun ppnary (op expr kind val len)
   (cond ((null expr))
-	((and (not (atom (car expr)))
+	((and (not (atomp (car expr)))
 	      (eq (caar expr) op) (get op 'asso))
 	 (ppnary op (append (cdar expr) (cdr expr)) kind val len))
 	((cdr expr)

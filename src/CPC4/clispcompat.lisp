@@ -50,6 +50,17 @@
     `(setf  (aref ,(car arrayref) ,(cadr arrayref)) ,newval))
     
 ;;;
+;;; atomp -- is object an atom in the Franz LISP sense?
+;;;
+(defun atomp (p) 
+      (cond 
+            ((symbolp p)  t)        ; symbols, yes
+            ((numberp p) t)         ; numbers, yes
+            ((stringp p) t)         ; strings, yes
+            ((consp p) nil)          ; cons, no
+            ((typep p 'structure-object) nil)   ; structure, no
+            (t (internalerror "atomp: unknown type")))) ; anything else we need to know about
+;;;
 ;;; portp -- is object a port?
 ;;;
 (defun portp (p) (streamp p))   ; ports are streams in CL

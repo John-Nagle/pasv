@@ -59,7 +59,7 @@
              (setq form (esuccessors node))
              (return (cond ((econgruent node) '(200000 . printerror))
                            ((eprinttag node) '(200000 . printerror))
-                           ((atom form) (cons 1 form))
+                           ((atomp form) (cons 1 form))
                            ((eq (eroot (car form)) (eroot zgenode))
                             (ppzge (cadr form) (caddr form) nil))
                            ((eq (eroot (car form)) (eroot zgtnode))
