@@ -73,16 +73,40 @@
 ;
 ;	Dumping and tracing tools
 ;
-;	dumpaything
+;	dumpanything
 ;
 (defun dumpanything (xx)
-    (cond	((isenode xx) (patom (dumpenodeexpr xx)))
+    (cond	
+		((isenode xx) (patom (dumpenodeexpr xx)))
 		((atomp xx) (patom xx))
-		(t (patom "(")
-		   (mapcar 'dumpanything xx)
-		   (patom ")")))
+		((consp xx) (patom "(")
+		   ;;;(mapcar 'dumpanything xx) ; ***DOES NOT WORK ON A NON-LIST CONS***
+			(dumplist xx)
+		   (patom ")"))
+		((functionp xx) (patom (getfunctionname xx)))
+		(t (patom xx)))
 		(patom " ")
 		nil)
+
+;
+;	dumplist -- also does a single cons
+;
+(defun dumplist (lst) 
+	(cond 	((null lst) (patom "nil"))
+				((consp lst) 
+					(dumpanything (car lst))
+					(cond 	((consp (cdr lst)) (dumplist (cdr lst)))
+								((null (cdr lst))) ;	 Nothing to do if null list end
+								(t (patom ". ") (dumpanything (cdr lst)))))
+				(t (dumpanything(lst)))))
+				
+;
+;	getfunctionname -- there should be some easier way to do this.
+;
+(defun getfunctionname (fn) 
+	(setq s (write-to-string fn))
+	(concatenate 'string (subseq s 0 (search "(" s)) ">"))
+
 ;
 ;	dumpbind1  --  dump one pattern-var to expr-var binding
 ;
@@ -131,7 +155,7 @@
 ;	Demon dumping
 ;
 (defun dumpfiredemon nil
-    (patom "Firing ")
+    (patom "Firing demon ")
     ;;;(patom (arg 1))
 	(patom (nth 0 EXT:*TRACE-ARGS*)) ; CL
     (terpri))
@@ -141,11 +165,11 @@
     (terpri)
     (patom "    Function: ");
     ;(patom (arg 1))
-	(patom (nth 0 EXT:*TRACE-ARGS*)) ; CL
+	(dumpanything (nth 0 EXT:*TRACE-ARGS*)) ; CL
     (terpri)
     (patom "    Node: ")
     ;;;(patom (dumpenodeexpr (arg 2)))
-	(patom (dumpenodeexpr (nth 1 EXT:*TRACE-ARGS*))) ; CL
+	(dumpanything (dumpenodeexpr (nth 1 EXT:*TRACE-ARGS*))) ; CL
     (terpri)
     (patom "    Bindings: ")
     (terpri)

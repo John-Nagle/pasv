@@ -140,6 +140,21 @@ implies
   
   After fixing enode printing, found that the rule is matching properly
   with correct bindings, but the proof still fails.
+  
+  Gets to "ifexists" with all the variables bound.
+  Gets through "ifexists" at least as far as the call to "pushcontext".
+  Lost control of the trace before "mapeqclass".
+  Possible trouble with "mapeqclass", which is a macro defined with
+  "defsmac". The macro has a goto in it, to a tag "a". In what context
+  is "a" defined?  Each instantiatiation of "mapeclass" defines "a".
+  
+  That's OK, because go tags are local to a tagbody, and the enclosing
+  "prog" defines a tagbody.
+  
+  At a higher level, what's going on here? The rule has matched.
+  Now there must be proof goals to validate the NUMBERP! and GTN!
+  conditions. Not sure how that works. Need to get to the "mapeclass"
+  call again and see what's being sent where.
 
 
 

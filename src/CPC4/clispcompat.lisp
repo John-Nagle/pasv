@@ -59,7 +59,7 @@
             ((stringp p) t)         ; strings, yes
             ((consp p) nil)          ; cons, no
             ((typep p 'structure-object) nil)   ; structure, no
-            (t (internalerror "atomp: unknown type")))) ; anything else we need to know about
+            (t (internalerror "atomp: unknown type")))) ; anything else, we need to know about
 ;;;
 ;;; portp -- is object a port?
 ;;;
