@@ -27,7 +27,7 @@ Converted to Free Pascal and working.
 Conversion not started. This program runs the LISP theorem prover
 in a subprocess, so the theorem prover is being converted first.
 
-### Pass 4, theorem prover in LISP (CPC4)
+### Pass 3, theorem prover in LISP (CPC4)
 
 Partially converted to GNU Common LISP. The built-in theories of the Oppen-Nelson simplifier 
 appear to be working, but added rewrite rules are not working yet. 
