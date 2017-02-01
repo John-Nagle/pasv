@@ -15,6 +15,8 @@
 (p (function (boolean)))
 (u (function (universal)))
 (allzero (rulefunction (boolean)))
+(dummyfff (rulefunction (boolean)))
+(dummyggg (rulefunction (boolean)))
 (rec~6
 (variable (record buffer~1 
 	(buffer~1$bufin (subrange 0 19)) 
@@ -27,7 +29,12 @@
 ;
 (setq testrules
       (quote
-       ((|prove-lemma| |unchanged-allzero-rule|
+       (
+		(|prove-lemma| |simple-dummy-rule|	; dummy rule to test if rule engine is working at all
+                       (rewrite)
+                       (implies (dummyfff A)
+									(dummyggg B)))
+	    (|prove-lemma| |unchanged-allzero-rule|
                        (rewrite)
                        (implies (and (numberp I)
                                      (numberp J)
@@ -88,6 +95,8 @@
 (testcase 'p21 nil '(integerp! (a~5v01)))
 (testcase 'p22 nil '(booleanp! (a~5v01)))
 (testcase 'p23 t '(arrayp! (a~5v01)))
+(testcase 'p31 t '(numberp! (consti! 50)))
+(testcase 'p32 nil '(numberp! (consti! -50)))
 ;
 ;	Array tests
 ;
@@ -139,6 +148,8 @@
 ;
 ;	rule tests
 ;
+(testcase 'u00 t '(implies! (dummyfff x~1v01) (dummyggg x~1v01)))	; simplest possible rule test
+
 (testcase 'u01 t '(implies! (allzero (a~5v01) (consti! 1) (consti! 50))
 	             (allzero (storea! (a~5v01) (consti! 51) (consti! 10))
 			      (consti! 1) (consti! 50))))

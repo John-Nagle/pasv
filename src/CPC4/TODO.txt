@@ -156,6 +156,10 @@ implies
   conditions. Not sure how that works. Need to get to the "mapeclass"
   call again and see what's being sent where.
 
+  Added a very simple rule to see if rules work at all. Caused a trap
+  in "ss" of newsimp, because there is a enode where a cons was
+  expected. Possible "atomp" problem?  "atomp" returns false
+  for enodes, just as FL "atom" did for hunks".
 
 
 

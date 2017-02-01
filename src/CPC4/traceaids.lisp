@@ -78,12 +78,12 @@
 (defun dumpanything (xx)
     (cond	
 		((isenode xx) (patom (dumpenodeexpr xx)))
+		((functionp xx) (patom (getfunctionname xx)))
 		((atomp xx) (patom xx))
 		((consp xx) (patom "(")
 		   ;;;(mapcar 'dumpanything xx) ; ***DOES NOT WORK ON A NON-LIST CONS***
 			(dumplist xx)
 		   (patom ")"))
-		((functionp xx) (patom (getfunctionname xx)))
 		(t (patom xx)))
 		(patom " ")
 		nil)
@@ -398,9 +398,18 @@
     	(patom (dumpenodeexpr EXT:*TRACE-VALUES*))
      	(terpri))
 	(t nil)))
+	
+(defun dumpstartpattern nil 
+	;(pattern matchlist node)
+	(patom "Startpattern: ") (terpri)
+	(patom "  Pattern: ") (dumpanything (nth 0 EXT:*TRACE-ARGS*)) (terpri)
+	(patom "  Matchlist: ") (dumpanything (nth 1 EXT:*TRACE-ARGS*)) (terpri)
+	(patom "  Node: ") (dumpanything (nth 2 EXT:*TRACE-ARGS*)) (terpri))
+	
 ;
 ;	These turn on tracing of the indicated function
 ;
+(defun tracestartpattern nil (trace (startpattern :pre (dumpstartpattern))))
 (defun tracefiredemon nil (trace (firedemon :pre (dumpfiredemon))))
 (defun tracepfire nil (trace (pfire :pre (dumppfire))))
 (defun traceapplyrule nil (trace (applyrule :pre (dumpapplyrule))))
