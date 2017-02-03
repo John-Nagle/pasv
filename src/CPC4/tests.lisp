@@ -148,7 +148,9 @@
 ;
 ;	rule tests
 ;
-(testcase 'u00 t '(implies! (dummyfff x~1v01) (dummyggg x~1v01)))	; simplest possible rule test
+(testcase 'x01 t '(implies! (dummyfff x~1v01) (dummyggg x~1v01)))	; simplest possible rule test
+
+(testcase 'x02 nil '(implies! (dummyggg x~1v01) (dummyfff x~1v01)))	; simplest possible rule test
 
 (testcase 'u01 t '(implies! (allzero (a~5v01) (consti! 1) (consti! 50))
 	             (allzero (storea! (a~5v01) (consti! 51) (consti! 10))

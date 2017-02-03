@@ -575,6 +575,7 @@
                    ((not (numberp f)) (internalerror "ifexists2")))
              (setq ifexistsnumber (1+ ifexistsnumber))
              (setq node (cadr pattern))
+			 (cond ((null pattern) (break "Pushing null epattern"))) ; ***TEMP DEBUG***
              (xepattern node (cons (cons pattern matchlist) (epattern node)))
              (pushcontext (cons poppattern node))
              (mapeqclass (mapcone (startpattern pattern matchlist x) 
@@ -887,6 +888,7 @@
                    ((not (numberp f)) (internalerror "ifexists2")))
              (setq ifexistsnumber (1+ ifexistsnumber))
              (setq node (cadr pattern))
+			 (cond ((null pattern) (break "Pushing null epattern"))) ; ***TEMP DEBUG***
              (xepattern node (cons (cons pattern matchlist) (epattern node)))
              (pushcontext (cons poppattern node))
              (setq rulenodelist 

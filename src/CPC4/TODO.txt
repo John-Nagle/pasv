@@ -110,6 +110,10 @@ Somewhat kludgy fix in place. Assumes the node field wanted is "den" if item is 
  simply calling "get" on enodes, expecting that to fail? Must check all sets of 'enode property.
  If none set on enode structs, the test in ENODEATOM can be fixed.
  
+--
+Replaced all calls to (atom x) with (atomp x), and wrote (atomp x) to have Franz LISP semantics.
+This fixed most of the problems above.
+ 
  
 --
 
@@ -160,6 +164,23 @@ implies
   in "ss" of newsimp, because there is a enode where a cons was
   expected. Possible "atomp" problem?  "atomp" returns false
   for enodes, just as FL "atom" did for hunks".
+  
+  Looks like the problem there was that in FL, (car) of a hunk
+  was legal, and all the tests doing that would fail, so it didn't
+  matter. Added an explicit test for enodes.
+  
+  Next problem: rplaca into nil in poppattern at
+  
+    (mapone (rplaca x nil) (car (epattern node)))
+    
+  Is that something you could get away with in FL?
+  This happens during final cleanup after proving the 
+  simplest possible rule case.  
+  
+  The question is whether something invalid was pushed
+  onto the pattern list at an xeparttern call in e.lisp The pattern
+  list contains (nil) at the trouble spot, which makes no
+  sense.
 
 
 

@@ -99,6 +99,7 @@
                      (cond ((null a) nil)
                            ((eq a t) (ss ff tt fff ttt ppp nil))
                            (t (ss ff tt fff ttt (append a ppp) nil))))
+                    ((isenode a) nil) ; CL if a is an enode, don't try to take the car of it
                     ((eq (car a) boolsymnot)
                      (ss ff (cons (cadr a) tt) fff ttt ppp nil))
                     ((eq (car a) boolsymor)
@@ -121,7 +122,8 @@
                      (cond ((null a) nil)
                            ((eq a t) (ss ff tt fff ttt ppp nil))
                            (t (ss ff tt fff ttt (append a ppp) nil))))
-                    ((eq (car a) boolsymnot)
+                   ((isenode a) nil) ; CL if a is an enode, don't try to take the car of it
+                   ((eq (car a) boolsymnot)
                      (ss (cons (cadr a) ff) tt fff ttt ppp nil))
                     ((eq (car a) boolsymor)
                      (ss ff tt fff (cons a ttt) ppp nil))
