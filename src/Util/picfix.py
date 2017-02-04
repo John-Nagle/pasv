@@ -26,7 +26,9 @@ import sys
 # W                 WWWWWWWW  
 BOXCHARS = "XXX┃X┗┏┣X┛┓┫━┻┳╋"            # line drawing chars, by NSEW bits   
 
-ARROWCHARS ="▲▼▶◀"                      # arrow chars, NSEW order 
+ARROWCHARS ="▲▼▶◀"                      # arrow chars, NSEW order
+ARROWSUBST = {'^': '▲', 'v' : '▼', 'V' : '▼', '>' : '▶', '<' : '◀' } # arrow substitutions  ➡
+####ARROWSUBST = {'^': '▲', 'v' : '↓', 'V' : '↓', '>' : '➤', '<' : '◀' } # arrow substitutions  ➡
 #
 #   Globals
 #
@@ -104,7 +106,7 @@ class Linegroup :
             if ch in "vV" and self.getc(row-1, col) in '|' :
                 return(True)
         if ch in "<>" :
-            if self.getc(row-1,col) != ' ' or self.getc(row,col+1) != ' ' :
+            if self.getc(row-1,col) != ' ' or self.getc(row+1,col) != ' ' :
                 return(False)               # whitespace check fail
             if ch == '>' and self.getc(row, col-1) in '-_' :
                 return(True)
@@ -131,6 +133,9 @@ class Linegroup :
             neighbors |= 8                  # south bit
         if ch in "|-_+*" and popcount(neighbors) > 1 :# ***TEMP***
             return(BOXCHARS[neighbors])  
+        #   Arrow recognition
+        if self.validarrow(2,i) :           # if valid arrow
+            ch = ARROWSUBST[ch]             # subsitute arrow char  
         return(ch)                          # no change
         
     def fixline(self) :
