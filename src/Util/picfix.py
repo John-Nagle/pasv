@@ -18,10 +18,27 @@ UNICODETEES = "┣┫┻┳"
 UNICODELINES = "┃━"
 UNICODEARROWS = "▶◀▲▼"
 UNICODELDC = UNICODECORNERS + UNICODETEES + UNICODELINES + UNICODEARROWS
+#           0123456789abcdef
+# N          N N N N N N N N
+# S           SS  SS  SS  SS
+# E             EEEE    EEEE
+# W                 WWWWWWWW  
+BOXCHARS = "XXX┃X┗┏┣X┛┓┫━┻┳╋"            # line drawing chars, by NSEW bits   
 #
 #   Globals
 #
-verbose = False                 # verbose mode
+verbose = False                         # verbose mode
+
+#
+#   popcount - population count
+#
+def popcount(n) :
+    assert(n >= 0)                      # nonnegative, or we will hang
+    if n == 0 :
+        return(0)
+    if n & 1 :
+        return(1 + popcount(n >> 1))
+    return(popcount(n >> 1))            # if only we had tail recursion
    
 
 #
@@ -56,7 +73,18 @@ class Linegroup :
         ch = self.getc(1,i)
         if ch not in "_-|+*<>^V" :
             return(ch)                      # uninteresting
-        return("█")                         # ***TEMP****
+        neighbors = 0                       # neighbor bits NSEW
+        if self.getc(0,i) in "|-_+*^" :       # if north points down
+            neighbors |= 1                  # north bit
+        if self.getc(2,i) in "-_|+*V" :       # if south points up
+            neighbors |= 2                  # south bit
+        if self.getc(1,i+1) in "|-_+*>" :    # if east points left
+            neighbors |= 4                  # south bit
+        if self.getc(1,i-1) in "|-_+*<" :    # if west points right
+            neighbors |= 8                  # south bit
+        if ch in "|-_+*" and popcount(neighbors) > 1 :# ***TEMP***
+            return(BOXCHARS[neighbors])  
+        return(ch)                          # no change
         
     def fixline(self) :
         """
