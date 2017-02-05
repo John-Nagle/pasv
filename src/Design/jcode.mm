@@ -143,6 +143,7 @@ Anywhere the syntax allows a newline, it also allows
 a comment, which begins with -- and ends with the end of the line.
 .H 2 "Overall syntax of j-code"
 .(d
+.ft CR
 <j-code> ::= <j-unit>*
 <j-unit> ::= BEGIN # <unit name> $
              <declaration part> <statement part> END $
@@ -188,6 +189,7 @@ a comment, which begins with -- and ends with the end of the line.
 
 <catch statement> ::= <when statement>
                     | <join statement>
+.ft
 .)d
 A file of j-code consists of a sequence of units.
 The j-code generator produces a unit for each routine.
@@ -217,6 +219,7 @@ and end in a <throw\ statement>.
 The machine has two states: A and B, and has the following state
 transitions:
 .(d
+.ft CR
                             throw statement
                          +------------------+
                          |                  |
@@ -228,6 +231,7 @@ transitions:
                          |                  |
                          +------------------+
                             catch statement
+.ft
 .)d
 Every J-unit begins with a break statement, which puts the machine into
 state A.  When the unit ends, it must be in state B.
@@ -245,6 +249,7 @@ are balanced with respect to REIN, RENEW, and REOUT, and change the
 finite state machine from state x to state y.
 .H 2 "J-statements"
 .ES
+.ft CR
 <j-statement> ::= <simple statement> | <throw statement>
                 | <catch statement> | <rein statement>
                 | <renew statement> | <reout statement>
@@ -290,6 +295,7 @@ finite state machine from state x to state y.
 <rein statement> ::= REIN $
 <renew statement> ::= RENEW <expression> $
 <reout statement> ::= REOUT $
+.ft
 .EE
 The syntax (though certainly not the semantics) of the J-statements
 should in most cases be clear from the productions.
@@ -335,6 +341,7 @@ J-code that contains a circularity.
 .mc
 .H 2 "Types"
 .(d
+.ft CR
 <type> ::= <enumerated type> | <other type>
 <enumerated type> ::= <subrange type> | <boolean type>
 <subrange type> ::= ( ~ subrange # <low bound>
@@ -364,6 +371,7 @@ J-code that contains a circularity.
 <field> ::= ( ~ <field name> # <type> ~)
 <record name> ::= <identifier>
 <field name> ::= <identifier>
+.ft
 .)d
 The given types are a subset of the types found in Pascal-F.
 The subset is supposed to be the universe of types
@@ -371,6 +379,7 @@ that make their way into i-code.
 Types can be written in declarations only.
 .H 2 "Expressions"
 .(d
+.ft CR
 <expression list> ::= ( { ~ <expression> }* ~ )
 <expression> ::= ( ~ <operator> ~ )
       | ( ~ <operator> # <expression>
@@ -391,6 +400,7 @@ Types can be written in declarations only.
 <variable> ::= <identifier>
 <modifier> ::= <empty> | defined! # | new! #
              | defined! # new! #
+.ft
 .)d
 Field names must be unique over all records.
 .P
@@ -420,6 +430,7 @@ Each operator takes a fixed number of operands.
 The following codes are used to indicate the types of
 operands for which the operator yields meaningful results:
 .(d
+.ft CR
 I - integer
 F - fixed point
 B - Boolean
@@ -431,6 +442,7 @@ C - integer constant
 V - variable
 T - type
 N - field or record name
+.ft
 .)d
 .P
 The list of operators should be considered tentative; it will
@@ -438,6 +450,7 @@ be finalized once we have a firmer understanding of what i-code
 is.
 .H 3 "Integer operators"
 .ES
+
 (consti! C)  \t integer constant
 (addi! I1 I2)  \t addition
 (subi! I1 I2)  \t subtraction
@@ -534,6 +547,7 @@ is.
 .t
 .H 2 "Strings"
 .(d
+.ft CR
 <string> ::= <ends in /> | <does not end in />
 
 <does not end in /> ::= <empty> | <does not end in /> )
@@ -572,6 +586,7 @@ is.
 <other ascii character> ::= ! | " | % | & | ' | ( | + | ,
                           | - | . | : | ; | = | ? | @ | [
                           | \e | ] | ^ | _ | `
+.ft
 .)d
 Strings appearing in j-code are used to construct messages
 when verification fails.
@@ -597,9 +612,11 @@ a production for each of the troublesome characters listed above.
 .P
 .H 2 "Numbers"
 .(d
+.ft CR
 <integer> ::= <whole number> | - <counting number>
 <counting number> ::= <nonzero digit> <digit>*
 <whole number> ::= 0 | <counting number>
+.ft
 .)d
 Numbers are not used directly in expressions.
 Instead they are used as arguments to the builtin
@@ -607,10 +624,12 @@ functions consti! and constf!.  Note that leading zeroes
 are not permitted.
 .H 2 "Identifiers"
 .(d
+.ft CR
 <identifier> ::= <letter> <identifier piece>*
 <identifier piece> ::= <letter>
                      | <digit> | <break character>
 <break character> ::= . | _ | <tilde>
+.ft
 .)d
 Note that there are no reserved identifiers.
 .H 1 "The Semantics of J-code"
@@ -733,7 +752,9 @@ denotes the value of the shadow variable after the NEW.
 The ASSIGN statement is a deterministic version of NEW.
 The syntax of ASSIGN is:
 .(d
+.ft CR
 ASSIGN (V) (S) (D) (E)
+.ft
 .)d
 where (V) is a list of one variable or declaration,
 (S) is a selector expression specifying all or part of (V),
@@ -743,14 +764,18 @@ and (D) is a boolean expression.
 In the case where (S) is simply (V), the ASSIGN above is equivalent
 to the statement:
 .(d
+.ft CR
 NEW (V) (and! (equal! (new! V) (E))
               (equal! (defined! new! V) (D)))  .
+.ft 
 .)d
 In the case where V is a structured variable and (S) specifies
 a selector expression, the ASSIGN statement is equivalent to:
 .(d
+.ft CR
 NEW (V) (and! (equal! (new! V) (V'))
               (equal! (defined! new! V) (V'')))
+.ft
 .)d
 where V' is everywhere equal to V, except at the portion specified
 by (S); at that point V' has the value E.
@@ -857,14 +882,18 @@ by a REQUIRE.  For example, the J-code generated for an IF statement
 involve WHEN\ B and WHEN\ (not!\ B).  There is little point in
 generating:
 .(d
+.ft CR
 REQUIRE (or! B (not! B)) (/system error/)
+.ft
 .)d
 since it would always succeed.
 .P
 A similar situation occurs with NEW statements.
 Suppose we reach the statement:
 .(d
+.ft CR
 NEW (V) P
+.ft
 .)d
 in a state in which there is no way to change V to make P true.
 This situation could arise because P just cannot be true in the
@@ -874,7 +903,9 @@ In either case, we would again stuck.
 As in the SPLIT problem, we could (in theory) solve this problem
 by inserting:
 .(d
+.ft CR
 REQUIRE ("there exists V of type T such that P") (/NEW check/)
+.ft
 .)d
 before the NEW.
 However, we cannot really do this in practice, since the theorem prover
@@ -887,7 +918,9 @@ Fortunately, this task is not as hard as it sounds.
 For example, the NEW statements that come from assignment statements
 are of the form:
 .(d
+.ft CR
 NEW (V) (equal! V E)
+.ft
 .)d
 and the statement "there is a V such that V equals E" is always true,
 as long as E is an element of the type of V.
@@ -939,13 +972,17 @@ The test performed for conflicting side effects is unique
 in that the test must be made on a statement as a whole.
 For example, it is possible for two statements of the form:
 .(d
+.ft CR
 A[1] := E1;
 A[2] := E2;
+.ft
 .)d
 to be free of side effect problems, but to have
 the statement:
 .(d
+.ft CR
 A[1] := E1 + E2
+.ft
 .)d
 be disallowed.
 The two tests that must be performed are described in
@@ -997,7 +1034,9 @@ S1,S2\ ...\ Sn and
 T1,T2\ ...\ Tn of subscripts.
 Generate:
 .(d
+.ft CR
 REQUIRE S1<>T1 OR S2<>T2 ... Sn<>Tn
+.ft
 .)d
 The special case of n=0 would result in REQUIRE\ FALSE.
 This case can be flagged as an error without consulting
@@ -1097,6 +1136,7 @@ the routine call, S1,\ S2,\ ...\ Sn are the roots of the output
 parameters, and T1,\ T2,\ ...\ To are the new values being returned
 by the routine.
 .(d
+.ft CR
 .ul 1
 Formal param. in EXIT      What is substituted in
 
@@ -1106,6 +1146,7 @@ Output VAR parameter       The corresponding Ti
 Readonly VAR parameter     The corresponding Ri
 Function name              The actual function call,
                               complete with arguments
+.ft
 .)d
 .P
 Finally, a sequence of ASSIGN statements is is used to
@@ -1179,9 +1220,11 @@ Let us consider other ways two NEW instructions generated for
 the same Pascal-F statement could interfere with one another.
 If we have the two instructions:
 .(d
+.ft CR
 NEW (V1) P1
 \&...
 NEW (V2) P2
+.ft
 .)d
 The first NEW instruction has the effect of altering the meaning
 of any variables that are in both V1 and P2.
@@ -1219,7 +1262,9 @@ The tag field is given a value, but all other fields controlled
 by the tag are made undefined.
 A variable v is made undefined with the J-code statement
 .(d
+.ft CR
 NEW (v) (true!)
+.ft
 .)d
 The checking performed by the SAFE operation must ensure that
 a particular variant field will be accessed only when the associated
@@ -1249,7 +1294,9 @@ enclosed expression must be translated to J-code notation.
 For example,
 [.NOT\ (x\ >\ 0).] stands for
 .(d
+.ft CR
 (not!\ (gti!\ (x)\ (consti!\ 0))).
+.ft
 .)d
 CODE\ <construct>
 is notation meaning the J-code recursively generated
@@ -1270,12 +1317,15 @@ use of the punctuation BEGIN and END are
 not relevant here.)  The J-code generated for an IF statement
 of the form:
 .(d
+.ft CR
 IF B
 THEN <then part>
 ELSE <else part>
+.ft CR
 .)d
 is:
 .(d
+.ft CR
 SAFE      [.B.]
 SPLIT     1
 WHEN      [.B.] 1
@@ -1287,6 +1337,7 @@ SIDE      [.B.]
 CODE      <else part>
 BRANCH    2 (/else branch/)
 JOIN      2
+.ft
 .)d
 .P
 The J-code generated for an IF without a matching ELSE
@@ -1297,15 +1348,18 @@ is deleted and the "else branch" string is changed to "skip then branch."
 The CASE statement is quite similar to the IF statement.
 The J-code generated for a CASE statement of the form:
 .(d
+.ft CR
 CASE x OF
 c1:  <statement 1>
 c2:  <statement 2>
 \&...
 cn:  <statement n>
 END
+.ft
 .)d
 is:
 .(d
+.ft CR
 SAFE      [.x.]
 REQUIRE   [.x=c1 OR x=c2 OR ... x=cn.]
 SPLIT     1
@@ -1323,6 +1377,7 @@ SIDE      [.x.]
 CODE      <statement n>
 BRANCH    (/CASE cn/) 2
 JOIN      2
+.ft
 .)d
 The ISO standard specifies that the constants
 c1,\ c2,\ ...\ cn must be distinct, which is important
@@ -1332,6 +1387,7 @@ While loops and until loops can each be written in terms
 of LOOP statements.
 LOOP statements have the following syntax:
 .(d
+.ft CR
 LOOP
 
 <pre-body>
@@ -1342,6 +1398,7 @@ MEASURE M
 <post-body>
 
 ENDLOOP
+.ft
 .)d
 The semantics executing ENDLOOP is to transfer control
 to the matching LOOP.
@@ -1352,11 +1409,13 @@ ENDLOOP pass through the STATE and MEASURE.
 .P
 Within the loop there may be statements of the form:
 .(d
+.ft CR
 EXIT IF B
 .)d
 and
 .(d
 EXIT IF B THEN S.
+.ft
 .)d
 Execution of these statements causes B to be evaluated, and if
 it is true, control is transferred to the ENDLOOP.
@@ -1377,11 +1436,14 @@ inserted just before the RENEW to prevent loops in the J-code.
 The following J-code is generated for a loop with n EXIT statements,
 each of the form.
 .(d
+.ft CR
 EXIT IF Bi THEN Si (for i=0, 1, ... n-1).
+.ft
 .)d
 Two temporary variables must be declared as loop counters,
 which are used to prove that the loop terminates.
 .(d
+.ft CR
 ASSIGN    (temp1: (integer)) (temp1) (true!) (temp1)
 ASSIGN    (temp2: (boolean)) (temp1) (true!) (true!)
 REIN
@@ -1425,24 +1487,30 @@ CODE      Sn-1
 BRANCH    3 (/loop exit/)
 
 JOIN      3
+.ft
 .)d
 If the i'th exit statement does not have a then part, then
 the CODE\ Si is simply omitted from the above template.
 For each statement of the form:
 .(d
+.ft CR
 EXIT IF Bi [THEN Si]
+.ft
 .)d
 The following J-code is generated:
 .(d
+.ft CR
 SAFE B0
 SPLIT 4+i
 WHEN [. not B0 .] 4+i
 SIDE B0
+.ft
 .)d
 The generated J-code is the same whether or not the THEN part is present.
 .H 2 "FOR loops"
 Pascal-F FOR loops have the following syntax:
 .(d
+.ft CR
 FOR i := lo TO hi DO BEGIN
 <prebody>
 STATE P
@@ -1454,6 +1522,7 @@ FOR i := hi DOWNTO lo DO BEGIN
 STATE P
 <postbody>
 END
+.ft CR
 .)d
 One approach to FOR loops would be to compile them into LOOP statements and
 generate code for the LOOP statement.
@@ -1466,6 +1535,7 @@ For these four instructions,
 the version for downward loops is shown in angle brackets
 on the next line.
 .(d
+.ft CR
  SAFE       lo
  SAFE       hi
  ASSIGN     (lot: (integer)) (lot) (true!) (lo)
@@ -1499,6 +1569,7 @@ on the next line.
  BRANCH     (/nnn: SKIP/) 4
  JOIN       4
  NEW        (i) [.not defined(i).]
+ .ft
 .)d
 The verifier will not complain if the final
 "undefined" value of the the index variable is in reality
@@ -1507,7 +1578,9 @@ We must be sure that these semantics are consistent
 those of the Pascal-F compiler.
 Likewise, a loop such as:
 .(d
+.ft CR
 FOR i := 1 to N
+.ft
 .)d
 where i is declared to be 1..10,
 is considered valid as long as N<=10.
@@ -1515,20 +1588,26 @@ In particular, the case N=0 is allowed.
 .H 2 "ASSERT statements"
 The J-code generated by a statement of the form:
 .(d
+.ft CR
 ASSERT(P)
+.ft
 .)d
 is:
 .(d
+.ft CR
 REQUIRE P
+.ft
 .)d
 .H 2 "The SUMMARY statement"
 The STATE statement is similar to the ASSERT statement,
 except that it causes a break.
 The J-code generated for SUMMARY\ P is:
 .(d
+.ft CR
 REQUIRE   P
 BREAK
 PROCLAIM  P
+.ft
 .)d
 .H 2 "Routine definitions"
 Associated with each routine,
@@ -1552,6 +1631,7 @@ For recursive routines, an extra variable (d0) is required
 for the DEPTH expression.
 The J-code for a routine definition is:
 .(d
+.ft CR
 NEW (parameters and local variables)
    [. <entry condition> and
       <definedness of value parameters> and
@@ -1565,6 +1645,7 @@ REQUIRE    [. d0 >= 0 .]  (/depth non-negative/)
 CODE       <routine body>
 REQUIRE    <exit condition>
 REQUIRE    (defined! f)   (/function name is defined/)
+.ft
 .)d
 The last REQUIRE only appears in functions.
 Its role is to make sure the function is defined,
@@ -1586,7 +1667,9 @@ As part of the processing of the SAFE instruction,
 for every recursive call to a routine P within the the body
 of Q, the following J-instruction:
 .(d
+.ft CR
 REQUIRE [. D < d0 .]
+.ft
 .)d
 is generated.
 In the REQUIRE, D is the depth expression for P (not Q)

@@ -17,6 +17,7 @@ Design Overview
 .H 2 "CPCI #1 -- Language Processing"
 .H 3 "Phase 1A"
 .DS
+.ft CR
 
                        *----------*
                        |Dictionary|            *------*
@@ -39,6 +40,7 @@ Design Overview
                                                |Stream |
                                                *-------*
 
+.ft
 .FG "Phase 1A -- Syntax and Type Checking"
 .DE
 The syntax and type checking phase has the task of accepting Pascal-F
@@ -113,6 +115,7 @@ User-readable error messages.  Standard output.
 .H 2 "CPCI #2: Preverification Checking and Jcode Generation"
 .H 3 "Phase 2A -- Transitive Property Propagation"
 .DS
+.ft CR
 
                      *-----------------*
    *---------*       |                 |
@@ -122,6 +125,7 @@ User-readable error messages.  Standard output.
    *---------*       |                 |
                      *-----------------*
 
+.ft
 .FG "Transitive Property Propagation Phase"
 .DE
 .P
@@ -156,6 +160,7 @@ Read/write in this phase.
 .LE
 .H 3 "Phase 2B -- Jcode Generation"
 .DS
+.ft CR
                                                     *------*
                          *----------*               |Source|
                          |Dictionary|               |Line  |
@@ -173,6 +178,7 @@ Read/write in this phase.
    |Database  |    *------------------------*    *-----*
    *----------*
 
+.ft
 .FG "Jcode Generation"
 .DE
 .P
@@ -203,6 +209,7 @@ Standard output.
 .H 2 "CPCI #3: Verification Condition Generation"
 .H 3 "Phase 3A -- Jcode Augmentation"
 .DS
+.ft CR
 
 
                *---------*
@@ -227,6 +234,7 @@ Standard output.
  *------*    |                 |     *--------*
              *-----------------*
 
+.ft
 .FG "Phase 3A -- Jcode Augmentation"
 .DE
 The primary purpose of Jcode augmentation is the expansion of
@@ -239,6 +247,7 @@ from one verification attempt to the next, there is no need to reverify the
 routine.
 .H 3 "Phase 3B -- Verification Condition Generation"
 .DS
+.ft CR
 
 
 
@@ -282,6 +291,7 @@ routine.
                  theorem|             |to be proven
                  proving|             v
 
+.ft
 .FG "Phase 3B - Verification Condition Generation"
 .DE
 .P
@@ -313,6 +323,7 @@ Standard output.
 .LE
 .H 2 "CPCI #4: Theorem Proving"
 .DS
+.ft CR
 
                         ^             v
                    error|             |formulae to
@@ -337,6 +348,7 @@ Standard output.
             |Database|   |                    |
             *--------*   *--------------------*
 
+.ft
 .FG "Theorem Proving Phase"
 .DE
 .P
