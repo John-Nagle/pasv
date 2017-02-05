@@ -1,5 +1,3 @@
-.nr Hc 2
-.nr Hs 9
 .nr Hb 9
 .nr Ej 0
 .nr Pt 0
@@ -71,7 +69,7 @@ are space, newline, |, <, >, {, }, *, #, ~, and $.
 The plain characters
 are all the ascii characters that are not metacharacters.
 A metavariable is defined to be
-either string of characters that is 
+either string of characters that is
 enclosed in angular brackets (but does not contain any
 other brackets nested within the outer pair)
 or one of the metacharacters #, ~, or $.
@@ -119,7 +117,7 @@ delete the selected metavariable
 from the current string, and replace it with the modified alternative.
 .H 2 "Basic punctuation"
 .(d
-<empty> ::= 
+<empty> ::=
 <separator> ::= <space> | <tab> | <line end>
 
 # ::= <separator>* <space>
@@ -154,7 +152,7 @@ a comment, which begins with -- and ends with the end of the line.
 <form> ::= ( ~ <class> ~ <type> ~ )
 <class> ::= variable | function | rulefunction
 
-<statement part> ::= <break statement> <A bal B> 
+<statement part> ::= <break statement> <A bal B>
 
 <A bal A> ::= <empty> |
     <A bal A> <simple statement> |
@@ -169,20 +167,20 @@ a comment, which begins with -- and ends with the end of the line.
     <B bal A> <rein statement> <A bal A> <renew statement>
               <A bal A> <reout statement> |
     <B bal B> <rein statement> <B bal A> <renew statement>
-              <A bal A> <reout statement> 
+              <A bal A> <reout statement>
 
 <A bal B> ::= <A bal A> <throw statement> |
     <A bal A> <rein statement> <A bal A> <renew statement>
               <A bal B> <reout statement> |
     <A bal B> <rein statement> <B bal A> <renew statement>
-              <A bal B> <reout statement> 
+              <A bal B> <reout statement>
 
 <B bal B> ::= <empty> |
     <B bal A> <throw statement> |
     <B bal A> <rein statement> <A bal A> <renew statement>
               <A bal B> <reout statement> |
     <B bal B> <rein statement> <B bal A> <renew statement>
-              <A bal B> <reout statement> 
+              <A bal B> <reout statement>
 
 <throw statement> ::= <split statement>
                     | <branch statement>
@@ -205,7 +203,7 @@ in the declaration part, and every variable appearing in the
 statement part must also appear in the declaration part.
 .P
 The statement part consists of a sequence of J-statements.
-A J-unit must begin with a break statement. 
+A J-unit must begin with a break statement.
 This initial break ensures that all verification conditions
 terminate; it also delimits the end of the declaration part.
 .P
@@ -213,7 +211,7 @@ The productions using metavariables of the form <x\ bal\ y>
 are somewhat confusing because they simultaneously describe
 two different ordering constraints.
 The first constraint is a finite state machine,
-which is used to ensure that a J-unit 
+which is used to ensure that a J-unit
 consists of a series of blocks that begin with a <catch\ statement>
 and end in a <throw\ statement>.
 The machine has two states: A and B, and has the following state
@@ -252,10 +250,10 @@ finite state machine from state x to state y.
                 | <renew statement> | <reout statement>
 
 <simple statement> ::= <require statement>
-                     | <new statement>   
+                     | <new statement>
                      | <assign statement>
                      | <proclaim statement>
-                     | <break statement>   
+                     | <break statement>
 
 <require statement> ::= REQUIRE # <expression>
                                 ~ (/ <string> /) $
@@ -286,8 +284,8 @@ finite state machine from state x to state y.
 <variable sequence> ::=
     <empty> | <variable sequence> # <variable item>
 
-<variable item> ::= 
-     <variable>  | <variable> ~ : ~ <form> 
+<variable item> ::=
+     <variable>  | <variable> ~ : ~ <form>
 
 <rein statement> ::= REIN $
 <renew statement> ::= RENEW <expression> $
@@ -342,11 +340,11 @@ J-code that contains a circularity.
 <subrange type> ::= ( ~ subrange # <low bound>
                                  # <high bound> ~ )
 <boolean type> ::= ( ~ boolean ~ )
-<other type> ::= ( ~ integer ~ ) 
-		| ( ~ universal ~ )
-		| ( ~ module ~ )
+<other type> ::= ( ~ integer ~ )
+                | ( ~ universal ~ )
+                | ( ~ module ~ )
 \!.mc I
-     | ( ~ fixed # <low bound> 
+     | ( ~ fixed # <low bound>
                  # <high bound> # <precision> ~ )
      | ( ~ set # <enumerated type> ~ )
 \!.mc
@@ -383,16 +381,16 @@ Types can be written in declarations only.
 \!.mc
       | ( ~ selectr! # <expression>
                      # <field name> ~ )
-      | ( ~ storer! # <expression> 
+      | ( ~ storer! # <expression>
                     # <field name>
                     # <expression> ~ )
 \!.mc
-              
+
 <operator> ::= <modifier> <variable> | <builtin>
 <builtin> ::= <identifier> !
 <variable> ::= <identifier>
 <modifier> ::= <empty> | defined! # | new! #
-             | defined! # new! # 
+             | defined! # new! #
 .)d
 Field names must be unique over all records.
 .P
@@ -548,11 +546,11 @@ is.
 
 <string break> ::= <newline> ~ /
 
-<safe character> ::= <letter> | <digit> 
+<safe character> ::= <letter> | <digit>
                    | <metacharacter> | <other ascii character>
 
 <letter> ::= a | b | c | d | e | f | g | h | i | j | k | l
-           | m | n | o | p | q | r | s | t | u | v | w | x 
+           | m | n | o | p | q | r | s | t | u | v | w | x
            | y | z | A | B | C | D | E | F | G | H | I | J
            | K | L | M | N | O | P | Q | R | S | T | U | V
            | W | X | Y | Z
@@ -565,7 +563,7 @@ is.
                    | <vertical bar>
                    | <asterisk>
                    | <left brace>
-                   | <right brace> 
+                   | <right brace>
                    | <number sign>
                    | <tilde>
                    | <dollar sign>
@@ -573,7 +571,7 @@ is.
 
 <other ascii character> ::= ! | " | % | & | ' | ( | + | ,
                           | - | . | : | ; | = | ? | @ | [
-                          | \e | ] | ^ | _ | ` 
+                          | \e | ] | ^ | _ | `
 .)d
 Strings appearing in j-code are used to construct messages
 when verification fails.
@@ -691,7 +689,7 @@ The SPLIT statements is the second kind of control flow statement.
 It is similar to the BRANCH, except that it is nondeterministic.
 When a SPLIT statement with label N is encountered, the next statement
 to be executed will be a WHEN statement satisfying the following
-two constraints: 
+two constraints:
 .AL a
 .LI
 The label on the WHEN statement is N.
@@ -699,7 +697,7 @@ The label on the WHEN statement is N.
 The expression on the WHEN statement evaluates to true (given the
 state when the SPLIT/WHEN pair is executed).
 .LE 1
-The syntax of J-code ensures that there will be at least two 
+The syntax of J-code ensures that there will be at least two
 WHEN statements with a label N.  Another constraint
 (to be discussed later) ensures that at least one of these
 WHEN will have an expression that evaluates to true.
@@ -899,7 +897,7 @@ where V has a smaller range than E, then a REQUIRE will be necessary.
 .H 1 "Generating J-code"
 To use J-code to verify Pascal-F programs,
 it is necessary to Pascal-F into J-code.
-The J-code generation process 
+The J-code generation process
 is much like the one a compiler performs to
 generate assembly language.
 In this section,
@@ -1026,7 +1024,7 @@ is a procedure call, the statement itself counts as one
 of the routines called in the statement.
 The list of variables obtained in part (b) depends of the
 statement type.  In the case of an assignment statement,
-the list consists of the root of 
+the list consists of the root of
 the variable to the left of the assignment operator.
 In the case of a FOR statement, the list consists of the
 root of the index variable.
@@ -1080,7 +1078,7 @@ The next section of J-code that is generated for a routine call
 is the effects section.
 The effects section is a NEW instruction and a series of ASSIGN
 instructions, which reference the auxiliary variables declared and
-set in the safety section.  
+set in the safety section.
 These instructions update the program variables being modified
 by the routine call.
 .P
@@ -1093,7 +1091,7 @@ substitutions on the EXIT assertion of the routine.
 Every (augmented) parameter in the call R appearing
 in the EXIT assertion must be replaced with a variation on
 the corresponding actual parameter, as described below.
-Recall that 
+Recall that
 R1,\ R2,\ ...\ Rm are values of the input parameters before
 the routine call, S1,\ S2,\ ...\ Sn are the roots of the output
 parameters, and T1,\ T2,\ ...\ To are the new values being returned
@@ -1151,7 +1149,7 @@ In the effects section, the following takes place:
 A NEW statement is generated using the variables
 T1,\ T2,\ ...\ To.
 The assertion is obtained by substituting R1,\ R2,\ ...\ Rm
-and T1,\ T2,\ ...\ To into the ENTRY conditions of the routine. 
+and T1,\ T2,\ ...\ To into the ENTRY conditions of the routine.
 .LI
 A series of ASSIGN statements is used to update each of the
 actual parameters of the call to the appropriate Ti.
@@ -1346,7 +1344,7 @@ MEASURE M
 ENDLOOP
 .)d
 The semantics executing ENDLOOP is to transfer control
-to the matching LOOP. 
+to the matching LOOP.
 The STATE and MEASURE statements must be at the "top" nesting
 level of the loop; they cannot be nested within other compound statements.
 This restriction is enforced to ensure that all paths from LOOP to
@@ -1387,7 +1385,7 @@ which are used to prove that the loop terminates.
 ASSIGN    (temp1: (integer)) (temp1) (true!) (temp1)
 ASSIGN    (temp2: (boolean)) (temp1) (true!) (true!)
 REIN
-SPLIT 	0
+SPLIT   0
 WHEN TRUE 0
 BRANCH 1  (/advance to loop state/)
 WHEN TRUE 0
@@ -1571,7 +1569,7 @@ REQUIRE    (defined! f)   (/function name is defined/)
 The last REQUIRE only appears in functions.
 Its role is to make sure the function is defined,
 which in turn ensures that it truly is a function.
-Any assumptions about the definedness 
+Any assumptions about the definedness
 of VAR parameters must appear explicitly in
 the entry assertion.
 .P

@@ -70,8 +70,9 @@ def expandtabs(s, tabspacing) :
 #   class Linegroup -- group of three lines handled together
 #
 class Linegroup :
-    def __init__(self, outf) :
-        self.outf = outf                # output goes here
+    def __init__(self, outf, nodraw) :
+        self.outf = outf                    # output goes here
+        self.nodraw = nodraw                # don't add line drawing chars, just fix tabs
         self.lines = [None, None,None, None, None]  # last five lines
         
     def getc(self, row, col) :
@@ -157,7 +158,10 @@ class Linegroup :
         self.lines[3] = self.lines[4]
         self.lines[4] = s
         if self.lines[0] is not None :      # if all 5 lines are full
-            s = self.fixline()              # fix middle line based on adjacent info
+            if self.nodraw :
+                s = self.lines[2]           # don't fix line
+            else :
+                s = self.fixline()          # fix middle line based on adjacent info
             self.outf.write(s.rstrip() + '\n')  # output line       
     
     def flush(self) :                       # call at end to flush last line
@@ -168,12 +172,12 @@ class Linegroup :
 #
 #   dofile -- do one file
 #
-def dofile(infilename, tabval) :
+def dofile(infilename, tabval, nodraw) :
     outf = sys.stdout                   # ***TEMP***
     with open(infilename, 'r') as infile :
-        lwork = Linegroup(outf)         # line group object
+        lwork = Linegroup(outf, nodraw)         # line group object
         for line in infile :
-            lwork.addline(expandtabs(line,tabval))
+            lwork.addline(expandtabs(line, tabval))
         lwork.flush()
                           
     
@@ -184,11 +188,12 @@ def main() :
     parser = argparse.ArgumentParser(description='Fix pictures in text files')
     parser.add_argument('-v', "--verbose", action='store_true', help='Verbose')
     parser.add_argument('-t', "--tab", dest="tabval", metavar='N', type=int, default=4, help='Spaces per tab')
+    parser.add_argument('-n', "--nodraw", dest="nodrawval", action='store_true', help="Don't insert drawing chars")
     parser.add_argument("FILE", help="Text file to process", nargs="+")
     args = parser.parse_args()
     verbose = args.verbose              # set verbosity
     for filename in args.FILE :         # do each file       
-        dofile(filename, args.tabval)
+        dofile(filename, args.tabval, args.nodrawval)
     
     
     

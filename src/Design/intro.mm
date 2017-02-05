@@ -1,5 +1,3 @@
-.nr Hc 2
-.nr Hs 9
 .nr Hb 9
 .nr Ej 0
 .rm ul
@@ -20,26 +18,26 @@ Design Overview
 .H 3 "Phase 1A"
 .DS
 
-		       *----------*
-		       |Dictionary|            *------*
-		       *----------*            |Source|
-			    |                  |Line  |
-		   *--------------------*      |File  |
-		   |                    |----->*------*
-		   |                    |
+                       *----------*
+                       |Dictionary|            *------*
+                       *----------*            |Source|
+                            |                  |Line  |
+                   *--------------------*      |File  |
+                   |                    |----->*------*
+                   |                    |
    *------*        |                    |      *-----*
    |Source|        |    Phase One       |----->|Icode|
    |Input |------->|    of Pascal-F     |      *-----*
    |Stream|        |    Compiler        |
    *------*        |    (modified)      |      *------------------*
-		   |                    |----->|Routine Interfaces|
-		   |                    |      *------------------*
-		   |                    |
-		   |                    |----->*-------*
-		   *--------------------*      |Error  |
-					       |Message|
-					       |Stream |
-					       *-------*
+                   |                    |----->|Routine Interfaces|
+                   |                    |      *------------------*
+                   |                    |
+                   |                    |----->*-------*
+                   *--------------------*      |Error  |
+                                               |Message|
+                                               |Stream |
+                                               *-------*
 
 .FG "Phase 1A -- Syntax and Type Checking"
 .DE
@@ -116,13 +114,13 @@ User-readable error messages.  Standard output.
 .H 3 "Phase 2A -- Transitive Property Propagation"
 .DS
 
-		     *-----------------*
+                     *-----------------*
    *---------*       |                 |
    |Routine  |       |  General        |
    |Interface|<----->|  Transitivity   |
    |Database |       |  Propagator     |
    *---------*       |                 |
-		     *-----------------*
+                     *-----------------*
 
 .FG "Transitive Property Propagation Phase"
 .DE
@@ -158,17 +156,17 @@ Read/write in this phase.
 .LE
 .H 3 "Phase 2B -- Jcode Generation"
 .DS
-						    *------*
-			 *----------*               |Source|
-			 |Dictionary|               |Line  |
-			 *----------*               |File  |
-			      |                     *------*
-			      v                        |
-	*-----*    *------------------------*    *---------------*
-	|Icode|--->|                        |    |   Error       |
-	*-----*    |                        |--->|   Message     |
-		   |    Icode-to-Jcode      |    |   Generator   |
-		   |      Translator        |    *---------------*
+                                                    *------*
+                         *----------*               |Source|
+                         |Dictionary|               |Line  |
+                         *----------*               |File  |
+                              |                     *------*
+                              v                        |
+        *-----*    *------------------------*    *---------------*
+        |Icode|--->|                        |    |   Error       |
+        *-----*    |                        |--->|   Message     |
+                   |    Icode-to-Jcode      |    |   Generator   |
+                   |      Translator        |    *---------------*
    *----------*    |                        |
    |Routine   |--->|                        |    *-----*
    |Interface |    |                        |--->|Jcode|
@@ -207,27 +205,27 @@ Standard output.
 .DS
 
 
-	       *---------*
-	       |Routine  |
-	       |Interface|
-	       |Database |
-	       *---------*
-		    |
-	     *------------------*
+               *---------*
+               |Routine  |
+               |Interface|
+               |Database |
+               *---------*
+                    |
+             *------------------*
  *-----*     |                  |     *---------*
  |Jcode|---->|    Jcode         |---->|Augmented|
  *-----*     |    Expander      |     |Jcode    |
-	     |                  |     *---------*
-	     |                  |
-	     *------------------*
-		      |
-		      v
+             |                  |     *---------*
+             |                  |
+             *------------------*
+                      |
+                      v
  *------*    *-----------------*
  |Source|    |                 |     *--------*
  |Line  |--->|  Error Message  |---->|Error   |
  |File  |    |  Printer        |     |Messages|
  *------*    |                 |     *--------*
-	     *-----------------*
+             *-----------------*
 
 .FG "Phase 3A -- Jcode Augmentation"
 .DE
@@ -244,45 +242,45 @@ routine.
 
 
 
-					    *--------*
-			  *-------------*   |Source  |
-			  |             |   |Line    |
-			  |  Error      |-->|File    |
-			  |  Message    |   *--------*
-			  |  Generator  |
-			  |             |-->*--------*
-			  *-------------*   |Error   |
-				^           |Messages|
-				|           *--------*
-				|
-				|
+                                            *--------*
+                          *-------------*   |Source  |
+                          |             |   |Line    |
+                          |  Error      |-->|File    |
+                          |  Message    |   *--------*
+                          |  Generator  |
+                          |             |-->*--------*
+                          *-------------*   |Error   |
+                                ^           |Messages|
+                                |           *--------*
+                                |
+                                |
        *---------*    *---------------*
        |Augmented|    |               |        *--------*
        |Jcode    |--->|  VC Generator |        |Proved  |
        |File     |    |  Supervisor   |<------>|Routines|
        *---------*    |               |        |Database|
-		      *---------------*        *--------*
-			^            |
-			|            v
-			|      *--------------*
-			|      |              |
-			|      |    Path      |
-			|      |  Traverser   |
-			|      |              |
-			|      *--------------*
-			|             |
-			|             v
-			|   *---------------------*
-			|   |                     |
-			|   |    Verification     |
-			|   |     Condition       |
-			|   |     Generator       |
-			|   |                     |
-		   error|   *---------------------*
-		messages|             |
-		    from|             |formulae
-		 theorem|             |to be proven
-		 proving|             v
+                      *---------------*        *--------*
+                        ^            |
+                        |            v
+                        |      *--------------*
+                        |      |              |
+                        |      |    Path      |
+                        |      |  Traverser   |
+                        |      |              |
+                        |      *--------------*
+                        |             |
+                        |             v
+                        |   *---------------------*
+                        |   |                     |
+                        |   |    Verification     |
+                        |   |     Condition       |
+                        |   |     Generator       |
+                        |   |                     |
+                   error|   *---------------------*
+                messages|             |
+                    from|             |formulae
+                 theorem|             |to be proven
+                 proving|             v
 
 .FG "Phase 3B - Verification Condition Generation"
 .DE
@@ -316,28 +314,28 @@ Standard output.
 .H 2 "CPCI #4: Theorem Proving"
 .DS
 
-			^             v
-		   error|             |formulae to
-		messages|             |be proven
-		    from|             |
-		  prover|             |
-			|   __________|
-			|   |
-			|   |
-			|   v
-	    *------------------*
-	    |   Theorem        |
-	    |   Prover         |
-	    |   Supervisor     |
-	    *------------------*
-		^           ^
-		|           |
-		v           v
-	    *--------*   *--------------------*
-	    |Proved  |   |                    |
-	    |Theorems|   |   Theorem Prover   |
-	    |Database|   |                    |
-	    *--------*   *--------------------*
+                        ^             v
+                   error|             |formulae to
+                messages|             |be proven
+                    from|             |
+                  prover|             |
+                        |   __________|
+                        |   |
+                        |   |
+                        |   v
+            *------------------*
+            |   Theorem        |
+            |   Prover         |
+            |   Supervisor     |
+            *------------------*
+                ^           ^
+                |           |
+                v           v
+            *--------*   *--------------------*
+            |Proved  |   |                    |
+            |Theorems|   |   Theorem Prover   |
+            |Database|   |                    |
+            *--------*   *--------------------*
 
 .FG "Theorem Proving Phase"
 .DE
