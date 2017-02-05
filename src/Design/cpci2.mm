@@ -73,7 +73,7 @@ detection of violations of Pascal-F rules.
 In the Icode representation, variables are referred to by triples of the
 form
 .DS
-	<level>, <size>, <address>
+    <level>, <size>, <address>
 .DE
 which is too machine-oriented for verification purposes.
 Addresses are converted back into variable names by dictionary lookup.
@@ -86,6 +86,7 @@ of addresses back into variable names and subscripts where required.
 .H 1 "Internal design"
 .H 2 "Expression decompiler"
 .DS
+.ft CR
 
   -------             ------------
   |     |-------------| OFFSET   |      (record references)
@@ -117,7 +118,7 @@ of addresses back into variable names and subscripts where required.
   |Typed|
   |Stack|
   -------
-
+.ft
 .FG "Decompiler for Icode expressions"
 .DE
 .P
@@ -185,23 +186,25 @@ We refer to the directions of edges as ``right'' and ``down'',
 rather than ``left'' and ``right'', purely so that we can draw more
 linear pictures, such as
 .DS
+.ft CR
 
       -------
       | addi|
       -------
-	 |
+         |
       -------      -------
       |  A  |------|multi|
       -------      -------
-		      |
-		   --------     -------
-		   |select|-----|  B  |
-		   --------     -------
-		      |
-		   -------      -------
-		   |  C  |------|  D  |
-		   -------      -------
+                      |
+                   --------     -------
+                   |select|-----|  B  |
+                   --------     -------
+                      |
+                   -------      -------
+                   |  C  |------|  D  |
+                   -------      -------
 
+.ft
 .DE
 where the argument list always starts below the relevant operator.
 .H 3 "Decompiling of operators"
@@ -209,8 +212,9 @@ As an example of the technique used for decompiling expressions, the
 sequence for decompiling a binary operator is given.
 This is not necessarily the code of the implementation.
 .DS
+.ft CR
 {
-	binaryoperator --  decompile a binary operator
+    binaryoperator --  decompile a binary operator
 }
 procedure binaryoperator(op: opcode);   { operator being decompiled }
 var
@@ -222,11 +226,11 @@ begin
     pop(expr2,type2,class2);            { ditto for 2nd operand }
     binoptypecheck(op,type1,type2,newtype); { get result type }
     require(arg1req[op],type1,expr1);   { generate REQUIRE for domain
-					  enforcement for 1st operand }
+                      enforcement for 1st operand }
     require(arg2req[op],type2,expr2);   { ditto for operand two }
-					{ construct and push Jcode
-					  representation of result }
+                    { construct and push Jcode
+                      representation of result }
     push(newjcode2(jcodeop[op],expr1,expr2),newtype,valuekind);
 end {binary operator};
-
+.ft
 .DE

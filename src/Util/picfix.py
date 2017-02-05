@@ -175,7 +175,7 @@ def dofile(infilename, tabval) :
         for line in infile :
             lwork.addline(expandtabs(line,tabval))
         lwork.flush()
-                   
+                          
     
 #
 #   main -- main program

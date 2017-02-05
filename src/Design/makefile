@@ -7,10 +7,12 @@
 #
 TARGET=.
 GROFF=groff
-GOPTIONS=-m mm -Tpdf
+GOPTIONS=-m mm -Tpdf -Kutf8
+PICFIXCMD=python3 ../Util/picfix.py -t 4
 
 %.pdf: %.mm $(DEPS)
 	$(GROFF) $(GOPTIONS) $< > $(TARGET)/$@
+####	$(PICFIXCMD) $< | $(GROFF) $(GOPTIONS)  > $(TARGET)/$@
 
 all:    cpci1.pdf cpci1.pdf cpci2.pdf cpci3.pdf cpci4.pdf cpci5.pdf cpci6.pdf \
 icode.pdf icodechg.pdf installbm.pdf intro.pdf irdprop.pdf \

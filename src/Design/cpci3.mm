@@ -23,6 +23,7 @@ a strictly sequential fashion.
 The ordering of these operations is shown in the
 following diagram.
 .DS 2
+.ft CR
                  START                                      \&
                    :                                        \&
                    :                                        \&
@@ -49,6 +50,7 @@ Interfaces  <.... I-code                                    \&
                                                  Generate   \&
                                                verification \&
                                                 conditions  \&
+.ft
 .DE
 If tasks are connected by a solid arrow, the first
 task must be completed before the second task is begun.
@@ -279,12 +281,14 @@ However, if the entire structure is referenced without selection,
 the entire structure is checked for definedness.
 Here are two examples:
 .DS 2
+.ft CR
 A[K].E.F > B[J]            DEFINED(A[K].E.F) \&
                            DEFINED(B[J])     \&
                            DEFINED(K)        \&
                            DEFINED(J)        \&
 
 A                          DEFINED(A)        \&
+.ft
 .DE
 .LI
 For every subexpression of the form A\ DIV\ B or A\ MOD\ B
@@ -390,12 +394,14 @@ the routine.
 The following substitutions are performed (after the call
 has been augmented).
 .DS 1
+.ft CR
 Value parameter            The corresponding actual
 OLD(VAR parameter)         The corresponding actual
 Writable simple VAR        The actual, with (+) appended
 Writable VAR component     A newly created variable
 Readonly VAR parameter     The corresponding actual
 Function name              The actual function call
+.ft
 .DE
 Next a sequence of PROCLAIMs must be generated for each
 component of a structured variable that is
@@ -436,9 +442,11 @@ a SAFE and a SIDE.
 These three instructions always come as a matched set.
 Their formats are:
 .DS 1
+.ft CR
 REIN     name
 RESMASH  name
 REOUT    name
+.ft
 .DE
 The purpose of the name is to identify the three instructions that
 are part of each matched set.  Each triple must have a unique
@@ -473,8 +481,10 @@ These two instructions do not effect verification condition generation;
 they are used to enforce syntactic checks.
 The formats are:
 .DS 1
+.ft CR
 FREEZE v
 THAW   v
+.ft
 .DE
 where v is a variable.
 It is an error for a SMASH\ v to appear in the
@@ -516,6 +526,7 @@ the set of field names.
 .P
 The J-code generated for the assignment statement is:
 .DS 1
+.ft CR
 SAFE      *A, A[I1][I2] ... [In], E
 REQUIRE   inrange(E, type(A[I1][I2] ... [In]))
 PROCLAIM  DEFINED(A(+)[I1][I2][I3] ... [In])
@@ -527,6 +538,7 @@ PROCLAIM  A(+) = store(A,I1,
 SIDE      A[I1][I2] ... [In]
 SIDE      E
 SMASH     A
+.ft
 .DE
 In the special case of n=0, the awful PROCLAIM simplifies to:
 .DS 1
@@ -613,6 +625,7 @@ ELSE <else part>
 .DE
 is:
 .DS 1
+.ft CR
 SAFE      B
 LABEL     1
 PROCLAIM  B
@@ -626,6 +639,7 @@ SIDE      B
 CODE      <else part>
 LABEL     3
 FORK      2,3
+.ft
 .DE
 There is no CODE instruction.  CODE\ <construct>
 is notation meaning the J-code recursively generated
@@ -647,6 +661,7 @@ END
 .DE
 is:
 .DS 1
+.ft CR
 LABEL     1
 SAFE      x
 REQUIRE   x=c1 OR x=c2 OR ... x=cn
@@ -667,6 +682,7 @@ SIDE      x
 CODE      <statement n>
 LABEL     n+1
 FORK      2,3, ... n+1
+.ft
 .DE
 The ISO draft standard specifies that the constants
 c1,\ c2,\ ...\ cn must be distinct, which is important
@@ -688,6 +704,7 @@ Each time J-code is generated for a new loop,
 a new variable and label not used elsewhere are required.
 The J-code is:
 .DS 1
+.ft CR
 PROCLAIM    c=INFINITY
 LABEL       1
 FORK        1,2
@@ -710,6 +727,7 @@ LABEL       2
 FORK        1,2
 PROCLAIM    NOT B
 SIDE        B
+.ft
 .DE
 .P
 The initial PROCLAIM of c=INFINITY is a bit of a kludge.
@@ -731,6 +749,7 @@ FORK/LABEL structure is loop-free.
 These problems can be eliminated using the following
 equivalent J-code.
 .DS 1
+.ft CR
 PROCLAIM    c=INFINITY
 LABEL       1
 RESMASH     loopname
@@ -752,6 +771,7 @@ REQUIRE     M<c
 FORK        1,2
 PROCLAIM    NOT B
 SIDE        B
+.ft
 .DE
 The cost of producing this J-code is that the order of the
 code for the the pre- and post-body is reversed
@@ -761,6 +781,7 @@ used for generating this kind of code.
 .H 2 "The REPEAT/UNTIL loop"
 The J-code generated for the REPEAT/UNTIL loop:
 .DS 1
+.ft CR
 REPEAT
 <prebody>
 MEASURE   M
@@ -770,6 +791,7 @@ UNTIL B
 .DE
 is:
 .DS 1
+.ft CR
 PROCLAIM  c=INFINITY
 LABEL     1
 FORK      3
@@ -793,6 +815,7 @@ SAFE      B
 LABEL     3
 PROCLAIM  B
 SIDE      B
+.ft 
 .DE
 As was the case with WHILE loops,
 an extra variable c is needed to prove termination.
@@ -802,21 +825,25 @@ reordering the prebody and postbody.
 .H 2 "FOR loops"
 There are two forms of FOR loops, upward loops:
 .DS 1
+.ft CR
 FOR i := lo TO hi DO
 BEGIN
    <prebody>
    INVARIANT P
    <postbody>
 END
+.ft
 .DE
 and downward loops:
 .DS 1
+.ft CR
 FOR i := hi DOWNTO lo DO
 BEGIN
    <prebody>
    INVARIANT P 
    <postbody>
 END
+.ft
 .DE
 To generate J-code for a FOR loop,
 two new variables whose names
@@ -828,6 +855,7 @@ except for three PROCLAIMs.
 For these three PROCLAIMs,
 the version for downward loops is shown in brackets.
 .DS 1
+.ft CR
 SAFE       lo,hi
 PROCLAIM   lo'=lo
 PROCLAIM   hi'=hi
@@ -863,6 +891,7 @@ LABEL      6
 FORK       5,6
 SMASH      i
 PROCLAIM   NOT DEFINED(I)
+.ft
 .DE
 The verifier will not complain if the final
 "undefined" value of the the index variable is in reality
@@ -962,6 +991,7 @@ for the DEPTH expression.
 The J-code for a routine definition is:
 .P
 .DS 1
+.ft CR
 PROCLAIM   <entry condition>
 PROCLAIM   <range of value parameters>
 PROCLAIM   <definedness of value parameters>
@@ -973,6 +1003,7 @@ PROCLAIM   v2 = p2
 PROCLAIM   vn = pn
 CODE       <routine body>
 REQUIRE    <exit condition>
+.ft
 .DE
 The range information of value parameters is taken
 from the subrange declarations for those parameters.

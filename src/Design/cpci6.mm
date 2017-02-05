@@ -148,6 +148,7 @@ Let us suppose that we want to prove that all the elements in an array
 are zero after a loop has cleared the array.  Consider the following
 program fragment.
 .DS
+.ft CR
 	VAR tab: array[1..10] of integer;
 	    i,n: 1..10;
 	...
@@ -155,6 +156,7 @@ program fragment.
 	    tab[i] := 0;
 	    END;
 	ASSERT(a[n] = 0);
+.ft
 .DE
 .P
 The proof of the assertion will require proving that the loop is
@@ -163,6 +165,7 @@ There is no way to describe the concept of all the elements of an array
 being zero with the primitives of the Pascal-F language alone, so we
 will introduce a function.
 .DS
+.ft CR
     {
      	allzero  -- part of array is zero predicate
 	
@@ -175,6 +178,7 @@ will introduce a function.
 We are now able to state our loop invariant.
 We can also state that the entire array is zero after the clearing loop.
 .DS
+.ft CR
 	VAR tab: array[1..10] of integer;
 	    i,n: 1..10;
 	...
@@ -184,6 +188,7 @@ We can also state that the entire array is zero after the clearing loop.
 	    END;
 	ASSERT(allzero(a,1,10));  { a[n] now zero from 1 to 10 }
 	ASSERT(a[n] = 0);
+.ft
 .DE
 .P
 This completes our preparation of the source program.  It is now necessary
@@ -193,6 +198,7 @@ to deal with this program.
 We begin by defining ``allzero'' informally.
 Note that the definition is recursive.
 .DS
+.ft CR
 	allzero(a,i,j) =
 	if not ARRAYP(a) then false
 	else if not NUMBERP(i) then false
@@ -200,6 +206,7 @@ Note that the definition is recursive.
 	else if i > j then true
 	else if a[j] <> 0 then false
 	else allzero(a,i,j-1)
+.ft
 .DE
 .P
 Note the type restrictions.  All functions in the Rule Builder must
@@ -208,6 +215,7 @@ generate some value for all inputs.  We return false for invalid inputs.
 We are now ready to define the function for the Boyer-Moore theorem prover
 in its language.
 .DS
+.ft CR
 
 	DEFN(ALLZERO
 	      (A I J)
@@ -222,6 +230,7 @@ in its language.
 			      T
 			      (ALLZERO A I (SUB1 J)))))
 		  F))
+.ft
 .DE
 .P
 We now have to prove a few things about ``allzero'', which we will use
@@ -229,11 +238,13 @@ later as rules.  Proof of the loop invariant, above, will require that
 we prove that if an array is zero up to i-1, and it is zero at i, then
 it is zero up to i.  In the Boyer-Moore notation, this reads
 .DS
+.ft CR
 	PROVE.LEMMA(ALLZERO.EXTEND
 		     (REWRITE)
 		     (IMPLIES (AND (ALLZERO A I (SUB1 J))
 				   (EQUAL (SELECTA A J) 0))
 			      (ALLZERO A I J)))
+.ft
 .DE
 .P
 We will call this Rule #1.
@@ -244,6 +255,7 @@ for the path around the loop.  We should even be able to prove the assertion
 after the loop.  The case at entry to the loop requires another rule,
 a trivial one, which we will call rule #2.
 .DS
+.ft CR
 	PROVE.LEMMA(ALLZERO.VOID
 		     (REWRITE)
 		     (IMPLIES (AND (NUMBERP I)
@@ -251,6 +263,7 @@ a trivial one, which we will call rule #2.
 				   (ARRAYP A)
 				   (LESSP J I))
 			      (ALLZERO A I J)))
+.ft
 .DE
 In this case, the case for which the low bound for ``allzero'' exceeds
 the high one, the truth of the proposition follows directly from the
@@ -258,6 +271,7 @@ definition.  However, the simplifier needs to know this explicitly.
 .P
 Finally, we will need a third rule about ``allzero'' later in the program.
 .DS
+.ft CR
 	PROVE.LEMMA(ALLZERO.SELECT
 		     (REWRITE)
 		     (IMPLIES (AND (NUMBERP I)
@@ -268,6 +282,7 @@ Finally, we will need a third rule about ``allzero'' later in the program.
 				   (NOT (LESSP X I))
 				   (ALLZERO A I J))
 			      (EQUAL (SELECTA A X) 0)))
+.ft
 .DE
 .P
 When we want to prove that a[n] = 0, this rule #3 will be used by the

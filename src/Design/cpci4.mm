@@ -153,9 +153,11 @@ In the original Oppen prover,
 .DE
 is an axiom.  In the Boyer-Moore prover, using Boyer-Moore theory of Z-numbers,
 .DS
+.ft CR
 	(IMPLIES
 	    (NOT (integerp! Y))
 	    (EQUAL (addi! X Y) 0))
+.ft
 .DE
 is a theorem.
 This leads to the contradiction that
