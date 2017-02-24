@@ -2,14 +2,16 @@
 #
 #   picfix -- Line drawing picture converter
 #
+#   Python 3
+#
 #   Converts pictures written in ASCII using * - | < - > _ + to line drawing
 #   characters in Unicode.
+#
+#   For now, output is always to standard output.
 #
 #   John Nagle
 #   January, 2017
 #
-#   TODO: recognize arrows made from < > v V ^
-#   TODO: expand tabs
 #
 import argparse
 import sys
@@ -131,7 +133,7 @@ class Linegroup :
         if self.getc(2,i+1) in "|-_+*" or (self.getc(2,i+1) == '>' and self.validarrow(2,i+1)) : # if east valid
             neighbors |= 4                  # south bit
         if self.getc(2,i-1) in "|-_+*" or (self.getc(2,i-1) == '<' and self.validarrow(2,i-1)) :  # if west valid
-            neighbors |= 8                  # south bit
+            neighbors |= 8                  # south bit        
         if ch in "|-_+*" and popcount(neighbors) > 1 :# ***TEMP***
             return(BOXCHARS[neighbors])  
         #   Arrow recognition
@@ -141,10 +143,8 @@ class Linegroup :
         
     def fixline(self) :
         """
-        Use Unicode line drawing symbols, examining a 3x3 square
-        around the character of interest.  There is an extra space
-        at the beginning and end of the line, to simplify indexing.
-        The prevous line has already been processed.
+        Use Unicode line drawing symbols, examining a 5x5 square
+        around the character of interest.  
         """
         s = ''
         for i in range(len(self.lines[2])) :# for all on line
@@ -173,9 +173,9 @@ class Linegroup :
 #   dofile -- do one file
 #
 def dofile(infilename, tabval, nodraw) :
-    outf = sys.stdout                   # ***TEMP***
+    outf = sys.stdout                       # for now, output is always stdout
     with open(infilename, 'r') as infile :
-        lwork = Linegroup(outf, nodraw)         # line group object
+        lwork = Linegroup(outf, nodraw)     # line group object
         for line in infile :
             lwork.addline(expandtabs(line, tabval))
         lwork.flush()
